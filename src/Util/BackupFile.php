@@ -31,13 +31,6 @@ class BackupFile {
   protected $name;
 
   /**
-   * The file name.
-   *
-   * @var string
-   */
-  protected $name;
-
-  /**
    * A file handle if it is open.
    *
    * @var resource
@@ -138,8 +131,8 @@ class BackupFile {
    */
   function delete() {
     if ($path = $this->realpath()) {
-      if (file_exists($file) && (is_writable($file) || is_link($file))) {
-        unlink($file);
+      if (file_exists($path) && (is_writable($path) || is_link($path))) {
+        unlink($path);
       }
       else {
         // @TODO: Throw an exception because we can't delete this file.

@@ -1,9 +1,10 @@
 <?php
 namespace BackupMigrate\Core\Tests\Util;
-use \BackupMigrate\Core\Util;
+
+use \BackupMigrate\Core\Util\TempFile;
 
 /**
- * @coversDefaultClass \\BackupMigrate\Core\Util\TempFile
+ * @coversDefaultClass \BackupMigrate\Core\Util\TempFile
  */
 class TempFileTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,8 +31,9 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty(is_writable($file->realpath()));
 
         // Destroy the object
+        $path = $file->realpath();
         unset($file);
-        $this->assertEmpty(file_exists($file->realpath()));
+        $this->assertEmpty(file_exists($path));
     }
 
 }
