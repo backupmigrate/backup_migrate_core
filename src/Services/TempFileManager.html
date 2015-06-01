@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Contains \BackupMigrate\Core\Services\TempFileManager.
+ */
+
+namespace BackupMigrate\Core\Services;
+
+/**
+ * Provides a very basic temp file manager which assumes read/write access to a
+ * local temp directory.
+ */
+class TempFileManager implements TempFileManagerInterface
+{
+  /**
+   * The path to the temp directory.
+   *
+   * @var string
+   */
+  protected $dir;
+
+  /**
+   * A prefix to add to all temp files.
+   *
+   * @var string
+   */
+  protected $prefix;
+
+  /**
+   * The list of files created by this manager
+   * 
+   * @var array
+   */
+  protected $tempfiles;
+
+  /**
+   * Construct a manager
+   * 
+   * @param string $dir A file path or stream URL for the temp direcory
+   * @param string $prefix A string prefix to add to each created file.
+   */
+  public function __construct($dir, $prefix = 'bam') {
+    $this->dir = $dir;
+    $this->prefix = $prefix;
+    // @TODO: check that temp direcory is writeable or throw an exception.
+  }
+
+  /**
+   * Destruct the manager. Delete all the temporary files when this manager is destroyed.
+   */
+  public function __destruct() {
+    $this->deleteAllTempFiles();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createTempFile() {
+    $out = tempnam($this->dir, $this->prefix);
+    $this->tempfiles[] = $out;
+    return $out;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteTempFile($filename) {
+    // Only delete files that were created by this manager.
+    if (in_array($filename, $this->tempfiles)) {
+      $filepath = $this->dir . '/' . $filename;
+      if (file_exists($filepath)) {
+        if (is_writable($filepath)) {
+          unlink($filepath);
+        }
+        else {
+          // @TODO: Throw exception. Cannot delete temp file.
+        }
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteAllTempFiles() {
+    foreach ($this->tempfiles as $file) {
+      $this->deleteTempFile($filename);
+    }
+  }
+
+}

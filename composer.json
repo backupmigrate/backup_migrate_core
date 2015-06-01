@@ -1,0 +1,27 @@
+{
+    "name": "backupmigrate/core",
+    "description": "Backup and Migrate",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "BackupMigrate\\Core\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ronan Dowling"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BackupMigrate\\Core\\Tests\\": "tests"
+        }
+    },
+
+}
