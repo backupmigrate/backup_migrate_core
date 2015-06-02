@@ -7,8 +7,9 @@
 
 namespace BackupMigrate\Core\Util;
 
+use BackupMigrate\Core\Util\BackupFileInterface;
 
-class BackupFile {
+class BackupFile implements BackupFileInterface {
   /**
    * The file info (size, timestamp, etc.).
    *
@@ -35,7 +36,7 @@ class BackupFile {
    *
    * @var resource
    */
-  private $handle;
+  protected $handle;
   
   /**
    * Constructor.
@@ -47,6 +48,13 @@ class BackupFile {
     //@TODO check that this file exists and is readable/writeable.
   }
 
+  /**
+   * Destructor.
+   */
+  function __destruct() {
+    // Close the handle if we've opened it.
+    $this->close();
+  }
 
   /**
    * Get the realpath of the file
@@ -67,58 +75,57 @@ class BackupFile {
    * @param bool $binary If true open as a binary file
    */
   function open($write = FALSE, $binary = FALSE) {
-    if (!$this->handle) {
-      $path = $this->filepath();
+    if (!$this->isOpen()) {
+      $path = $this->realpath();
 
       // Check if the file can be read/written.
       if ($write && ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path)))) {
-        _backup_migrate_message('The file %path cannot be written to.', array('%path' => $path), 'error');
-        return FALSE;
+        // @TODO: Throw better exception
+        throw new \Exception('Cannot write to file.');
       }
       if (!$write && !is_readable($path)) {
-        _backup_migrate_message('The file %path cannot be read.', array('%path' => $path), 'error');
-        return FALSE;
+        // @TODO: Throw better exception
+        throw new \Exception('Cannot read file.');
       }
 
       // Open the file.
       $mode = ($write ? "w" : "r") . ($binary ? "b" : "");
       $this->handle = fopen($path, $mode);
-      return $this->handle;
+      if (!$this->handle) {
+        throw new \Exception('Cannot open file.');
+      }
     }
-    return NULL;
+    return $this->handle;
   }
 
   /**
    * Close a file when we're done reading/writing.
    */
   function close() {
-    fclose($this->handle);
-    $this->handle = NULL;
+    if ($this->isOpen()) {
+      fclose($this->handle);
+      $this->handle = NULL;
+    }
   }
 
   /**
-   * Write a line to the file.
+   * Is this file open for reading/writing.
    * 
-   * @param string $data A string to write to the file.
+   * return bool True if the file is open, false if not.
    */
-  function write($data) {
-    if (!$this->handle) {
-      $this->handle = $this->open(TRUE);
-    }
-    if ($this->handle) {
-      fwrite($this->handle, $data);
-    }
+  function isOpen() {
+    return !empty($this->handle);
   }
-
+  
   /**
    * Read a line from the file.
    * 
    * @param int $size The number of bites to read or 0 to read the whole file
    * @return string The data read from the file or NULL if the file can't be read or is at the end of the file.
    */
-  function read($size = 0) {
-    if (!$this->handle) {
-      $this->handle = $this->open();
+  function read($size = 0, $binary = FALSE) {
+    if (!$this->isOpen()) {
+      $this->open(FALSE, $binary);
     }
     if ($this->handle && !feof($this->handle)) {
       return $size ? fread($this->handle, $size) : fgets($this->handle);
@@ -127,17 +134,11 @@ class BackupFile {
   }
 
   /**
-   * Delete the file.
+   * Rewind the file handle to the start of the file.
    */
-  function delete() {
-    if ($path = $this->realpath()) {
-      if (file_exists($path) && (is_writable($path) || is_link($path))) {
-        unlink($path);
-      }
-      else {
-        // @TODO: Throw an exception because we can't delete this file.
-      }
+  function rewind() {
+    if ($this->isOpen()) {
+      rewind($this->handle);
     }
   }
-
 }

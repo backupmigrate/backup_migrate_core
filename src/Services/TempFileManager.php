@@ -65,16 +65,16 @@ class TempFileManager implements TempFileManagerInterface
   /**
    * {@inheritdoc}
    */
-  public function deleteTempFile($filename) {
+  public function deleteTempFile($filepath) {
     // Only delete files that were created by this manager.
-    if (in_array($filename, $this->tempfiles)) {
-      $filepath = $this->dir . '/' . $filename;
+    if (in_array($filepath, $this->tempfiles)) {
       if (file_exists($filepath)) {
         if (is_writable($filepath)) {
           unlink($filepath);
         }
         else {
           // @TODO: Throw exception. Cannot delete temp file.
+          throw new \Exception('Could not delete the temp file because it is not writable');
         }
       }
     }
@@ -85,7 +85,7 @@ class TempFileManager implements TempFileManagerInterface
    */
   public function deleteAllTempFiles() {
     foreach ($this->tempfiles as $file) {
-      $this->deleteTempFile($filename);
+      $this->deleteTempFile($file);
     }
   }
 

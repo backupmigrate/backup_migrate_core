@@ -30,20 +30,54 @@ class TempFile extends BackupFile {
     $this->delete();
   }
 
+  // /**
+  //  * Make the file permanent by moving it to the given file path.
+  //  * 
+  //  * @param string $path The destination path (without filename) as a file path or stream URI.
+  //  * @param string $filename The destination filename without an extension.
+  //  */
+  // function save($path, $filename) {
+  //   $to = $path . $filename . $this->getExtension();
+  //   if (rename($this->realpath(), $to)) {
+  //     $out = new BackupFile($to);
+  //     return $out;
+  //   }
+  //   // @TODO throw an exception. The file could not be moved
+  //   return NULL;
+  // }
+
   /**
-   * Make the file permanent by moving it to the given file path.
+   * Write a line to the file.
    * 
-   * @param string $path The destination path (without filename) as a file path or stream URI.
-   * @param string $filename The destination filename without an extension.
+   * @param string $data A string to write to the file.
    */
-  function save($path, $filename) {
-    $to = $path . $filename . $this->getExtension();
-    if (rename($this->realpath(), $to)) {
-      $out = new BackupFile($to);
-      return $out;
+  function write($data) {
+    if (!$this->isOpen()) {
+      $this->open(TRUE);
     }
-    // @TODO throw an exception. The file could not be moved
-    return NULL;
+
+    if ($this->handle) {
+      if (!fwrite($this->handle, $data)) {
+        throw new \Exception('Cannot write to file.');
+      }
+    }
+    else {
+      throw new \Exception('File not open for writing.');
+    }
   }
+
+  // /**
+  //  * Delete the file.
+  //  */
+  // function delete() {
+  //   if ($path = $this->realpath()) {
+  //     if (file_exists($path) && (is_writable($path) || is_link($path))) {
+  //       unlink($path);
+  //     }
+  //     else {
+  //       // @TODO: Throw an exception because we can't delete this file.
+  //     }
+  //   }
+  // }
 
 }
