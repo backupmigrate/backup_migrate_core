@@ -151,7 +151,7 @@ class BackupFile implements BackupFileReadableInterface {
    * @return mixed The value of the metadata for this file.
    */
   public function getMeta($key) {
-    return isset($this->medatata[$key]) ? $this->medatata[$key] : NULL;
+    return isset($this->metadata[$key]) ? $this->metadata[$key] : NULL;
   }
 
   /**
@@ -161,7 +161,7 @@ class BackupFile implements BackupFileReadableInterface {
    * @param mixed $value The value for the metadata item.
    */
   public function setMeta($key, $value) {
-    $this->medatata[$key] = $value;
+    $this->metadata[$key] = $value;
   }
 
   /**
@@ -170,8 +170,17 @@ class BackupFile implements BackupFileReadableInterface {
    * @param array $values An array of key-value pairs for the file metadata.
    */
   public function setMetaMultiple($values) {
-    foreach ($values as $key => $value) {
+    foreach ((array)$values as $key => $value) {
       $this->setMeta($key, $value);
     }
+  }
+
+  /**
+   * Get all metadata
+   *
+   * @param array $values An array of key-value pairs for the file metadata.
+   */
+  public function getMetaAll() {
+    return $this->metadata;
   }
 }

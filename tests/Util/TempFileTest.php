@@ -2,7 +2,7 @@
 namespace BackupMigrate\Core\Tests\Util;
 
 use \BackupMigrate\Core\Util\TempFile;
-use \BackupMigrate\Core\Services\TempFileManager;
+use \BackupMigrate\Core\Services\TempFileAdapter;
 use \BackupMigrate\Core\Tests\Util\BackupFileTest;
 
 /**
@@ -14,14 +14,14 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string A URI for a virtual file
      */
-    protected $manager;
+    protected $adapter;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-      $this->manager = new TempFileManager('/tmp', 'abc');
+      $this->adapter = new TempFileAdapter('/tmp', 'abc');
     }
 
     /**
@@ -31,15 +31,16 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateAndDestroy()
     {
-        $file = new TempFile($this->manager);
+        $file = new TempFile($this->adapter->createTempFile());
         // Make sure a temp file has been created somewhere.
         $this->assertNotEmpty(file_exists($file->realpath()));
         $this->assertNotEmpty(is_writable($file->realpath()));
 
         // Destroy the object
-        $path = $file->realpath();
-        unset($file);
-        $this->assertEmpty(file_exists($path));
+      // Removed. Temp files don't manage their own desctuction. That's the adapter's problem
+//        $path = $file->realpath();
+//        unset($file);
+//        $this->assertEmpty(file_exists($path));
     }
 
     /**
@@ -50,7 +51,7 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
      */
     public function testOpenForWrite()
     {
-      $file = new TempFile($this->manager);
+      $file = new TempFile($this->adapter->createTempFile());
 
       // Not open yet
       $this->assertFalse($file->isOpen());
@@ -74,13 +75,14 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
       $this->assertFalse(is_resource($handle));
 
       // Test implicit file open and close.
-      $new_file = new TempFile($this->manager);
+      $new_file = new TempFile($this->adapter->createTempFile());
       $path = $new_file->realpath();
       $new_file->write('Hello, World!');
       $this->assertEquals(file_get_contents($new_file->realpath()), 'Hello, World!');
-      unset($new_file);
-      // Make sure the file was deleted
-      $this->assertFalse(file_exists($path));
+
+//      unset($new_file);
+//      // Make sure the file was deleted
+//      $this->assertFalse(file_exists($path));
     }
 
 }

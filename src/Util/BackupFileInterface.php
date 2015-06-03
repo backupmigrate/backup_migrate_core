@@ -37,6 +37,15 @@ interface BackupFileInterface {
    */
   public function setMetaMultiple($values);
 
+
+  /**
+   * Get all meta data as an array
+   *
+   * @return array $values An array of key-value pairs for the file metadata.
+   */
+  public function getMetaAll();
+
+
   /**
    * Read a line from the file.
    * 

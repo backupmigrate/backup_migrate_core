@@ -1,99 +1,127 @@
 <?php
+/**
+ * @file
+ */
+
 namespace BackupMigrate\Core\Tests\Services;
 
+use \BackupMigrate\Core\Services\TempFileAdapter;
 use \BackupMigrate\Core\Services\TempFileManager;
+use \BackupMigrate\Core\Util\BackupFileWritableInterface;
+
 
 /**
- * @coversDefaultClass \BackupMigrate\Core\Services\TempFileManagerTest
+ * @coversDefaultClass \BackupMigrate\Core\Services\TempFileManager
  */
 class TempFileManagerTest extends \PHPUnit_Framework_TestCase
 {
 
-   /**
-     * @var string A URI for a virtual file
-     */
-    protected $manager;
+  /**
+   * @var \BackupMigrate\Core\Services\TempFileAdapter
+   */
+  protected $adapter;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp()
-    {
-      $this->manager = new TempFileManager('/tmp', 'abc');
-    }
+  /**
+   * @var \BackupMigrate\Core\Services\TempFileAdapter
+   */
+  protected $manager;
 
-    /**
-     * Create multiple files for testing.
-     */
-    private function createMultipleFiles($number = 5) {
-      $out = array();
-      for ($i = 0; $i < $number; $i++) {
-        $out[] = $this->manager->createTempFile();
-      }
-      return $out;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp()
+  {
+    $this->adapter = new TempFileAdapter('/tmp', 'abc');
+    $this->manager = new TempFileManager($this->adapter);
+  }
 
-    /**
-     * @covers ::__constructor
-     * @covers ::createTempFile
-     */
-    public function testPrefix()
-    {
-      $path = $this->manager->createTempFile();
-      $this->assertStringStartsWith('abc', basename($path));
+  /**
+   * @covers ::__constructor
+   */
+  public function testCreate() {
+    // Create with no extension.
+    $file = $this->manager->create();
 
-      // Test another to be sure
-      $new_manager = new TempFileManager('/tmp', 'bca');
-      $path = $new_manager->createTempFile();
-      $this->assertStringStartsWith('bca', basename($path));
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
 
-    }
+    // Create with an extension.
+    $file = $this->manager->create('txt');
 
-    /**
-     * @covers ::createTestFile
-     * @covers ::deleteTestFile
-     */
-    public function testCreateDestroyTempFile()
-    {
-      $path = $this->manager->createTempFile();
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    $this->assertEquals('txt', $file->getMeta('ext'));
 
-      // Make sure a temp file has been created somewhere.
-      $this->assertNotEmpty(file_exists($path));
-      $this->assertNotEmpty(is_writable($path));
+  }
 
-      $this->manager->deleteTempFile($path);
-      $this->assertEmpty(file_exists($path));
-    }
+  /**
+   * @covers ::__constructor
+   * @covers ::pushExt
+   */
+  public function testPushExt() {
+    // Create with no extension.
+    $file = $this->manager->create();
+    $this->assertEquals('', $file->getMeta('ext'));
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Push an extension.
+    $file = $this->manager->pushExt($file, 'txt');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt', $file->getMeta('ext'));
+    // Push an extension.
+    $file = $this->manager->pushExt($file, 'tar');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt.tar', $file->getMeta('ext'));
+    // Push an extension.
+    $file = $this->manager->pushExt($file, 'gz');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt.tar.gz', $file->getMeta('ext'));
 
-    /**
-     * @covers ::createTempFile
-     * @covers ::deleteAllTempFiles
-     */
-    public function testDeleteAllTempFiles()
-    {
-      $files = $this->createMultipleFiles();
-      foreach ($files as $path) {
-        $this->assertNotEmpty(file_exists($path));
-      }
-      $this->manager->deleteAllTempFiles();
+    // Do it again but starting with an extension
+    // Create with no extension.
+    $file = $this->manager->create('txt');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt', $file->getMeta('ext'));
+    // Push an extension.
+    $file = $this->manager->pushExt($file, 'tar');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt.tar', $file->getMeta('ext'));
+    // Push an extension.
+    $file = $this->manager->pushExt($file, 'gz');
+    // Is this a temp file
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    // Is the ext correct.
+    $this->assertEquals('txt.tar.gz', $file->getMeta('ext'));
 
-      foreach ($files as $path) {
-        $this->assertEmpty(file_exists($path));
-      }
-    }
+  }
 
-    /**
-     * @covers ::__destructor
-     */
-    public function testCleanUp() {
-      $files = $this->createMultipleFiles();
-      foreach ($files as $path) {
-        $this->assertNotEmpty(file_exists($path));
-      }
-      unset($this->manager);
-      foreach ($files as $path) {
-        $this->assertEmpty(file_exists($path));
-      }      
-    }
+  /**
+   * @covers ::__constructor
+   * @covers ::pushExt
+   */
+  public function testPopExt() {
+    $file = $this->manager->create('txt.tar.gz');
+    $this->assertEquals('txt.tar.gz', $file->getMeta('ext'));
+
+    $file = $this->manager->popExt($file);
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    $this->assertEquals('txt.tar', $file->getMeta('ext'));
+    $file = $this->manager->popExt($file);
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    $this->assertEquals('txt', $file->getMeta('ext'));
+    $file = $this->manager->popExt($file);
+    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileWritableInterface', $file);
+    $this->assertEquals('', $file->getMeta('ext'));
+  }
 
 }

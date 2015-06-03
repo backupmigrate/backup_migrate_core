@@ -1,92 +1,102 @@
 <?php
-
 /**
  * @file
- * Contains \BackupMigrate\Core\Services\TempFileManager.
+ * Contains \BackupMigrate\Core\Services\TempFileManagerInterface.
  */
 
 namespace BackupMigrate\Core\Services;
 
+use BackupMigrate\Core\Services\TempFileAdapterInterface;
+use BackupMigrate\Core\Util\BackupFileInterface;
+use BackupMigrate\Core\Util\BackupFileWritableInterface;
+use BackupMigrate\Core\Util\TempFile;
+
 /**
- * Provides a very basic temp file manager which assumes read/write access to a
- * local temp directory.
+ * Class TempFileManager
+ * @package BackupMigrate\Core\Services
  */
-class TempFileManager implements TempFileManagerInterface
-{
+class TempFileManager implements TempFileManagerInterface {
+
   /**
-   * The path to the temp directory.
+   * @var \BackupMigrate\Core\Services\TempFileAdapterInterface
+   */
+  protected $adapter;
+
+  /**
+   * Build the manager with the given adapter. This manager needs the adapter
+   * to create the actual temp files.
    *
-   * @var string
+   * @param \BackupMigrate\Core\Services\TempFileAdapterInterface $adapter
    */
-  protected $dir;
-
-  /**
-   * A prefix to add to all temp files.
-   *
-   * @var string
-   */
-  protected $prefix;
-
-  /**
-   * The list of files created by this manager
-   * 
-   * @var array
-   */
-  protected $tempfiles;
-
-  /**
-   * Construct a manager
-   * 
-   * @param string $dir A file path or stream URL for the temp direcory
-   * @param string $prefix A string prefix to add to each created file.
-   */
-  public function __construct($dir, $prefix = 'bam') {
-    $this->dir = $dir;
-    $this->prefix = $prefix;
-    // @TODO: check that temp direcory is writeable or throw an exception.
+  public function __construct(TempFileAdapterInterface $adapter) {
+    $this->adapter = $adapter;
   }
 
   /**
-   * Destruct the manager. Delete all the temporary files when this manager is destroyed.
+   * Create a brand new temp file with the given extension (if specified). The
+   * new file should be writable.
+   *
+   * @param string $ext The file extension for this file (optional)
+   * @return BackupFileWritableInterface
    */
-  public function __destruct() {
-    $this->deleteAllTempFiles();
+  public function create($ext = '') {
+    $file = new TempFile($this->adapter->createTempFile());
+    $file->setMeta('ext', $ext);
+    return $file;
   }
 
   /**
-   * {@inheritdoc}
+   * Return a new file based on the passed in file with the given file extension.
+   * This should maintain the metadata of the file passed in with the new file
+   * extension added after the old one.
+   * For example: xxx.mysql would become xxx.mysql.gz
+   *
+   *
+   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   *        The file to add the extension to.
+   * @param $ext
+   *        The new file extension.
+   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   *        A new writable backup file with the new extension and all of the metadata
+   *        from the previous file.
    */
-  public function createTempFile() {
-    $out = tempnam($this->dir, $this->prefix);
-    $this->tempfiles[] = $out;
+  public function pushExt(BackupFileInterface $file, $ext) {
+    // Copy the file metadata to a new TempFile
+    $out = new TempFile($this->adapter->createTempFile());
+    $file->setMetaMultiple($file->getMetaAll());
+
+    // Push the new extension on to the new file
+    $previous_ext = $file->getMeta('ext');
+    $parts = explode('.', $previous_ext);
+    array_push($parts, $ext);
+
+    $out->setMeta('ext', implode('.', array_filter($parts)));
+
     return $out;
   }
 
   /**
-   * {@inheritdoc}
+   * Return a new file based on the one passed in but with the last part of the
+   * file extension removed.
+   * For example: xxx.mysql.gz would become xxx.mysql
+   *
+   *
+   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   *        A new writable backup file with the last extension removed and
+   *        all of the metadata from the previous file.
    */
-  public function deleteTempFile($filepath) {
-    // Only delete files that were created by this manager.
-    if (in_array($filepath, $this->tempfiles)) {
-      if (file_exists($filepath)) {
-        if (is_writable($filepath)) {
-          unlink($filepath);
-        }
-        else {
-          // @TODO: Throw exception. Cannot delete temp file.
-          throw new \Exception('Could not delete the temp file because it is not writable');
-        }
-      }
-    }
-  }
+  public function popExt(BackupFileInterface $file) {
+    // Copy the file metadata to a new TempFile
+    $out = new TempFile($this->adapter->createTempFile());
+    $file->setMetaMultiple($file->getMetaAll());
 
-  /**
-   * {@inheritdoc}
-   */
-  public function deleteAllTempFiles() {
-    foreach ($this->tempfiles as $file) {
-      $this->deleteTempFile($file);
-    }
-  }
+    // Pop the last extension from the last of the file.
+    $ext = $file->getMeta('ext');
+    $parts = explode('.', $ext);
+    array_pop($parts);
+    $out->setMeta('ext', implode('.', $parts));
 
+    return $out;
+  }
 }

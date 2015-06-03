@@ -45,9 +45,7 @@ interface BackupFileWritableInterface extends BackupFileInterface {
   /**
    * Open a file for reading or writing.
    * 
-   * @param bool $write If tre open for writing, otherwise open for reading only
    * @param bool $binary If true open as a binary file
-   * @return resource A file handle that can be used for fread or fwrite.
    */
   public function openForWrite($binary = FALSE);
 
