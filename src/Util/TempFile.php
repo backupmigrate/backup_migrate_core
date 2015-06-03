@@ -11,15 +11,25 @@
 namespace BackupMigrate\Core\Util;
 
 use BackupMigrate\Core\Util\BackupFile;
+use BackupMigrate\Core\Services\TempFileManagerInterface;
 
-class TempFile extends BackupFile {
+class TempFile extends BackupFile implements BackupFileWritableInterface  {
+
+  /**
+   * Injected filemanager to provision and delete actual files
+   * 
+   * @var TempFileManagerInterface
+   */
+  protected $filemanager;
 
   /**
    * Constructor. Create a new file object from 
    */
-  function __construct() {
-    // @TODO: Allow the temp directory to be specified by injection.
-    $path = tempnam('/tmp', 'bam');
+  function __construct($filemanager) {
+    $this->filemanager = $filemanager;
+
+    // Request a new temporary file from the temp file manager.
+    $path = $this->filemanager->createTempFile();
     parent::__construct($path);
   }
 
@@ -47,13 +57,39 @@ class TempFile extends BackupFile {
   // }
 
   /**
+   * Open a file for reading or writing.
+   * 
+   * @param bool $write If tre open for writing, otherwise open for reading only
+   * @param bool $binary If true open as a binary file
+   */
+  function openForWrite($binary = FALSE) {
+    if (!$this->isOpen()) {
+      $path = $this->realpath();
+
+      // Check if the file can be read/written.
+      if ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path))) {
+        // @TODO: Throw better exception
+        throw new \Exception('Cannot write to file.');
+      }
+
+      // Open the file.
+      $mode = "w" . ($binary ? "b" : "");
+      $this->handle = fopen($path, $mode);
+      if (!$this->handle) {
+        throw new \Exception('Cannot open file.');
+      }
+    }
+    return $this->handle;
+  }
+
+  /**
    * Write a line to the file.
    * 
    * @param string $data A string to write to the file.
    */
   function write($data) {
     if (!$this->isOpen()) {
-      $this->open(TRUE);
+      $this->openForWrite();
     }
 
     if ($this->handle) {
@@ -66,18 +102,11 @@ class TempFile extends BackupFile {
     }
   }
 
-  // /**
-  //  * Delete the file.
-  //  */
-  // function delete() {
-  //   if ($path = $this->realpath()) {
-  //     if (file_exists($path) && (is_writable($path) || is_link($path))) {
-  //       unlink($path);
-  //     }
-  //     else {
-  //       // @TODO: Throw an exception because we can't delete this file.
-  //     }
-  //   }
-  // }
+  /**
+   * Delete the file.
+   */
+  function delete() {
+    $this->filemanager->deleteTempFile($this->path);
+  }
 
 }

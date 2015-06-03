@@ -56,7 +56,7 @@ class BackupFileTest extends \PHPUnit_Framework_TestCase
       $this->assertFalse($this->file->isOpen());
 
       // Open for reading.
-      $handle = $this->file->open();
+      $handle = $this->file->openForRead();
 
       // Read a limited number of bytes
       $this->assertEquals($this->file->read(5), 'Hello');

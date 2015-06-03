@@ -9,7 +9,7 @@ namespace BackupMigrate\Core\Util;
 
 use BackupMigrate\Core\Util\BackupFileInterface;
 
-class BackupFile implements BackupFileInterface {
+class BackupFile implements BackupFileReadableInterface {
   /**
    * The file info (size, timestamp, etc.).
    *
@@ -38,6 +38,13 @@ class BackupFile implements BackupFileInterface {
    */
   protected $handle;
   
+  /**
+   * The file's metadata
+   * 
+   * @var array A key/value associative array of metadata.
+   */
+  protected $metadata;
+
   /**
    * Constructor.
    * 
@@ -74,22 +81,17 @@ class BackupFile implements BackupFileInterface {
    * @param bool $write If tre open for writing, otherwise open for reading only
    * @param bool $binary If true open as a binary file
    */
-  function open($write = FALSE, $binary = FALSE) {
+  function openForRead($binary = FALSE) {
     if (!$this->isOpen()) {
       $path = $this->realpath();
 
-      // Check if the file can be read/written.
-      if ($write && ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path)))) {
-        // @TODO: Throw better exception
-        throw new \Exception('Cannot write to file.');
-      }
-      if (!$write && !is_readable($path)) {
+      if (!is_readable($path)) {
         // @TODO: Throw better exception
         throw new \Exception('Cannot read file.');
       }
 
       // Open the file.
-      $mode = ($write ? "w" : "r") . ($binary ? "b" : "");
+      $mode = "r" . ($binary ? "b" : "");
       $this->handle = fopen($path, $mode);
       if (!$this->handle) {
         throw new \Exception('Cannot open file.');
@@ -125,7 +127,7 @@ class BackupFile implements BackupFileInterface {
    */
   function read($size = 0, $binary = FALSE) {
     if (!$this->isOpen()) {
-      $this->open(FALSE, $binary);
+      $this->openForRead($binary);
     }
     if ($this->handle && !feof($this->handle)) {
       return $size ? fread($this->handle, $size) : fgets($this->handle);
@@ -139,6 +141,37 @@ class BackupFile implements BackupFileInterface {
   function rewind() {
     if ($this->isOpen()) {
       rewind($this->handle);
+    }
+  }
+
+  /**
+   * Get a metadata value
+   *
+   * @param string $key The key for the metadata item.
+   * @return mixed The value of the metadata for this file.
+   */
+  public function getMeta($key) {
+    return isset($this->medatata[$key]) ? $this->medatata[$key] : NULL;
+  }
+
+  /**
+   * Set a metadata value
+   *
+   * @param string $key The key for the metadata item.
+   * @param mixed $value The value for the metadata item.
+   */
+  public function setMeta($key, $value) {
+    $this->medatata[$key] = $value;
+  }
+
+  /**
+   * Set a metadata value
+   *
+   * @param array $values An array of key-value pairs for the file metadata.
+   */
+  public function setMetaMultiple($values) {
+    foreach ($values as $key => $value) {
+      $this->setMeta($key, $value);
     }
   }
 }

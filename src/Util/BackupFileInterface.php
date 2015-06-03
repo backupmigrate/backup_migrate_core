@@ -2,30 +2,17 @@
 
 /**
  * @file
- * Contains \BackupMigrate\Core\Services\BackupFileInterface.
+ * Contains \BackupMigrate\Core\Util\BackupFileInterface.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\Util;
 
 /**
- * Provides a service to provision temp files in the correct place for the environment.
+ * Provides a metadat-only file object. If the file needs to be readable or
+ * writable use \BackupMigrate\Core\Util\BackupFileReadableInterface or
+ * \BackupMigrate\Core\Util\BackupFileWritableInterface
  */
 interface BackupFileInterface {
-
-  /**
-   * Read a line from the file.
-   * 
-   * @param int $size The number of bites to read or 0 to read the whole file
-   * @return string The data read from the file or NULL if the file can't be read or is at the end of the file.
-   */
-  public function read($size = 0);
-
-  /**
-   * Write a line to the file.
-   * 
-   * @param string $data A string to write to the file.
-   */
-  public function write($data);
 
   /**
    * Get a metadata value
@@ -51,13 +38,12 @@ interface BackupFileInterface {
   public function setMetaMultiple($values);
 
   /**
-   * Open a file for reading or writing.
+   * Read a line from the file.
    * 
-   * @param bool $write If tre open for writing, otherwise open for reading only
-   * @param bool $binary If true open as a binary file
-   * @return resource A file handle that can be used for fread or fwrite.
+   * @param int $size The number of bites to read or 0 to read the whole file
+   * @return string The data read from the file or NULL if the file can't be read or is at the end of the file.
    */
-  public function open($write = FALSE, $binary = FALSE);
+  public function read($size = 0);
 
   /**
    * Close a file when we're done reading/writing.
