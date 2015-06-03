@@ -6,11 +6,21 @@
 
 namespace BackupMigrate\Core\Config;
 
+use \BackupMigrate\Core\Config\ConfigInterface;
+
 /**
- * Provides an interface defining a backup source.
+ * Class ConfigBase
+ *
+ * A basic congfiguration manager with very little logic in it.
+ *
+ * @package BackupMigrate\Core\Config
  */
-interface ConfigInterface
-{
+class ConfigBase implements ConfigInterface {
+
+  /**
+   * @var array
+   */
+  protected $config;
 
   /**
    * Get a setting value
@@ -18,7 +28,9 @@ interface ConfigInterface
    * @param string $key The key for the setting.
    * @return mixed The value of the setting.
    */
-  public function get($key);
+  public function get($key) {
+    return isset($this->config[$key]) ? $this->config[$key] : NULL;
+  }
 
   /**
    * Set a setting value
@@ -26,22 +38,25 @@ interface ConfigInterface
    * @param string $key The key for the setting.
    * @param mixed $value The value for the setting.
    */
-  public function set($key, $value);
+  public function set($key, $value) {
+    $this->config[$key] = $value;
+  }
 
   /**
    * Get all settings as an associative array
    *
    * @return array All of the settings in this profile
    */
-  public function toArray();
-
+  public function toArray() {
+    return $this->config;
+  }
 
   /**
    * Set all from an array
    *
    * @param array $values An associative array of settings.
    */
-  public function fromArray($values);
-
-
+  public function fromArray($values) {
+    $this->config = $values;
+  }
 }

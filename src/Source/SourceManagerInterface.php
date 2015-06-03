@@ -22,7 +22,7 @@ interface SourceManagerInterface
    * @param int $weight
    *   (optional) The the order of the source when it appears in lists.
    */
-  public function addSource(SourceInterface $source, $source_id, $weight = 0);
+  public function add(SourceInterface $source, $source_id, $weight = 0);
 
   /**
    * Get the source with the given id.
@@ -31,12 +31,12 @@ interface SourceManagerInterface
    * 
    * @return SourceInterface The source specified by the id or NULL if it doesn't exist.
    */
-  public function getSource($source_id);
+  public function get($source_id);
 
   /**
    * Get a list of all of the sources.
    *
    * @return array An ordered list of the sources, keyed by their id.
    */
-  public function getAllSources();
+  public function getAll();
 }

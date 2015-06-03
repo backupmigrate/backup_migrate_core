@@ -29,7 +29,7 @@ interface SourceManager extends SourceManagerInterface
   /**
    * {@inheritdoc}
    */
-  public function addSource(SourceInterface $source, $source_id, $weight = 0) {
+  public function add(SourceInterface $source, $source_id, $weight = 0) {
     $this->sources[$source_id] = $source;
     $this->sourceWeights[$source_id] = $weight;
 
@@ -40,7 +40,7 @@ interface SourceManager extends SourceManagerInterface
   /**
    * {@inheritdoc}
    */
-  public function getSource($source_id) {
+  public function get($source_id) {
     if (isset($this->sources[$source_id])) {
       return $this->sources[$source_id]
     }
@@ -50,7 +50,7 @@ interface SourceManager extends SourceManagerInterface
   /**
    * {@inheritdoc}
    */
-  public function getAllSources() {
+  public function getAll() {
     return $this->sources;
   }
 }

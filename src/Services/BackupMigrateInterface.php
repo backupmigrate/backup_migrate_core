@@ -7,36 +7,49 @@
 
 namespace BackupMigrate\Core\Services;
 
-use \BackupMigrate\Core\Source;
-use \BackupMigrate\Core\Destination;
-use \BackupMigrate\Core\Config;
+use \BackupMigrate\Core\Source\SourceManagerInterface;
+use \BackupMigrate\Core\Source\SourceInterface;
+use \BackupMigrate\Core\Destination\DestinationManagerInterface;
+use \BackupMigrate\Core\Destination\DestinationInterface;
+use \BackupMigrate\Core\Plugin\PluginManagerInterface;
+use \BackupMigrate\Core\Config\ConfigInterface;
 
 
 /**
  * The core Backup and Migrate service.
  */
-class BackupMigrateInterface
+interface BackupMigrateInterface
 {
 
   /**
-   * Peform the backup from a given source and save it to the given destination.
-   * 
-   * @param SourceInterface $source The source (eg: database, file directory) to be backed up
-   * @param ConfigInterface $settings The settings to be used during the operation
-   * @param DestinationInterface $destination The place to save the backup file to.
+   * Backup and Migrate constructor. Takes all of the dependencies for this service.
+   *
+   * @param \BackupMigrate\Core\Source\SourceManagerInterface $sources
+   * @param \BackupMigrate\Core\Destination\DestinationManagerInterface $destinations
+   * @param \BackupMigrate\Core\Plugin\PluginManagerInterface $plugins
+   * @param \BackupMigrate\Core\Services\ApplicationInterface $app
+   * @param \BackupMigrate\Core\Config\ConfigInterface $config
    */
-  public function backup(SourceInterface $source, DestinationInterface $destination, ConfigInterface $settings);
+  public function __construct(SourceManagerInterface $sources, DestinationManagerInterface $destinations, PluginManagerInterface $plugins, ApplicationInterface $app, ConfigInterface $config = NULL);
 
   /**
-   * Peform the backup from a given source and save it to the given destination.
-   * 
-   * @param SourceInterface $source The source (eg: database, file directory) to be restored
-   * @param DestinationInterface $destination The destination where the backup file is stored
-   * @param ConfigInterface $settings The settings to be used during the operation
+   * Perform the backup from a given source and save it to the given destination.
+   *
+   * @param string $source_id The id of the source to backup
+   * @param string $destination_id The id of the destination to save the backup to.
+   * @return
+   */
+  public function backup($source_id, $destination_id);
+
+  /**
+   * Perform the restore to a given source loading it from the given file in the given destination.
+   *
+   * @param string $source_id The id of the source to restore
+   * @param string $destination_id The id of the destination to read the backup from.
    * @param string $file The ID of the file to be restored. Only optional when the destination
    *                     does not store multiple files (like browser upload)
    */
-  public function restore(SourceInterface $source, DestinationInterface $destination, ConfigInterface $settings, $file = NULL);
+  public function restore($source_id, $destination_id, $file = NULL);
 
 
 }

@@ -7,12 +7,16 @@
 
 namespace BackupMigrate\Core\Services;
 
-use \BackupMigrate\Core\Source;
+use BackupMigrate\Core\Config\ConfigBase;
+use \BackupMigrate\Core\Config\ConfigInterface;
+use \BackupMigrate\Core\Destination\DestinationManagerInterface;
+use \BackupMigrate\Core\Plugin\PluginManagerInterface;
+use \BackupMigrate\Core\Source\SourceManagerInterface;
 
 /**
  * The core Backup and Migrate service.
  */
-class BackupMigrate
+class BackupMigrate implements BackupMigrateInterface
 {
   /**
    * A source manager listing the available sources.
@@ -22,57 +26,66 @@ class BackupMigrate
   protected $sources;
 
   /**
-   * Add a source manager
-   * 
-   * @param \BackupMigrate\Core\Source\SourceInterface $source 
-   *    The source to add.
-   * @param string $source_id
-   *   Identifier of the provider.
-   * @param int $weight
-   *   (optional) The the order of the source when it appears in lists.
+   * A destination manager listing the available destinations.
+   *
+   * @var \BackupMigrate\Core\Destination\DestinationManagerInterface
    */
-  public function addSourceManager(SourceManagerInterface $sources) {
-    $this->sources = $sources;
-  }
+  protected $destinations;
 
   /**
-   * Add an available source
-   * 
-   * @param \BackupMigrate\Core\Source\SourceInterface $source 
-   *    The source to add.
-   * @param string $source_id
-   *   Identifier of the provider.
-   * @param int $weight
-   *   (optional) The the order of the source when it appears in lists.
+   * @var \BackupMigrate\Core\Plugin\PluginManagerInterface
    */
-  public function addSource(SourceInterface $source, $source_id, $weight = 0) {
-    if (!$this->sources) {
-      $this->addSourceManager(new SourceManager());
-    }
-    $this->sources->addSource($source, $source_id, $weight);
+  protected $plugins;
+
+  /**
+   * The interface with the underlying app
+   *
+   * @var \BackupMigrate\Core\Services\ApplicationInterface
+   */
+  protected $app;
+
+  /**
+   * @var \BackupMigrate\Core\Config\ConfigInterface
+   */
+  protected $config;
+
+  /**
+   * {@inheritdoc}
+   */
+  function __construct(SourceManagerInterface $sources, DestinationManagerInterface $destinations, PluginManagerInterface $plugins, ApplicationInterface $app, ConfigInterface $config = NULL) {
+    $this->sources = $sources;
+    $this->destinations = $destinations;
+    $this->plugins = $plugins;
+
+    $this->app = $app;
+    $this->config = empty($this->config) ? new ConfigBase() : $config;
   }
 
-
   /*
-  
+
   // Backup pseudocode
-  public function backup() {
-    
+  public function backup($source, $dest, $config) {
+
     // Dependencies:
     // Config (specifies source id, dest id and the config for those and all plugins)
     // TempFileManager (so plugins can create temp files as needed)
     // Source/SourceManager
     // Destination/DestinationManager
+    // Application
+    //  Cache
+    //  State
+    //  TempFileManager
+    //
 
-    // Get the config from somewhere
+    // Get the config from somewhere. Passed in probably.
     $config = new Config();
-
-    // Get a list of the plugins from somewhere
-    // Configure each plugin with the config object
-    $plugins = new PluginManager($config);
 
     // Dependency injected file manager
     $filemanager = new TempFileManager();
+
+    // Get a list of the plugins from somewhere
+    // Configure each plugin with the config object
+    $plugins = new PluginManager($sources, $destinations, $tempfilemanager, $config);
 
     // Basically we can make generating the file and saving the file separate operations:
     $file = $source->backup($config);
@@ -113,9 +126,65 @@ class BackupMigrate
 
   }
 
+  Usage:
+  $config = new ConfigBase(..)
 
+  $bam = new BackupMigrate();
 
+  // Autodiscovered (but dynamic)?
+  $bam->addSource('db', new MySQLSource(...));
+  $bam->addSource('files', new FileSource(...));
+  $bam->addDestination('manual', new FileDestination(...)));
+
+  // Autodiscovered?
+  $bam->addPlugin('compression', new CompressionFilter());
+  $bam->addPlugin('encryption', new EncryptionFilter());
+
+  $bam->backup($from, $to, [$config]);
+
+-- or --
+  $config->set('source', $from);
+  $config->set('destination', $to);
+  $bam->backup($config);
+
+-- or --
+  $config->set('source', $from);
+  $config->set('destination', $to);
+  $bam->setConfig($config);
+  $bam->backup();
+
+-- or --
+  $bam->setConfig($config);
+  $bam->backup($from, $to);
+
+  -- OR --
+  $sources = new SourceManager();
+  $sources->add(new MySQLSource(...), 'db');
+  $sources->add(new MySQLSource(...), 'another');
+
+  $destinations = new DestinationManager();
+  $destinations->add(new DirectoryDestination(...), 'manual');
+
+  $plugins = new PluginManager();
+  $plugins->add(new CompressionPlugin(), 'encryption');
+
+  $app = new Drupal8Application();
+
+  $bam = new BackupMigrate($sources, $destinations, $plugins, $app, $config);
+  $bam->backup($from, $to);
+  */
+
+  /**
+   * {@inheritdoc}
    */
+  public function backup($source_id, $destination_id) {
+    // TODO: Implement backup() method.
+  }
 
-
+  /**
+   * {@inheritdoc}
+   */
+  public function restore($source_id, $destination_id, $file = NULL) {
+    // TODO: Implement restore() method.
+  }
 }
