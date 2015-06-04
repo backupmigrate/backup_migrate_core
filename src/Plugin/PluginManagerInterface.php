@@ -14,6 +14,30 @@ use \BackupMigrate\Core\Config\ConfigInterface;
  */
 interface PluginManagerInterface
 {
+  /**
+   * Add an item to the manager
+   *
+   * @param \BackupMigrate\Core\Plugin\PluginInterface|object $item
+   *    The source to add.
+   * @param $id
+   * @return
+   */
+  public function add(PluginInterface $item, $id);
+
+  /**
+   * Get the item with the given id.
+   *
+   * @param $id
+   * @return \BackupMigrate\Core\Base\ModelBaseInterface The item specified by the id or NULL if it doesn't exist.
+   **/
+  public function get($id);
+
+  /**
+   * Get a list of all of the items.
+   *
+   * @return \BackupMigrate\Core\Plugin\PluginInterface[] An ordered list of the sources, keyed by their id.
+   */
+  public function getAll();
 
   /**
    * Set the configuration for all plugins.
@@ -23,26 +47,10 @@ interface PluginManagerInterface
   public function setConfig(ConfigInterface $config);
 
   /**
-   * Add an available Plugin
+   * Get all plugins that implement the given operation.
    *
-   * @param \BackupMigrate\Core\Plugin\PluginInterface $plugin
-   * @param string $plugin_id Identifier of the provider.
-   * @return
+   * @param string $op The name of the operation.
+   * @return \BackupMigrate\Core\Plugin\PluginInterface[]
    */
-  public function addPlugin(PluginInterface $plugin, $plugin_id);
-
-  /**
-   * Get the Plugin with the given id.
-   *
-   * @param $plugin_id string The id of the Plugin to return
-   * @return \BackupMigrate\Core\Plugin\PluginInterface The Plugin specified by the id or NULL if it doesn't exist.
-   */
-  public function getPlugin($plugin_id);
-
-  /**
-   * Get a list of all of the Plugins.
-   *
-   * @return array An ordered list of the Plugins, keyed by their id.
-   */
-  public function getAllPlugins();
+  public function getAllByOp($op);
 }

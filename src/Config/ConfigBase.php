@@ -11,7 +11,7 @@ use \BackupMigrate\Core\Config\ConfigInterface;
 /**
  * Class ConfigBase
  *
- * A basic congfiguration manager with very little logic in it.
+ * A basic configuration manager with very little logic in it.
  *
  * @package BackupMigrate\Core\Config
  */
@@ -21,6 +21,16 @@ class ConfigBase implements ConfigInterface {
    * @var array
    */
   protected $config;
+
+
+  public function __construct($init = array()) {
+    if ($init instanceof ConfigInterface) {
+      $this->fromArray($init->toArray());
+    }
+    else if (is_array($init)) {
+      $this->fromArray($init);
+    }
+  }
 
   /**
    * Get a setting value

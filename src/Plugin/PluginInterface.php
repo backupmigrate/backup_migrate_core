@@ -33,45 +33,33 @@ use \BackupMigrate\Core\Config\ConfigInterface;
 interface PluginInterface
 {
   /**
-   * Set the configuration for this profile.
-   * 
-   * @param ConfigInterface $config A configuration object containing only configuration for this plugin
-   */
-  public function setConfig(ConfigInterface $config);
-
-  /**
-   * Set the backup and migrate container so that dependencies can be accessed.
-   * @TODO this may be an anti-pattern.
-   *
-   * @param ConfigInterface $config A configuration object containing only configuration for this plugin
-   */
-  // public function setBackupMigrate(BackupMigrateInterface $bam);
-
-  /**
    * Get a list of supported operations and their weight.
+   *
+   * An array of operations should take the form:
+   *
+   * array(
+   *  'backup' => array('weight' => 100),
+   *  'restore' => array('weight' => -100),
+   * );
    *
    * @return array
    */
   public function supportedOps();
 
   /**
-   * Plugins are injected with a copy of the plugin manage so that they may call
-   * other plugin operations.
+   * Does this plugin implement the given operation.
    *
-   * @param \BackupMigrate\Core\Plugin\PluginManagerInterface $pluginManager
-   * @return mixed
+   * @param $op string The name of the operation
+   * @return bool
    */
-  public function setPluginManager(PluginManagerInterface $pluginManager);
+  public function supportsOp($op);
 
   /**
-   * @return \BackupMigrate\Core\Plugin\PluginManagerInterface
+   * What is the weight of the given operation for this plugin.
+
+   * @param $op string The name of the operation
+   * @return int
    */
-  public function getPluginManager();
-
-  // Inject a service so that a plugin can get temp files if needed
-  // public function setBackupFileManager();
-
-  // Retrieve a schema of some kind to be turned into a configuration form (etc.)
-  // public function getConfigSchema();
+  public function opWeight($op);
 
 }

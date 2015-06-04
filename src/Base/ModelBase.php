@@ -8,8 +8,7 @@
 namespace BackupMigrate\Core\Base;
 
 
-class ModelBase
-{
+class ModelBase implements ModelBaseInterface {
   /**
    * The item id.
    *

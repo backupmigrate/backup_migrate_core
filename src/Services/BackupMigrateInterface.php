@@ -7,6 +7,7 @@
 
 namespace BackupMigrate\Core\Services;
 
+use BackupMigrate\Core\Plugin\PluginInterface;
 use \BackupMigrate\Core\Source\SourceManagerInterface;
 use \BackupMigrate\Core\Source\SourceInterface;
 use \BackupMigrate\Core\Destination\DestinationManagerInterface;
@@ -24,13 +25,10 @@ interface BackupMigrateInterface
   /**
    * Backup and Migrate constructor. Takes all of the dependencies for this service.
    *
-   * @param \BackupMigrate\Core\Source\SourceManagerInterface $sources
-   * @param \BackupMigrate\Core\Destination\DestinationManagerInterface $destinations
-   * @param \BackupMigrate\Core\Plugin\PluginManagerInterface $plugins
    * @param \BackupMigrate\Core\Services\ApplicationInterface $app
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
    */
-  public function __construct(SourceManagerInterface $sources, DestinationManagerInterface $destinations, PluginManagerInterface $plugins, ApplicationInterface $app, ConfigInterface $config = NULL);
+  public function __construct(ApplicationInterface $app, ConfigInterface $config = NULL);
 
   /**
    * Perform the backup from a given source and save it to the given destination.
