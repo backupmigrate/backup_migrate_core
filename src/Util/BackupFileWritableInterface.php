@@ -13,6 +13,13 @@ namespace BackupMigrate\Core\Util;
 interface BackupFileWritableInterface extends BackupFileInterface {
 
   /**
+   * Get the realpath of the file
+   *
+   * @return string The path or stream URI to the file or NULL if the file does not exist.
+   */
+  function realpath();
+
+  /**
    * Write a line to the file.
    * 
    * @param string $data A string to write to the file.

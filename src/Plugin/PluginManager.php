@@ -7,7 +7,7 @@
 
 namespace BackupMigrate\Core\Plugin;
 
-use BackupMigrate\Core\Config\ConfigBase;
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
@@ -104,7 +104,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     if ($plugin instanceof ConfigurableInterface) {
       // Configure the plugin with the appropriate subset of the configuration.
       $config = $this->confGet($id);
-      $plugin->setConfig(new ConfigBase($config));
+      $plugin->setConfig(new Config($config));
     }
 
     // Inject the file processor

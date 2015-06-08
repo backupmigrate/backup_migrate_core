@@ -3,12 +3,12 @@
  * @file
  */
 
-use \BackupMigrate\Core\Config\ConfigBase;
+use \BackupMigrate\Core\Config\Config;
 
 /**
- * @coversDefaultClass \BackupMigrate\Core\Services\ConfigBase
+ * @coversDefaultClass \BackupMigrate\Core\Services\ConfigObject
  */
-class ConfigBaseTest extends PHPUnit_Framework_TestCase {
+class ConfigObjectTest extends PHPUnit_Framework_TestCase {
 
 
   /**
@@ -16,7 +16,7 @@ class ConfigBaseTest extends PHPUnit_Framework_TestCase {
    * @covers ::set
    */
   public function testSettingGetting() {
-    $conf = new ConfigBase();
+    $conf = new Config();
     $conf->set('a', 'b');
     $this->assertEquals('b', $conf->get('a'));
     $conf->set('c', 'd');
@@ -28,7 +28,7 @@ class ConfigBaseTest extends PHPUnit_Framework_TestCase {
    * @covers ::__constructor
    */
   public function testConstructor() {
-    $conf = new ConfigBase(
+    $conf = new Config(
       array(
         'a' => 'b',
         'c' => 'd',
@@ -36,7 +36,7 @@ class ConfigBaseTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('b', $conf->get('a'));
     $this->assertEquals('d', $conf->get('c'));
 
-    $conf2 = new ConfigBase($conf);
+    $conf2 = new Config($conf);
     $this->assertEquals('b', $conf2->get('a'));
     $this->assertEquals('d', $conf2->get('c'));
   }
@@ -45,7 +45,7 @@ class ConfigBaseTest extends PHPUnit_Framework_TestCase {
    * @covers ::fromArray()
    */
   public function testFromArray() {
-    $conf = new ConfigBase();
+    $conf = new Config();
     $conf->fromArray(array(
       'a' => 'b',
       'c' => 'd',
@@ -58,7 +58,7 @@ class ConfigBaseTest extends PHPUnit_Framework_TestCase {
    * @covers ::toArray()
    */
   public function testToArray() {
-    $conf = new ConfigBase();
+    $conf = new Config();
     $conf->set('a', 'b');
     $conf->set('c', 'd');
     $this->assertEquals(array(

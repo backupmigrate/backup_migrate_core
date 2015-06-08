@@ -12,7 +12,6 @@ namespace BackupMigrate\Core\Util;
  */
 interface BackupFileReadableInterface extends BackupFileInterface {
 
-
   /**
    * A path or stream that can be used in php file functions.
    * @return string

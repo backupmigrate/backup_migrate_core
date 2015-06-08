@@ -15,7 +15,7 @@ use \BackupMigrate\Core\Config\ConfigInterface;
  *
  * @package BackupMigrate\Core\Config
  */
-class ConfigBase implements ConfigInterface {
+class Config implements ConfigInterface {
 
   /**
    * @var array
@@ -23,6 +23,9 @@ class ConfigBase implements ConfigInterface {
   protected $config;
 
 
+  /**
+   * @param array $init
+   */
   public function __construct($init = array()) {
     if ($init instanceof ConfigInterface) {
       $this->fromArray($init->toArray());

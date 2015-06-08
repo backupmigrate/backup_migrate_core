@@ -1,13 +1,13 @@
 <?php
 namespace BackupMigrate\Core\Tests\Util;
 
-use \BackupMigrate\Core\Util\BackupFile;
+use \BackupMigrate\Core\Util\ReadableStreamBackupFile;
 use org\bovigo\vfs\vfsStream;
 
 /**
- * @coversDefaultClass \BackupMigrate\Core\Util\BackupFile
+ * @coversDefaultClass \BackupMigrate\Core\Util\ReadableStreamBackupFile
  */
-class BackupFileTest extends \PHPUnit_Framework_TestCase
+class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
 {
     
     /**
@@ -30,7 +30,7 @@ class BackupFileTest extends \PHPUnit_Framework_TestCase
         vfsStream::create(['test.txt' => 'Hello, World!']);
         $this->fileURI = 'vfs://dir/test.txt';
 
-        $this->file = new BackupFile($this->fileURI);
+        $this->file = new ReadableStreamBackupFile($this->fileURI);
     }
 
     /**
@@ -40,8 +40,8 @@ class BackupFileTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetupAndDestroy()
     {
-      $file = new BackupFile($this->fileURI);
-      
+      $file = new ReadableStreamBackupFile($this->fileURI);
+
     }
 
     /**
@@ -75,7 +75,7 @@ class BackupFileTest extends \PHPUnit_Framework_TestCase
       $this->assertFalse(is_resource($handle));
 
       // Test implicit file open and close.
-      $new_file = new BackupFile($this->fileURI);
+      $new_file = new ReadableStreamBackupFile($this->fileURI);
       $this->assertEquals($new_file->read(), 'Hello, World!');
       unset($new_file);
       // Not sure how to test that the handle has been closed since we don't get direct access to it.

@@ -17,7 +17,8 @@ interface DestinationInterface
   /**
    * Save a file to the destination.
    * 
-   * @param BackupMigrate\Core\Util\TempFile $file The file to save.
+   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   *        The file to save.
    */
   function saveFile(BackupFileReadableInterface $file);
 
@@ -26,7 +27,7 @@ interface DestinationInterface
    * 
    * @param string $id The unique identifier for the file. Usually the filename.
    *
-   * @return BackupMigrate\Core\Util\BackupFileInterface The file if it exists or NULL if it doesn't
+   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface The file if it exists or NULL if it doesn't
    */
   public function loadFile($id);
 
@@ -37,12 +38,18 @@ interface DestinationInterface
    * @param integer $count The number of files to return.
    * @param integer $start The number to start at for pagination.
    * 
-   * @return BackupFileInterface[] 
+   * @return BackupFileInterface[]
    *         An array of BackupFileInterface objects representing the files with
-   *         the file ids as keys. The file ids are usually filenames but that
-   *         is up to the implementing destination to decide.
+   *         the file ids as keys. The file ids are usually file names but that
+   *         is up to the implementing destination to decide. The returned files
+   *         may not be readable load file may need to be used to do so.
    */
   public function listFiles($count = 100, $start = 0);
+
+  /**
+   * @return int The number of files in the destination.
+   */
+  public function countFiles();
 
   /**
    * Does the file with the given id (filename) exist in this destination.
@@ -52,4 +59,11 @@ interface DestinationInterface
    * @return bool True if the file exists, false if it does not.
    */
   public function fileExists($id);
+
+  /**
+   * Delete the file with the given id.
+   *
+   * @param string $id The id of the file to delete.
+   */
+  public function deleteFile($id);
 }

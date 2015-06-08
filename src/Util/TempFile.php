@@ -19,7 +19,7 @@ use BackupMigrate\Core\Services\TempFileAdapterInterface;
  *
  * A temporary file object that can be written to and read from.
  */
-class TempFile extends BackupFile implements BackupFileWritableInterface  {
+class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInterface, BackupFileWritableInterface  {
 
   /**
    * Constructor. Create a new file object from 

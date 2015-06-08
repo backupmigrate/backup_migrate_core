@@ -44,10 +44,10 @@ class CompressionFilter extends PluginBase implements BackupPluginInterface, Fil
   /**
    * Run on a backup
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileInterface
+   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
    */
-  public function backup(BackupFileInterface $file) {
+  public function backup(BackupFileReadableInterface $file) {
     $out = $this->getTempFileManager()->pushExt($file, 'gz');
     $this->gzipEncode($file, $out);
     return $out;

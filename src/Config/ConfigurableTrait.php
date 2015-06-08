@@ -19,12 +19,25 @@ trait ConfigurableTrait {
   protected $config;
 
   /**
+   * @param ConfigInterface|array $init
+   *  The initial values for the configurable item
+   */
+  public function __construct($init = array()) {
+    if (is_array($init)) {
+      $init = new Config($init);
+    }
+    if ($init instanceof ConfigInterface) {
+      $this->setConfig($init);
+    }
+  }
+
+  /**
    * Set the configuration for all plugins.
    *
    * @param ConfigInterface $config A configuration object containing only configuration for all plugins
    */
   public function setConfig(ConfigInterface $config) {
-    $this->$config = $config;
+    $this->config = $config;
   }
 
   /**
@@ -32,7 +45,7 @@ trait ConfigurableTrait {
    * @return \BackupMigrate\Core\Config\ConfigInterface
    */
   public function config() {
-    return $this->$config ? $this->$config : new ConfigBase();
+    return $this->config ? $this->config : new Config();
   }
 
   /**
