@@ -14,7 +14,9 @@
 
 namespace BackupMigrate\Core\Source;
 
-class DatabaseSource extends SourceBase
+use BackupMigrate\Core\Util\BackupFile;
+
+abstract class DatabaseSource extends SourceBase
 {
   /**
    * Database connection credentials.
@@ -22,5 +24,6 @@ class DatabaseSource extends SourceBase
    * @var string
    */
   protected $id;
+
 
 }

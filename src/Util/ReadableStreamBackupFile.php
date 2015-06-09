@@ -104,7 +104,7 @@ class ReadableStreamBackupFile extends BackupFile implements BackupFileReadableI
       $this->openForRead($binary);
     }
     if ($this->handle && !feof($this->handle)) {
-      return $size ? fread($this->handle, $size) : fgets($this->handle);
+      return $size ? fread($this->handle, $size) : stream_get_contents($this->handle);
     }
     return NULL;
   }

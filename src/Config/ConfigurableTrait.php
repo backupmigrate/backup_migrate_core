@@ -18,6 +18,8 @@ trait ConfigurableTrait {
    */
   protected $config;
 
+  protected $defaults;
+
   /**
    * @param ConfigInterface|array $init
    *  The initial values for the configurable item
@@ -58,4 +60,20 @@ trait ConfigurableTrait {
     return $this->config()->get($key);
   }
 
+  /**
+   * Get the default value for a specific key
+   *
+   * @param string $key The configuration object key to retrieve
+   * @return mixed The default configuration value.
+   */
+  public function confDefault($key) {
+    $function = '_confDefault_'. $key;
+    if (function_exists($function)) {
+      return $function();
+    }
+    if (!empty($this->defaults[$key])) {
+      return $this->defaults[$key];
+    }
+    return NULL;
+  }
 }

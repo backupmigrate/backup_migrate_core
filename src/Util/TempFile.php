@@ -73,5 +73,4 @@ class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInt
       throw new \Exception('File not open for writing.');
     }
   }
-
 }

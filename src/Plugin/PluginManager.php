@@ -94,6 +94,27 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   }
 
   /**
+   * Get the list of supported file types, optionally for the specified op.
+   *
+   * @param null $op
+   * @return array
+   */
+  public function supportedFileTypes($op = NULL) {
+    $out = array();
+
+    foreach ($this->getAllByOp('getFileTypes') as $plugin) {
+      $types = $plugin->getFileTypes();
+      foreach ($types as $name => $type) {
+        if ($op == NULL || (is_array($type['ops']) && in_array($op, $type['ops']))) {
+          $out[$name] = $type;
+        }
+      }
+    }
+
+    return $out;
+  }
+
+  /**
    * @param \BackupMigrate\Core\Plugin\PluginInterface $plugin
    *   The plugin to prepare for use.
    * @param string $id

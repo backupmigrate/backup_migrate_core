@@ -8,7 +8,7 @@ use \BackupMigrate\Core\Config\Config;
 /**
  * @coversDefaultClass \BackupMigrate\Core\Services\ConfigObject
  */
-class ConfigObjectTest extends PHPUnit_Framework_TestCase {
+class ConfigTest extends PHPUnit_Framework_TestCase {
 
 
   /**

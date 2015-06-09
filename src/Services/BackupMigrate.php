@@ -36,12 +36,16 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    * @var \BackupMigrate\Core\Plugin\PluginManagerInterface
    */
   protected $plugins;
+  protected $sources;
+  protected $destinations;
 
   /**
    * {@inheritdoc}
    */
   function __construct(ApplicationInterface $app, ConfigInterface $config = NULL) {
     $this->plugins = new PluginManager($app, $config);
+    $this->sources = new PluginManager($app, $config);
+    $this->destinations = new PluginManager($app, $config);
   }
 
 
@@ -49,19 +53,55 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    * {@inheritdoc}
    */
   public function backup($source_id, $destination_id) {
-    // Start with an empty file reference, the backup generation plugin will create it for us.
-    $file = NULL;
-    // Run each of the installed plugins which implements the 'backup' operation.
-    foreach ($this->plugins()->getAllByOp('backup') as $plugin) {
-      $file = $plugin->backup($file, $filemanager);
+
+    // Get the source and the destination to use.
+    $source = $this->plugins()->get($source_id);
+    $destination = $this->plugins()->get($destination_id);
+
+    // @TODO Check the source and destination and throw appropriate exceptions.
+
+    // Run each of the installed plugins which implements the 'afterBackup' operation.
+    foreach ($this->plugins()->getAllByOp('beforeBackup') as $plugin) {
+      $file = $plugin->beforeBackup();
     }
+
+    $file = $source->exportToFile();
+
+    // Run each of the installed plugins which implements the 'afterBackup' operation.
+    foreach ($this->plugins()->getAllByOp('afterBackup') as $plugin) {
+      $file = $plugin->afterBackup($file);
+    }
+
+    // Save the file to the destination.
+    $destination->saveFile($file);
   }
 
   /**
    * {@inheritdoc}
    */
   public function restore($source_id, $destination_id, $file = NULL) {
-    // TODO: Implement restore() method.
+    // Get the source and the destination to use.
+    $source = $this->plugins()->get($source_id);
+    $destination = $this->plugins()->get($destination_id);
+
+    // @TODO Check the source and destination and throw appropriate exceptions.
+
+    // Load the file from the destination.
+    $file = $destination->loadFile($file);
+
+    // Run each of the installed plugins which implements the 'backup' operation.
+    foreach ($this->plugins()->getAllByOp('beforeRestore') as $plugin) {
+      $file = $plugin->restore($file);
+    }
+
+    // Do the actual source restore.
+    $source->importFromFile($file);
+
+    foreach ($this->plugins()->getAllByOp('afterRestore') as $plugin) {
+      $file = $plugin->restore();
+    }
+
+
   }
 
 }

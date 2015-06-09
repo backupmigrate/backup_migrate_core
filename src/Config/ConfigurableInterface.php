@@ -32,4 +32,11 @@ interface ConfigurableInterface {
    * @return mixed The configuration value.
    */
   public function confGet($key);
+
+  /**
+   * Get the default for the given key.
+   * @param $key
+   * @return mixed
+   */
+  public function confDefault($key);
 }

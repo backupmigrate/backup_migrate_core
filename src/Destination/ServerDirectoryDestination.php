@@ -10,6 +10,10 @@ namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
+use BackupMigrate\Core\Plugin\FileProcessorInterface;
+use BackupMigrate\Core\Plugin\FileProcessorTrait;
+use BackupMigrate\Core\Util\BackupFile;
+use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
 use BackupMigrate\Core\Util\ReadableStreamBackupFile;
 
@@ -17,13 +21,24 @@ use BackupMigrate\Core\Util\ReadableStreamBackupFile;
  * Class ServerDirectoryDestination
  * @package BackupMigrate\Core\Destination
  */
-class ServerDirectoryDestination implements DestinationInterface, ConfigurableInterface {
+class ServerDirectoryDestination extends DestinationBase implements DestinationInterface, ConfigurableInterface, FileProcessorInterface{
   use ConfigurableTrait;
+  use SidecarMetadataDestinationTrait;
 
   /**
    * {@inheritdoc}
    */
   function saveFile(BackupFileReadableInterface $file) {
+    $this->_saveFile($file);
+    $this->_saveFileMetadata($file);
+  }
+
+  /**
+   * Do the actual file save. This function is called to save the data file AND
+   * the metadata sidecar file.
+   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   */
+  function _saveFile(BackupFileReadableInterface $file) {
     rename($file->realpath(), $this->confGet('directory') . $file->getMeta('filename'));
     // @TODO: use copy/unlink if the temp file and the destination do not share a stream wrapper.
   }
@@ -31,7 +46,26 @@ class ServerDirectoryDestination implements DestinationInterface, ConfigurableIn
   /**
    * {@inheritdoc}
    */
-  public function loadFile($id) {
+  public function getFile($id) {
+    if ($this->fileExists($id)) {
+      $out = new BackupFile();
+      $out->setMeta('id', $id);
+      $out->setMeta('filename', $id);
+      return $out;
+    }
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadFileForReading(BackupFileInterface $file) {
+    // If this file is already readable, simply return it.
+    if ($file instanceof BackupFileReadableInterface) {
+      return $file;
+    }
+
+    $id = $file->getMeta('id');
     if ($this->fileExists($id)) {
       return new ReadableStreamBackupFile($this->_idToPath($id));
     }
@@ -79,10 +113,13 @@ class ServerDirectoryDestination implements DestinationInterface, ConfigurableIn
   /**
    * {@inheritdoc}
    */
-  public function deleteFile($id) {
-    if ($file = $this->loadFile($id)) {
-      return unlink($file->realpath());
+  public function _deleteFile($id) {
+    if ($file = $this->getFile($id)) {
+      if ($file = $this->loadFileForReading($file)) {
+        return unlink($file->realpath());
+      }
     }
+    return false;
   }
 
   /**
@@ -117,4 +154,5 @@ class ServerDirectoryDestination implements DestinationInterface, ConfigurableIn
 
     return $files;
   }
+
 }

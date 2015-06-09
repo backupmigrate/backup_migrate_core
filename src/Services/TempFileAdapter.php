@@ -41,8 +41,9 @@ class TempFileAdapter implements TempFileAdapterInterface
    * @param string $prefix A string prefix to add to each created file.
    */
   public function __construct($dir, $prefix = 'bam') {
-    $this->dir = $dir;
+    $this->dir = rtrim($dir, '/');
     $this->prefix = $prefix;
+    $this->tempfiles = array();
     // @TODO: check that temp direcory is writeable or throw an exception.
   }
 
@@ -57,7 +58,21 @@ class TempFileAdapter implements TempFileAdapterInterface
    * {@inheritdoc}
    */
   public function createTempFile() {
-    $out = tempnam($this->dir, $this->prefix);
+    // Find an unused random file name.
+    $try = 5;
+    do
+    {
+      $out = $this->dir . '/' . $this->prefix . mt_rand();
+      $fp = @fopen($out, 'x');
+    }
+    while(!$fp && $try-- > 0);
+    if ($fp) {
+      fclose($fp);
+    }
+    else {
+      throw new \Exception('Could not create a temporary file to write to.');
+    }
+
     $this->tempfiles[] = $out;
     return $out;
   }

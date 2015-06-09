@@ -21,7 +21,7 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-      $this->adapter = new TempFileAdapter('/tmp', 'abc');
+      $this->adapter = new TempFileAdapter('/tmp/', 'abc');
     }
 
     /**

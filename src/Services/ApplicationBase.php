@@ -6,12 +6,15 @@
 
 namespace BackupMigrate\Core\Services;
 
-use \BackupMigrate\Core\Services\ApplicationInterface;
+use BackupMigrate\Core\Services\ApplicationInterface;
 
-use \BackupMigrate\Core\Util\StateInterface;
-use \BackupMigrate\Core\Util\CacheInterface;
-use \BackupMigrate\Core\Services\TempFileManagerInterface;
-use \Psr\Log\LoggerInterface;
+use BackupMigrate\Core\Util\NullCache;
+use BackupMigrate\Core\Util\NullState;
+use BackupMigrate\Core\Util\StateInterface;
+use BackupMigrate\Core\Util\CacheInterface;
+use BackupMigrate\Core\Services\TempFileManagerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class ApplicationBase
@@ -51,9 +54,9 @@ class ApplicationBase implements ApplicationInterface {
    */
   public function __construct(TempFileManagerInterface $tempFileManager, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger) {
     $this->tempFileManager = $tempFileManager;
-    $this->cacheManager = $cacheManager;
-    $this->stateManager = $stateManager;
-    $this->logger = $logger;
+    $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
+    $this->stateManager = $stateManager ? $stateManager : new NullState();
+    $this->logger = $logger ? $logger : new NullLogger();
   }
 
   /**

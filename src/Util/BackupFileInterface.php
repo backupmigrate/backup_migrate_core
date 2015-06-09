@@ -45,4 +45,22 @@ interface BackupFileInterface {
    */
   public function getMetaAll();
 
+  /**
+   * Get an array of file extensions.
+   *
+   * For example: testfile.txt.gz would return:
+   * ['txt', 'gz']
+   *
+   * @return array
+   */
+  public function getExtList();
+
+  /**
+   * Get the last file extension
+   *
+   * For example: testfile.txt.gz would return:
+   * ['txt', 'gz']
+   * @return mixed
+   */
+  public function getExtLast();
 }

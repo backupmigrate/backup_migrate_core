@@ -7,6 +7,7 @@
 
 namespace BackupMigrate\Core\Destination;
 
+use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
 
 /**
@@ -22,14 +23,34 @@ interface DestinationInterface
    */
   function saveFile(BackupFileReadableInterface $file);
 
+
   /**
-   * Load the file with the given ID from the destination.
-   * 
+   * Get a file object representing the file with the given ID from the destination.
+   * This file item will not necessarily be readable nor will it have extended
+   * metadata loaded. Use loadForReading and loadFileMetadata to get those.
+   *
    * @param string $id The unique identifier for the file. Usually the filename.
    *
+   * @return \BackupMigrate\Core\Util\BackupFileInterface
+   *    The file if it exists or NULL if it doesn't
+   */
+  public function getFile($id);
+
+  /**
+   * Load the metadata for the given file however it may be stored.
+   *
+   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @return \BackupMigrate\Core\Util\BackupFileInterface
+   */
+  public function loadFileMetadata(BackupFileInterface $file);
+
+  /**
+   * Load the file with the given ID from the destination.
+   *
+   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
    * @return \BackupMigrate\Core\Util\BackupFileReadableInterface The file if it exists or NULL if it doesn't
    */
-  public function loadFile($id);
+  public function loadFileForReading(BackupFileInterface $file);
 
   /**
    * Return a list of files from the destination. This list should be
@@ -42,7 +63,7 @@ interface DestinationInterface
    *         An array of BackupFileInterface objects representing the files with
    *         the file ids as keys. The file ids are usually file names but that
    *         is up to the implementing destination to decide. The returned files
-   *         may not be readable load file may need to be used to do so.
+   *         may not be readable. Use loadFile to get a readable file.
    */
   public function listFiles($count = 100, $start = 0);
 

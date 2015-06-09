@@ -85,8 +85,35 @@ class BackupFile implements BackupFileInterface {
    * Get all metadata
    *
    * @param array $values An array of key-value pairs for the file metadata.
+   * @return array
    */
   public function getMetaAll() {
     return $this->metadata;
+  }
+
+  /**
+   * Get an array of file extensions.
+   *
+   * For example: testfile.txt.gz would return:
+   * ['txt', 'gz']
+   *
+   * @return array
+   */
+  public function getExtList() {
+    $ext = $this->getMeta('ext');
+    $parts = explode('.', $ext);
+    return $parts;
+  }
+
+  /**
+   * Get the last file extension
+   *
+   * For example: testfile.txt.gz would return:
+   * ['txt', 'gz']
+   * @return mixed
+   */
+  public function getExtLast() {
+    $exts = $this->getExtList();
+    return array_pop($exts);
   }
 }

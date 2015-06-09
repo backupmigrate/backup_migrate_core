@@ -36,6 +36,6 @@ trait FileProcessorTrait
    * @return \BackupMigrate\Core\Services\TempFileManagerInterface
    */
   public function getTempFileManager() {
-    return $tempfilemanager;
+    return $this->tempfilemanager;
   }
 }

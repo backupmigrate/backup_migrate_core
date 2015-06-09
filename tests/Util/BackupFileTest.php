@@ -25,12 +25,12 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        vfsStream::setup('dir');
-        vfsStream::setup('dir/subdir');
-        vfsStream::create(['test.txt' => 'Hello, World!']);
-        $this->fileURI = 'vfs://dir/test.txt';
+      vfsStream::setup('dir');
+      vfsStream::setup('dir/subdir');
+      vfsStream::create(['test.txt' => 'Hello, World!']);
+      $this->fileURI = 'vfs://dir/test.txt';
 
-        $this->file = new ReadableStreamBackupFile($this->fileURI);
+      $this->file = new ReadableStreamBackupFile($this->fileURI);
     }
 
     /**
@@ -79,5 +79,12 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
       $this->assertEquals($new_file->read(), 'Hello, World!');
       unset($new_file);
       // Not sure how to test that the handle has been closed since we don't get direct access to it.
+
+      // Multiline file read:
+      $message = "First Line\nSecond Line";
+      vfsStream::create(['multiline.txt' => "First Line\nSecond Line"]);
+
+      $file = new ReadableStreamBackupFile('vfs://dir/multiline.txt');
+      $this->assertEquals($message, $file ->read());
     }
 }

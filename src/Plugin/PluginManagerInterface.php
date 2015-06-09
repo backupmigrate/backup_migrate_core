@@ -53,4 +53,14 @@ interface PluginManagerInterface
    * @return \BackupMigrate\Core\Plugin\PluginInterface[]
    */
   public function getAllByOp($op);
+
+  /**
+   * Get the list of supported file types, optionally for the specified op.
+   *
+   * @param string|null $op
+   *    The operation for which the file types are supported.
+   * @return array
+   */
+  public function supportedFileTypes($op = NULL);
+
 }

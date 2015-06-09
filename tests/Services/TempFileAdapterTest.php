@@ -19,7 +19,7 @@ class TempFileAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-      $this->adapter = new TempFileAdapter('/tmp', 'abc');
+      $this->adapter = new TempFileAdapter('/tmp/', 'abc');
     }
 
     /**
@@ -43,7 +43,7 @@ class TempFileAdapterTest extends \PHPUnit_Framework_TestCase
       $this->assertStringStartsWith('abc', basename($path));
 
       // Test another to be sure
-      $new_adapter = new TempFileAdapter('/tmp', 'bca');
+      $new_adapter = new TempFileAdapter('/tmp/', 'bca');
       $path = $new_adapter->createTempFile();
       $this->assertStringStartsWith('bca', basename($path));
 

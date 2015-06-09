@@ -6,7 +6,7 @@
 namespace BackupMigrate\Core\Plugin;
 
 
-use BackupMigrate\Core\Services\PluginManagerInterface;
+use BackupMigrate\Core\Plugin\PluginManagerInterface;
 
 /**
  * Interface PluginCallerPluginInterface

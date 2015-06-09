@@ -56,4 +56,10 @@ interface BackupFileWritableInterface extends BackupFileInterface {
    */
   public function openForWrite($binary = FALSE);
 
+  /**
+   * Close a file when we're done reading/writing.
+   */
+  public function close();
+
+
 }

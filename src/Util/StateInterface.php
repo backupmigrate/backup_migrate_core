@@ -29,17 +29,6 @@ interface StateInterface {
   public function get($key, $default = NULL);
 
   /**
-   * Returns the stored key/value pairs for a given set of keys.
-   *
-   * @param array $keys
-   *   A list of keys to retrieve.
-   *
-   * @return array
-   *   An associative array of items successfully returned, indexed by key.
-   */
-  public function getMultiple(array $keys);
-
-  /**
    * Saves a value for a given key.
    *
    * @param string $key
@@ -50,14 +39,6 @@ interface StateInterface {
   public function set($key, $value);
 
   /**
-   * Saves key/value pairs.
-   *
-   * @param array $data
-   *   An associative array of key/value pairs.
-   */
-  public function setMultiple(array $data);
-
-  /**
    * Deletes an item.
    *
    * @param string $key
@@ -65,19 +46,5 @@ interface StateInterface {
    */
   public function delete($key);
 
-  /**
-   * Deletes multiple items.
-   *
-   * @param array $keys
-   *   A list of item names to delete.
-   */
-  public function deleteMultiple(array $keys);
-
-  /**
-   * Resets the static cache.
-   *
-   * This is mainly used in testing environments.
-   */
-  public function resetCache();
 
 }
