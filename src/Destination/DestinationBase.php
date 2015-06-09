@@ -7,6 +7,7 @@
 
 namespace BackupMigrate\Core\Destination;
 
+use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
 
@@ -16,6 +17,8 @@ use BackupMigrate\Core\Util\BackupFileReadableInterface;
  */
 abstract class DestinationBase implements DestinationInterface
 {
+  use ConfigurableTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -29,8 +32,9 @@ abstract class DestinationBase implements DestinationInterface
    */
   public function loadFileMetadata(BackupFileInterface $file) {
     // If this file is already loaded, simply return it.
+    // @TODO: fix this inappropriate use of file metadata
     if (!$file->getMeta('metadata_loaded')) {
-      $metadata = $this->_loadFileMetadata($file);
+      $metadata = $this->_loadFileMetadataArray($file);
       $file->setMetaMultiple($metadata);
       $file->setMeta('metadata_loaded', TRUE);
     }
@@ -42,6 +46,15 @@ abstract class DestinationBase implements DestinationInterface
    */
   public function deleteFile($id) {
     return $this->_deleteFile($id);
+  }
+
+  /**
+   * Is this a remote destination.
+   *
+   * @return bool True if remote, false if local.
+   */
+  public function isRemote() {
+    return false;
   }
 
   /**
@@ -70,6 +83,6 @@ abstract class DestinationBase implements DestinationInterface
    *
    * @param \BackupMigrate\Core\Util\BackupFileInterface $file
    */
-  abstract protected function _loadFileMetadata(BackupFileInterface $file);
+  abstract protected function _loadFileMetadataArray(BackupFileInterface $file);
 
 }

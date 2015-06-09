@@ -23,14 +23,15 @@ trait SidecarMetadataDestinationTrait {
   /**
    * {@inheritdoc}
    */
-  protected function _loadFileMetadata(BackupFileInterface $file) {
+  protected function _loadFileMetadataArray(BackupFileInterface $file) {
     $info = array();
+
     $id = $file->getMeta('id');
     $filename = $id . '.info';
     if ($this->fileExists($filename)) {
       $meta_file = $this->getFile($filename);
       $meta_file = $this->loadFileForReading($meta_file);
-      $info = $this->_INIToArray($meta_file->read());
+      $info = $this->_INIToArray($meta_file->readAll());
     }
     return $info;
   }
@@ -39,11 +40,15 @@ trait SidecarMetadataDestinationTrait {
    * {@inheritdoc}
    */
   protected function _saveFileMetadata(BackupFileInterface $file) {
+    // Get the file metadata and convert to INI format
     $meta = $file->getMetaAll();
     $ini = $this->_arrayToINI($meta);
-    $meta_file = $this->getTempFileManager()->create('info');
+
+    // Create an info file
+    $meta_file = $this->getTempFileManager()->pushExt($file, 'info');
     $meta_file->write($ini);
-    $meta_file->setMeta('filename', $file->getMeta('filename'). '.info');
+
+    // Save the metadata
     $this->_saveFile($meta_file);
   }
 

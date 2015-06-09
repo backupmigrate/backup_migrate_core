@@ -41,8 +41,8 @@ class Config implements ConfigInterface {
    * @param string $key The key for the setting.
    * @return mixed The value of the setting.
    */
-  public function get($key) {
-    return isset($this->config[$key]) ? $this->config[$key] : NULL;
+  public function get($key, $default = NULL) {
+    return $this->keyIsSet($key) ? $this->config[$key] : $default;
   }
 
   /**
@@ -53,6 +53,17 @@ class Config implements ConfigInterface {
    */
   public function set($key, $value) {
     $this->config[$key] = $value;
+  }
+
+
+  /**
+   * Determine if the given key has had a value set for it.
+   *
+   * @param $key
+   * @return bool
+   */
+  public function keyIsSet($key) {
+    return isset($this->config[$key]);
   }
 
   /**
@@ -72,4 +83,5 @@ class Config implements ConfigInterface {
   public function fromArray($values) {
     $this->config = $values;
   }
+
 }

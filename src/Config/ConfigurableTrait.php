@@ -31,6 +31,7 @@ trait ConfigurableTrait {
     if ($init instanceof ConfigInterface) {
       $this->setConfig($init);
     }
+    $this->defaults = new Config();
   }
 
   /**
@@ -43,11 +44,60 @@ trait ConfigurableTrait {
   }
 
   /**
+   * Set the configuration for all plugins.
+   *
+   * @param ConfigInterface $config A configuration object containing only configuration for all plugins
+   */
+  public function setDefaults(ConfigInterface $defaults) {
+    $this->defaults = $defaults;
+  }
+
+  /**
    * Get the configuration object for this item.
    * @return \BackupMigrate\Core\Config\ConfigInterface
    */
   public function config() {
     return $this->config ? $this->config : new Config();
+  }
+
+  /**
+   * Get the configuration object for this item.
+   * @return \BackupMigrate\Core\Config\ConfigInterface
+   */
+  public function defaults() {
+    if (!$this->defaults) {
+      $this->setDefaults($this->confDefaults());
+    }
+    return $this->defaults;
+  }
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Plugin\Config
+   */
+  public function confDefaults() {
+    $schema = $this->configSchema();
+    $defaults = new Config();
+
+    // Read the defaults from the schema if avialable.
+    if (isset($schema['fields'])) {
+      foreach ($schema['fields'] as $key => $field) {
+        if (isset($field['default'])) {
+          $defaults->set($key, $field['default']);
+        }
+      }
+    }
+    return $defaults;
+  }
+
+  /**
+   * Get a default (blank) schema.
+   *
+   * @return array
+   */
+  public function configSchema() {
+    return [];
   }
 
   /**
@@ -57,23 +107,12 @@ trait ConfigurableTrait {
    * @return mixed The configuration value.
    */
   public function confGet($key) {
-    return $this->config()->get($key);
+    if ($this->config()->keyIsSet($key)) {
+      return $this->config()->get($key);
+    }
+    else {
+      return $this->defaults()->get($key);
+    }
   }
 
-  /**
-   * Get the default value for a specific key
-   *
-   * @param string $key The configuration object key to retrieve
-   * @return mixed The default configuration value.
-   */
-  public function confDefault($key) {
-    $function = '_confDefault_'. $key;
-    if (function_exists($function)) {
-      return $function();
-    }
-    if (!empty($this->defaults[$key])) {
-      return $this->defaults[$key];
-    }
-    return NULL;
-  }
 }

@@ -38,4 +38,7 @@ trait FileProcessorTrait
   public function getTempFileManager() {
     return $this->tempfilemanager;
   }
+
+
+
 }

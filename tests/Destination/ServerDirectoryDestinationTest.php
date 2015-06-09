@@ -32,20 +32,39 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
   protected $manager;
 
   /**
+   * @var string A URI for a virtual file
+   */
+  protected $adapter;
+
+  /**
+   * @var vfsStream
+   */
+  protected $root;
+
+
+  /**
    * {@inheritdoc}
    */
   public function setUp()
   {
-    vfsStream::setup('tmp');
-    vfsStream::setup('destination');
-    vfsStream::create(['item1.txt' => 'Hello, World 1!']);
-    vfsStream::create(['item2.txt' => 'Hello, World 2!']);
-    vfsStream::create(['item3.txt' => 'Hello, World 3!']);
-    $this->destURI = 'vfs://destination/';
+
+    $this->root = vfsStream::setup('root', 0777,
+      [
+        'tmp' => [],
+        'files' => [
+          'item1.txt' => 'Hello, World 1!',
+          'item2.txt' => 'Hello, World 2!',
+          'item3.txt' => 'Hello, World 3!',
+        ]
+      ]);
+
+    $this->adapter = new TempFileAdapter($this->root->url() . '/tmp', 'abc');
+    $this->destURI = 'vfs://root/files/';
 
     $this->destination = new ServerDirectoryDestination(new Config(['directory' => $this->destURI]));
 
-    $this->manager = new TempFileManager(new TempFileAdapter('vfs://destination/', 'abc'));
+    // @TODO: have the tmp directory be somewhere else.
+    $this->manager = new TempFileManager($this->adapter);
     $this->destination->setTempFileManager($this->manager);
   }
 
@@ -78,17 +97,18 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileInterface', $file);
     $file = $this->destination->loadFileForReading($file);
     $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileReadableInterface', $file);
-    $this->assertEquals('Hello, World 1!', $file->read());
+    $this->assertEquals('Hello, World 1!', $file->readAll());
   }
 
   /**
    * @covers ::deleteFile
    */
   public function testDelete() {
+    $this->assertFileExists($this->destURI . '/item1.txt');
     $this->destination->deleteFile('item1.txt');
-    $this->assertFileNotExists('vfs://destination/item1.txt');
-    $this->assertFileExists('vfs://destination/item2.txt');
-    $this->assertFileExists('vfs://destination/item3.txt');
+    $this->assertFileNotExists($this->destURI . '/item1.txt');
+    $this->assertFileExists($this->destURI . '/item2.txt');
+    $this->assertFileExists($this->destURI . '/item3.txt');
   }
 
   /**
@@ -98,14 +118,14 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
     // Create with an extension.
     $file = $this->manager->create('txt');
     $file->write('Hello, World 4!');
-    $file->setMeta('filename', 'item4.txt');
+    $file->setName('item4');
 
     $this->destination->saveFile($file);
-    $this->assertFileExists('vfs://destination/item1.txt');
-    $this->assertFileExists('vfs://destination/item2.txt');
-    $this->assertFileExists('vfs://destination/item3.txt');
-    $this->assertFileExists('vfs://destination/item4.txt');
-    $this->assertEquals('Hello, World 4!', file_get_contents('vfs://destination/item4.txt'));
+    $this->assertFileExists($this->destURI . '/item1.txt');
+    $this->assertFileExists($this->destURI . '/item2.txt');
+    $this->assertFileExists($this->destURI . '/item3.txt');
+    $this->assertFileExists($this->destURI . '/item4.txt');
+    $this->assertEquals('Hello, World 4!', file_get_contents($this->destURI . '/item4.txt'));
   }
 
   /**
@@ -115,22 +135,26 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
     // Create with an extension.
     $file = $this->manager->create('txt');
     $file->write('Hello, World 4!');
-    $file->setMeta('filename', 'item4.txt');
+    $file->setName('item4');
     $file->setMeta('x-example', '12345');
 
     $this->destination->saveFile($file);
 
-    $this->assertFileExists('vfs://destination/item4.txt');
-    $this->assertEquals('Hello, World 4!', file_get_contents('vfs://destination/item4.txt'));
+    $this->assertFileExists($this->destURI . '/item4.txt');
+    $this->assertEquals('Hello, World 4!', file_get_contents($this->destURI . '/item4.txt'));
 
+    // Dipping beneath the API to test that the sidecar is created
+    $this->assertFileExists($this->destURI . '/item4.txt.info');
+
+    // Load the file again and get the metadata
     $file = $this->destination->getFile('item4.txt');
     $file = $this->destination->loadFileMetadata($file);
     $this->assertEquals('12345', $file->getMeta('x-example'));
 
     // Dipping beneath the API to test that the info file doesn't exist after a delete
     $this->destination->deleteFile('item4.txt');
-    $this->assertFileNotExists('vfs://destination/item4.txt');
-    $this->assertFileNotExists('vfs://destination/item4.txt.info');
+    $this->assertFileNotExists($this->destURI . '/item4.txt');
+    $this->assertFileNotExists($this->destURI . '/item4.txt.info');
   }
 
 }

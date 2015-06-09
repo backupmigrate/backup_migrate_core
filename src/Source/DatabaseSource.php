@@ -18,12 +18,44 @@ use BackupMigrate\Core\Util\BackupFile;
 
 abstract class DatabaseSource extends SourceBase
 {
+
   /**
-   * Database connection credentials.
+   * Get a definition for user-configurable settings.
    *
-   * @var string
+   * @return array
    */
-  protected $id;
+  public function configSchema() {
+    $form = array();
 
+    // @TODO: make this the id of the source.
+    $group = 'db';
 
+    $form['fields']['exclude_tables'] = [
+      'group' => $group,
+      'type' => 'select',
+      'multiple' => true,
+      'title' => 'Exclude these tables altogether',
+      'options' => $this->_getTableNames(),
+      'actions' => ['backup']
+    ];
+    $form['fields']['nodata_tables'] = [
+      'group' => $group,
+      'type' => 'select',
+      'multiple' => true,
+      'title' => 'Exclude these tables altogether',
+      'options' => $this->_getTableNames(),
+      'actions' => ['backup']
+    ];
+
+    return $form;
+  }
+
+  /**
+   * Get the list of tables from this db.
+   *
+   * @return array
+   */
+  protected function _getTableNames() {
+    return [];
+  }
 }

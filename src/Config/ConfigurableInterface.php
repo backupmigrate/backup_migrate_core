@@ -34,9 +34,19 @@ interface ConfigurableInterface {
   public function confGet($key);
 
   /**
-   * Get the default for the given key.
-   * @param $key
+   * Get the configuration defaults for this item.
+   *
    * @return mixed
+   * @internal param $key
    */
-  public function confDefault($key);
+  public function confDefaults();
+
+  /**
+   * Get a configuration schema for this configurable. This will help set
+   * default values for config and assist consuming parties with generating
+   * a UI for configuration
+   *
+   * @return array
+   */
+  public function configSchema();
 }

@@ -40,8 +40,7 @@ class TempFileManager implements TempFileManagerInterface {
    * @return BackupFileWritableInterface
    */
   public function create($ext = '') {
-    $file = new TempFile($this->adapter->createTempFile());
-    $file->setMeta('ext', $ext);
+    $file = new TempFile($this->adapter->createTempFile($ext));
     return $file;
   }
 
@@ -61,16 +60,17 @@ class TempFileManager implements TempFileManagerInterface {
    *        from the previous file.
    */
   public function pushExt(BackupFileInterface $file, $ext) {
-    // Copy the file metadata to a new TempFile
-    $out = new TempFile($this->adapter->createTempFile());
-    $file->setMetaMultiple($file->getMetaAll());
-
     // Push the new extension on to the new file
-    $previous_ext = $file->getMeta('ext');
-    $parts = explode('.', $previous_ext);
+    $parts = $file->getExtList();
     array_push($parts, $ext);
+    $new_ext = implode($parts, '.');
 
-    $out->setMeta('ext', implode('.', array_filter($parts)));
+    // Copy the file metadata to a new TempFile
+    $out = new TempFile($this->adapter->createTempFile($new_ext));
+
+    // Copy the file metadata to a new TempFile
+    $out->setMetaMultiple($file->getMetaAll());
+    $out->setName($file->getName());
 
     return $out;
   }
@@ -87,15 +87,17 @@ class TempFileManager implements TempFileManagerInterface {
    *        all of the metadata from the previous file.
    */
   public function popExt(BackupFileInterface $file) {
-    // Copy the file metadata to a new TempFile
-    $out = new TempFile($this->adapter->createTempFile());
-    $file->setMetaMultiple($file->getMetaAll());
-
     // Pop the last extension from the last of the file.
-    $ext = $file->getMeta('ext');
-    $parts = explode('.', $ext);
+    $parts = $file->getExtList();
     array_pop($parts);
-    $out->setMeta('ext', implode('.', $parts));
+    $new_ext = implode($parts, '.');
+
+    // Create a new temp file with the new extension
+    $out = new TempFile($this->adapter->createTempFile($new_ext));
+
+    // Copy the file metadata to a new TempFile
+    $out->setMetaMultiple($file->getMetaAll());
+    $out->setName($file->getName());
 
     return $out;
   }

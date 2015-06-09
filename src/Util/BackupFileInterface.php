@@ -46,10 +46,40 @@ interface BackupFileInterface {
   public function getMetaAll();
 
   /**
+   * Set the file name without extension.
+   *
+   * @param string $name
+   */
+  public function setName($name);
+
+  /**
+   * Get the file name without extension.
+   *
+   * @return string
+   */
+  public function getName();
+
+  /**
+   * Get the full filename with extensions.
+   *
+   * @return string
+   *  The full filename (with extension, without filepath)
+   */
+  public function getFullName();
+
+
+  /**
+   * Set the full filename with extensions.
+   *
+   * @param string $fullname
+   *  The full filename (with extension, without filepath)
+   */
+  public function setFullName($fullname);
+
+  /**
    * Get an array of file extensions.
    *
-   * For example: testfile.txt.gz would return:
-   * ['txt', 'gz']
+   * For example: testfile.txt.gz would return: ['txt', 'gz']
    *
    * @return array
    */
@@ -58,9 +88,17 @@ interface BackupFileInterface {
   /**
    * Get the last file extension
    *
-   * For example: testfile.txt.gz would return:
-   * ['txt', 'gz']
+   * For example: testfile.txt.gz would return: 'gz'
+   *
    * @return mixed
    */
   public function getExtLast();
+
+  /**
+   * Get the full file extension
+   *
+   * For example: testfile.txt.gz would return: 'txt.gz'
+   * @return mixed
+   */
+  public function getExt();
 }

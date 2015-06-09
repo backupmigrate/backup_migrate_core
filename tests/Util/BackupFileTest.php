@@ -59,15 +59,23 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
       $handle = $this->file->openForRead();
 
       // Read a limited number of bytes
-      $this->assertEquals($this->file->read(5), 'Hello');
+      $this->assertEquals($this->file->readBytes(5), 'Hello');
       // Skip ', '
-      $this->file->read(2);
-      $this->assertEquals($this->file->read(5), 'World');
+      $this->file->readBytes(2);
+      $this->assertEquals($this->file->readBytes(6), 'World!');
+
+      $this->assertEmpty($this->file->readLine());
+      $this->assertEmpty($this->file->readBytes(100));
 
       // Reset the file handle
       $this->file->rewind();
       // Read the entire file
-      $this->assertEquals($this->file->read(), 'Hello, World!');
+      $this->assertEquals($this->file->readLine(), 'Hello, World!');
+
+      // Read all resets automatically
+      $this->assertEquals($this->file->readAll(), 'Hello, World!');
+      $this->assertEquals($this->file->readAll(), 'Hello, World!');
+
 
       // Close the file again.
       $this->file->close();
@@ -76,7 +84,7 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
 
       // Test implicit file open and close.
       $new_file = new ReadableStreamBackupFile($this->fileURI);
-      $this->assertEquals($new_file->read(), 'Hello, World!');
+      $this->assertEquals($new_file->readAll(), 'Hello, World!');
       unset($new_file);
       // Not sure how to test that the handle has been closed since we don't get direct access to it.
 
@@ -85,6 +93,12 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
       vfsStream::create(['multiline.txt' => "First Line\nSecond Line"]);
 
       $file = new ReadableStreamBackupFile('vfs://dir/multiline.txt');
-      $this->assertEquals($message, $file ->read());
+      $this->assertEquals($message, $file->readAll());
+
+      $file->rewind();
+      $this->assertEquals('First Line', $file->readLine());
+      $this->assertEquals('Second Line', $file->readLine());
+
+
     }
 }

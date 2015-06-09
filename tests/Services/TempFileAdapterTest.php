@@ -2,6 +2,7 @@
 namespace BackupMigrate\Core\Tests\Services;
 
 use \BackupMigrate\Core\Services\TempFileAdapter;
+use org\bovigo\vfs\vfsStream;
 
 /**
  * @coversDefaultClass \BackupMigrate\Core\Services\TempFileManager
@@ -15,11 +16,17 @@ class TempFileAdapterTest extends \PHPUnit_Framework_TestCase
     protected $adapter;
 
     /**
+    * @var vfsStream
+    */
+    protected $root;
+
+    /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-      $this->adapter = new TempFileAdapter('/tmp/', 'abc');
+      $this->root = vfsStream::setup('root', 0777, ['tmp' => []]);
+      $this->adapter = new TempFileAdapter($this->root->url() . '/tmp/', 'abc');
     }
 
     /**
@@ -48,6 +55,21 @@ class TempFileAdapterTest extends \PHPUnit_Framework_TestCase
       $this->assertStringStartsWith('bca', basename($path));
 
     }
+
+  /**
+   * @covers ::__constructor
+   * @covers ::createTempFile
+   */
+  public function testExt()
+  {
+    $path = $this->adapter->createTempFile('txt');
+    $this->assertStringEndsWith('.txt', basename($path));
+
+    // Test another to be sure
+    $path = $this->adapter->createTempFile('dat');
+    $this->assertStringEndsWith('.dat', basename($path));
+
+  }
 
     /**
      * @covers ::createTestFile

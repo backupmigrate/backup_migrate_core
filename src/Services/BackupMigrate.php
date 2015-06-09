@@ -62,7 +62,7 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
 
     // Run each of the installed plugins which implements the 'afterBackup' operation.
     foreach ($this->plugins()->getAllByOp('beforeBackup') as $plugin) {
-      $file = $plugin->beforeBackup();
+      $plugin->beforeBackup();
     }
 
     $file = $source->exportToFile();

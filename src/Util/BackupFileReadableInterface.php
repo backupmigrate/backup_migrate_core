@@ -17,13 +17,28 @@ interface BackupFileReadableInterface extends BackupFileInterface {
    * @return string
    */
   public function realpath();
- /**
-   * Read a line from the file.
-   * 
-   * @param int $size The number of bites to read or 0 to read the whole file
+
+  /**
+   * Read a given number of bytes from the file
+   *
+   * @param int $size The number of bites to read
    * @return string The data read from the file or NULL if the file can't be read or is at the end of the file.
    */
-  public function read($size = 0);
+  public function readBytes($size = 0);
+
+  /**
+   * Read a single line from the file.
+   *
+   * @return string The data read from the file or NULL if the file can't be read or is at the end of the file.
+   */
+  public function readLine();
+
+  /**
+   * Read a line from the file.
+   *
+   * @return string The data read from the file or NULL if the file can't be read.
+   */
+  public function readAll();
 
   /**
    * Open a file for reading or writing.

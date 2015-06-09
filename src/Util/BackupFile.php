@@ -29,19 +29,19 @@ class BackupFile implements BackupFileInterface {
   protected $path;
 
   /**
-   * The file name.
+   * The file name without extension.
    *
    * @var string
    */
   protected $name;
 
   /**
-   * A file handle if it is open.
+   * The file extension(s)
    *
-   * @var resource
+   * @var array
    */
-  protected $handle;
-  
+  protected $ext;
+
   /**
    * The file's metadata
    * 
@@ -92,28 +92,56 @@ class BackupFile implements BackupFileInterface {
   }
 
   /**
-   * Get an array of file extensions.
-   *
-   * For example: testfile.txt.gz would return:
-   * ['txt', 'gz']
-   *
-   * @return array
+   * {@inheritdoc}
    */
-  public function getExtList() {
-    $ext = $this->getMeta('ext');
-    $parts = explode('.', $ext);
-    return $parts;
+  public function setName($name) {
+    $this->name = $name;
   }
 
   /**
-   * Get the last file extension
-   *
-   * For example: testfile.txt.gz would return:
-   * ['txt', 'gz']
-   * @return mixed
+   * {@inheritdoc}
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFullName() {
+    return rtrim($this->name . '.' . implode($this->getExtList(), '.'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setFullName($fullname) {
+    // Break the file name into name and extension array.
+    $parts = explode('.', $fullname);
+    $this->setName(array_shift($parts));
+    $this->ext = $parts;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExtList() {
+    return $this->ext;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getExtLast() {
-    $exts = $this->getExtList();
-    return array_pop($exts);
+    return end($this->ext);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExt() {
+    return implode($this->getExtList(), '.');
+  }
+
 }

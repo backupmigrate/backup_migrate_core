@@ -65,12 +65,22 @@ class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInt
     }
 
     if ($this->handle) {
-      if (!fwrite($this->handle, $data)) {
-        throw new \Exception('Cannot write to file.');
+      if (fwrite($this->handle, $data) === FALSE) {
+        throw new \Exception('Cannot write to file: ' . $this->realpath());
       }
     }
     else {
       throw new \Exception('File not open for writing.');
     }
+  }
+
+  /**
+   * Update the file time and size when the file is closed.
+   */
+  function close() {
+    parent::close();
+
+    $this->setMeta('filesize', filesize($this->realpath()));
+    $this->setMeta('datestamp', filectime($this->realpath()));
   }
 }

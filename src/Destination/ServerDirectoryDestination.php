@@ -21,8 +21,7 @@ use BackupMigrate\Core\Util\ReadableStreamBackupFile;
  * Class ServerDirectoryDestination
  * @package BackupMigrate\Core\Destination
  */
-class ServerDirectoryDestination extends DestinationBase implements DestinationInterface, ConfigurableInterface, FileProcessorInterface{
-  use ConfigurableTrait;
+class ServerDirectoryDestination extends DestinationBase implements DestinationInterface, ConfigurableInterface, FileProcessorInterface {
   use SidecarMetadataDestinationTrait;
 
   /**
@@ -39,7 +38,7 @@ class ServerDirectoryDestination extends DestinationBase implements DestinationI
    * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
    */
   function _saveFile(BackupFileReadableInterface $file) {
-    rename($file->realpath(), $this->confGet('directory') . $file->getMeta('filename'));
+    rename($file->realpath(), $this->confGet('directory') . $file->getFullName());
     // @TODO: use copy/unlink if the temp file and the destination do not share a stream wrapper.
   }
 
@@ -50,7 +49,7 @@ class ServerDirectoryDestination extends DestinationBase implements DestinationI
     if ($this->fileExists($id)) {
       $out = new BackupFile();
       $out->setMeta('id', $id);
-      $out->setMeta('filename', $id);
+      $out->setFullName($id);
       return $out;
     }
     return NULL;
@@ -87,7 +86,6 @@ class ServerDirectoryDestination extends DestinationBase implements DestinationI
       $file = $files[$i];
       $filepath = $dir . '/' . $file;
       $out[$file] = new ReadableStreamBackupFile($filepath);
-      // @TODO: Load metadata from .info file if it exists.
     }
 
     return $out;

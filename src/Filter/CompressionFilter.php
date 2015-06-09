@@ -6,6 +6,7 @@
 
 namespace BackupMigrate\Core\Filter;
 
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
@@ -81,21 +82,24 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     );
   }
 
+
   /**
    * Get a definition for user-configurable settings.
    *
    * @return array
    */
-  public function backupSettings() {
+  public function configSchema() {
     $form = array();
 
     $compression_options = $this->_availableCompressionAlgorithms();
-    $form['fields']['compression'] = array(
-      '#group' => 'file',
-      "#type" => count($compression_options) > 1 ? "select" : 'value',
-      "#title" => 'Compression',
-      "#options" => $compression_options,
-    );
+    $form['fields']['compression'] = [
+      'group' => 'file',
+      'type' => count($compression_options) > 1 ? "select" : 'value',
+      'title' => 'Compression',
+      'options' => $compression_options,
+      'default' => $this->_defaultCompressionAlgorithm(),
+      'actions' => ['backup']
+    ];
 
     return $form;
   }
@@ -107,21 +111,29 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
    */
   public function afterBackup(BackupFileReadableInterface $file) {
-    // If no compression is specified then return the input file as is.
-    $out = $file;
+    $success = FALSE;
     if ($this->confGet('compression') == 'gzip') {
       $out = $this->getTempFileManager()->pushExt($file, 'gz');
-      $this->_gzipEncode($file, $out);
+      $success = $this->_gzipEncode($file, $out);
     }
     if ($this->confGet('compression') == 'bzip') {
       $out = $this->getTempFileManager()->pushExt($file, 'bz2');
-      $this->_bzipEncode($file, $out);
+      $success = $this->_bzipEncode($file, $out);
     }
     if ($this->confGet('compression') == 'zip') {
       $out = $this->getTempFileManager()->pushExt($file, 'zip');
-      $this->_ZipEncode($file, $out);
+      $success = $this->_ZipEncode($file, $out);
     }
-    return $out;
+
+    // If the file was successfully compressed.
+    if ($success) {
+      $out->setMeta('filesize_uncompressed', $file->getMeta('filesize'));
+      $out->setMeta('compression', $this->confGet('compression'));
+      return $out;
+    }
+
+    // Return the original if we were not able to compress it.
+    return $file;
   }
 
   /**
@@ -135,12 +147,13 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     $out = $file;
 
     $type = $file->getExtLast();
+
     switch (strtolower($type)) {
       case "gz":
       case "gzip":
         $out = $this->getTempFileManager()->popExt($file);
         $this->_gzipDecode($file, $out);
-        break;
+      break;
 
       case "bz":
       case "bz2":
@@ -171,12 +184,12 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     $success = FALSE;
 
     if (!$success && @function_exists("gzopen")) {
-      if (($fp_out = gzopen($to->realpath(), 'wb9')) && ($fp_in = $from->openForRead())) {
-        while (!feof($fp_in)) {
-          gzwrite($fp_out, $from->read(1024 * 512));
+      if (($fp_out = gzopen($to->realpath(), 'wb9')) && $from->openForRead()) {
+        while ($data = $from->readBytes(1024 * 512)) {
+          gzwrite($fp_out, $data);
         }
         $success = TRUE;
-        @fclose($fp_in);
+        $from->close();
         @gzclose($fp_out);
       }
     }
@@ -195,7 +208,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     $success = FALSE;
 
     if (!$success && @function_exists("gzopen")) {
-      if (($fp_in = gzopen($from->realpath(), 'rb9'))) {
+      if ($fp_in = gzopen($from->realpath(), 'rb9')) {
         while (!feof($fp_in)) {
           $to->write(gzread($fp_in, 1024 * 512));
         }
@@ -217,15 +230,14 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    */
   protected function _bzipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
-
     if (!$success && @function_exists("bzopen")) {
-      if (($fp_out = bzopen($to->realpath(), 'wb')) && ($fp_in = $from->openForRead())) {
-        while (!feof($fp_in)) {
-          bzwrite($fp_out, $from->read(1024 * 512));
+      if (($fp_out = bzopen($to->realpath(), 'w')) && $from->openForRead()) {
+        while ($data = $from->readBytes(1024 * 512)) {
+          bzwrite($fp_out, $data);
         }
         $success = TRUE;
-        @fclose($fp_in);
-        @gzclose($fp_out);
+        $from->close();
+        @bzclose($fp_out);
       }
     }
 
@@ -243,7 +255,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     $success = FALSE;
 
     if (!$success && @function_exists("bzopen")) {
-      if (($fp_in = gzopen($from->realpath(), 'rb9'))) {
+      if ($fp_in = bzopen($from->realpath(), 'r')) {
         while (!feof($fp_in)) {
           $to->write(bzread($fp_in, 1024 * 512));
         }
@@ -277,7 +289,6 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
           @fclose($fp_in);
           $success = TRUE;
         }
-        @fclose($fp_out);
       }
     }
 
@@ -340,5 +351,19 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     return $compression_options;
   }
 
+  /**
+   * Get the default compression algorithm based on those available
+   *
+   * @return string
+   *  The machine name of the algorithm.
+   */
+  protected function _defaultCompressionAlgorithm() {
+    $available = array_keys($this->_availableCompressionAlgorithms());
+    // Remove the 'none' option.
+    array_shift($available);
+    $out = array_shift($available);
+    // Return the first available algorithm or 'none' of none other exist.
+    return $out ? $out : 'none';
+  }
 
 }

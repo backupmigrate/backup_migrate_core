@@ -57,12 +57,15 @@ class TempFileAdapter implements TempFileAdapterInterface
   /**
    * {@inheritdoc}
    */
-  public function createTempFile() {
+  public function createTempFile($ext = '') {
+    // Add a dot to the file extension
+    $ext = $ext ? '.' . $ext : '';
+
     // Find an unused random file name.
     $try = 5;
     do
     {
-      $out = $this->dir . '/' . $this->prefix . mt_rand();
+      $out = $this->dir . '/' . $this->prefix . mt_rand() . $ext;
       $fp = @fopen($out, 'x');
     }
     while(!$fp && $try-- > 0);
@@ -72,7 +75,7 @@ class TempFileAdapter implements TempFileAdapterInterface
     else {
       throw new \Exception('Could not create a temporary file to write to.');
     }
-
+//print_r(scandir($this->dir));
     $this->tempfiles[] = $out;
     return $out;
   }
