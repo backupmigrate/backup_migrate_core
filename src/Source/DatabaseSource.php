@@ -5,19 +5,15 @@
  * Contains \BackupMigrate\Core\Source\DatabaseSource.
  */
 
-
-// Must be injected:
-// Database access (PDO object etc.)
-//  Takes a set of credentials
-//  Allows raw queries
-//  Queries return a list of assoc arrays
-
 namespace BackupMigrate\Core\Source;
 
-use BackupMigrate\Core\Util\BackupFile;
+use BackupMigrate\Core\Plugin\FileProcessorInterface;
+use BackupMigrate\Core\Plugin\FileProcessorTrait;
+use BackupMigrate\Core\Plugin\PluginBase;
 
-abstract class DatabaseSource extends SourceBase
+abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
 {
+  use FileProcessorTrait;
 
   /**
    * Get a definition for user-configurable settings.

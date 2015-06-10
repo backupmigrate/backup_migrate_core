@@ -67,6 +67,9 @@ class CompressionFilterTest extends PHPUnit_Framework_TestCase {
     $this->cleanUpFiles($this->filedir);
   }
 
+  /**
+   * @param $dir
+   */
   protected function cleanUpFiles($dir) {
     // Remove our file directory.
     if (file_exists($dir)) {

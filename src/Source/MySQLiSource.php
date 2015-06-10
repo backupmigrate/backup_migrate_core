@@ -10,17 +10,30 @@ namespace BackupMigrate\Core\Source;
 
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
 use BackupMigrate\Core\Util\BackupFileWritableInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
 
 /**
  * Class MySQLiSource
  * @package BackupMigrate\Core\Source
  */
-class MySQLiSource extends SourceBase {
+class MySQLiSource extends SourceBase implements PluginCallerInterface {
+  use PluginCallerTrait;
 
   /**
    * @var resource A MySQLi connection.
    */
   protected $connection;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportedOps() {
+    return [
+      'exportToFile' => [],
+      'importFromFile' => []
+    ];
+  }
 
   /**
    * Export this source to the given temp file. This should be the main
@@ -129,11 +142,13 @@ class MySQLiSource extends SourceBase {
     $host =  $this->confGet('host');
     $db = $this->confGet('database');
     $timestamp = date('r');
+    $generator = $this->plugins()->getApp()->getIDString();
 
     return <<<HEADER
 -- Backup and Migrate MySQL Dump
 -- http://github.com/backupmigrate
 --
+-- Generator: $generator
 -- Host: $host
 -- Database: $db
 -- Generation Time: $timestamp

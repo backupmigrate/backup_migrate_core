@@ -40,4 +40,33 @@ interface ApplicationInterface {
    * @return \Psr\Log\LoggerInterface;
    */
   public function getLogger();
+
+  /**
+   * Get the full ID string for the application.
+   *
+   * @return string
+   */
+  public function getIDString();
+
+  /**
+   * Get the name of the application
+   *
+   * @return string
+   */
+  public function getName();
+
+  /**
+   * Get the version number of the application.
+   *
+   * @return string
+   */
+  public function getVersion();
+
+  /**
+   * Get the URL for the application.
+   *
+   * @return string
+   */
+  public function getProjectURL();
+
 }

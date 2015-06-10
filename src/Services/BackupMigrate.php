@@ -36,16 +36,12 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    * @var \BackupMigrate\Core\Plugin\PluginManagerInterface
    */
   protected $plugins;
-  protected $sources;
-  protected $destinations;
 
   /**
    * {@inheritdoc}
    */
   function __construct(ApplicationInterface $app, ConfigInterface $config = NULL) {
     $this->plugins = new PluginManager($app, $config);
-    $this->sources = new PluginManager($app, $config);
-    $this->destinations = new PluginManager($app, $config);
   }
 
 
@@ -59,6 +55,8 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
     $destination = $this->plugins()->get($destination_id);
 
     // @TODO Check the source and destination and throw appropriate exceptions.
+
+    // @TODO Add the
 
     // Run each of the installed plugins which implements the 'afterBackup' operation.
     foreach ($this->plugins()->getAllByOp('beforeBackup') as $plugin) {

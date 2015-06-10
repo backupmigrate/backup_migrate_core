@@ -55,6 +55,14 @@ interface PluginManagerInterface
   public function getAllByOp($op);
 
   /**
+   * Get the app (essentially a dependency injection container for interfacing
+   * with the broader app and environment)
+   *
+   * @return \BackupMigrate\Core\Services\ApplicationInterface
+   */
+  public function getApp();
+
+  /**
    * Get the list of supported file types, optionally for the specified op.
    *
    * @param string|null $op

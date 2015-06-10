@@ -87,4 +87,40 @@ class ApplicationBase implements ApplicationInterface {
   public function getLogger() {
     return $this->logger;
   }
+
+  /**
+   * Get the full ID string for the application.
+   *
+   * @return string
+   */
+  public function getIDString() {
+   return $this->getName() . ' v. ' . $this->getVersion() . ' (' . $this->getProjectURL() . ')';
+  }
+
+  /**
+   * Get the name of the application
+   *
+   * @return string
+   */
+  public function getName() {
+    return 'Backup and Migrate Core';
+  }
+
+  /**
+   * Get the version number of the application.
+   *
+   * @return string
+   */
+  public function getVersion() {
+    return '0.0.1';
+  }
+
+  /**
+   * Get the version number of the application.
+   *
+   * @return string
+   */
+  public function getProjectURL() {
+    return 'http://github.com/backupmigrate';
+  }
 }
