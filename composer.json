@@ -1,7 +1,6 @@
 {
     "name": "backupmigrate/core",
     "description": "Backup and Migrate",
-    "license": "MIT",
     "autoload": {
         "psr-4": {
             "BackupMigrate\\Core\\": "src"
