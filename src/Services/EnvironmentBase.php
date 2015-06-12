@@ -51,7 +51,7 @@ class EnvironmentBase implements EnvironmentInterface {
    * @param \BackupMigrate\Core\Util\StateInterface $stateManager
    * @param \Psr\Log\LoggerInterface $logger
    */
-  public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger) {
+  public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL) {
     $this->tempFileManager = $tempFileManager ? $tempFileManager : new TempFileManager(new TempFileAdapter('/tmp'));
     $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
     $this->stateManager = $stateManager ? $stateManager : new NullState();
