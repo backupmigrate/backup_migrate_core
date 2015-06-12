@@ -9,11 +9,12 @@ namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\Plugin\PluginInterface;
 
 /**
  * Provides an interface defining a backup source.
  */
-interface DestinationInterface
+interface DestinationInterface extends PluginInterface
 {
   /**
    * Save a file to the destination.

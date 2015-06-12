@@ -27,7 +27,9 @@ abstract class PluginBase implements PluginInterface, ConfigurableInterface {
    *
    * @return array
    */
-  abstract public function supportedOps();
+  public function supportedOps() {
+    return [];
+  }
 
   /**
    * Does this plugin implement the given operation.

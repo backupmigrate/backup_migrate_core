@@ -74,7 +74,7 @@ trait ConfigurableTrait {
   /**
    * Get the default values for the plugin.
    *
-   * @return \BackupMigrate\Core\Plugin\Config
+   * @return \BackupMigrate\Core\Config\Config
    */
   public function confDefaults() {
     $schema = $this->configSchema();

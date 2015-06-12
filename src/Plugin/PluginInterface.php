@@ -8,6 +8,8 @@
 namespace BackupMigrate\Core\Plugin;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Config\ConfigurableInterface;
+
 //use \BackupMigrate\Core\Services\ApplicationInterface;
 
 /**

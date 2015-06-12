@@ -41,10 +41,10 @@ interface PluginManagerInterface
 
   /**
    * Set the configuration for all plugins.
-   * 
+   *
    * @param ConfigInterface $config A configuration object containing only configuration for all plugins
    */
-  public function setConfig(ConfigInterface $config);
+  // public function setConfig(ConfigInterface $config);
 
   /**
    * Get all plugins that implement the given operation.
@@ -55,12 +55,12 @@ interface PluginManagerInterface
   public function getAllByOp($op);
 
   /**
-   * Get the app (essentially a dependency injection container for interfacing
-   * with the broader app and environment)
+   * Get the environment (essentially a dependency injection container for
+   * interfacing with the consuming application)
    *
    * @return \BackupMigrate\Core\Services\EnvironmentInterface
    */
-  public function getApp();
+  public function getEnv();
 
   /**
    * Get the list of supported file types, optionally for the specified op.

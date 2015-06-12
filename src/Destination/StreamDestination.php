@@ -8,17 +8,27 @@
 namespace BackupMigrate\Core\Destination;
 
 
+use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\Plugin\PluginBase;
 
 /**
  * Class StreamDestination
  * @package BackupMigrate\Core\Destination
  */
-class StreamDestination implements DestinationInterface, ConfigurableInterface {
-  use ConfigurableTrait;
+class StreamDestination extends PluginBase implements DestinationInterface, ConfigurableInterface {
+
+  /**
+   * Get a list of supported operations and their weight.
+   *
+   * @return array
+   */
+  public function supportedOps() {
+    return [];
+  }
 
   /**
    * {@inheritdoc}
@@ -85,4 +95,5 @@ class StreamDestination implements DestinationInterface, ConfigurableInterface {
    */
   public function deleteFile($id) {
   }
+
 }

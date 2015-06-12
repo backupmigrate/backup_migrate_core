@@ -28,14 +28,15 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   /**
    * @var \BackupMigrate\Core\Services\EnvironmentInterface
    */
-  protected $app;
+  protected $env;
 
   /**
    * @param $app
    */
-  public function __construct(EnvironmentInterface $app, ConfigInterface $config) {
-    $this->app = $app;
+  public function __construct(EnvironmentInterface $env, ConfigInterface $config) {
+    $this->env = $env;
     $this->setConfig($config);
+    $this->items = array();
   }
 
   /**
@@ -44,14 +45,15 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    *
    * @return \BackupMigrate\Core\Services\EnvironmentInterface
    */
-  public function getApp() {
-    return $this->app;
+  public function getEnv() {
+    return $this->env;
   }
 
   /**
    * {@inheritdoc}
    */
   public function add(PluginInterface $item, $id) {
+    $this->_preparePlugin($item, $id);
     $this->items[$id] = $item;
   }
 
@@ -66,12 +68,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    * {@inheritdoc}
    */
   public function getAll() {
-    $out = array();
-    foreach ((array)$this->items as $id => $plugin) {
-      $this->_preparePlugin($plugin, $id);
-      $out[] = $plugin;
-    }
-    return $out;
+    return $this->items;
   }
 
   /**
@@ -91,6 +88,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
       }
     }
     array_multisort($weights, $out);
+    return $out;
   }
 
   /**
@@ -130,7 +128,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
 
     // Inject the file processor
     if ($plugin instanceof FileProcessorInterface) {
-      $plugin->setTempFileManager($this->getApp()->getTempFileManager());
+      $plugin->setTempFileManager($this->getEnv()->getTempFileManager());
     }
 
     // Inject the plugin manager.

@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\Config\ConfigurableTrait;
+use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileReadableInterface;
 
@@ -15,9 +16,17 @@ use BackupMigrate\Core\Util\BackupFileReadableInterface;
  * Class DestinationBase
  * @package BackupMigrate\Core\Destination
  */
-abstract class DestinationBase implements DestinationInterface
+abstract class DestinationBase extends PluginBase implements DestinationInterface
 {
-  use ConfigurableTrait;
+
+  /**
+   * Get a list of supported operations and their weight.
+   *
+   * @return array
+   */
+  public function supportedOps() {
+    return [];
+  }
 
   /**
    * {@inheritdoc}

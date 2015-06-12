@@ -77,7 +77,7 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   /**
    * {@inheritdoc}
    */
-  public function restore($source_id, $destination_id, $file = NULL) {
+  public function restore($source_id, $destination_id, $file_id = NULL) {
     // Get the source and the destination to use.
     $source = $this->plugins()->get($source_id);
     $destination = $this->plugins()->get($destination_id);
@@ -85,21 +85,15 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
     // @TODO Check the source and destination and throw appropriate exceptions.
 
     // Load the file from the destination.
-    $file = $destination->loadFile($file);
+    $file = $destination->getFile($file_id);
 
     // Run each of the installed plugins which implements the 'backup' operation.
     foreach ($this->plugins()->getAllByOp('beforeRestore') as $plugin) {
-      $file = $plugin->restore($file);
+      $file = $plugin->beforeRestore($file);
     }
 
     // Do the actual source restore.
     $source->importFromFile($file);
-
-    foreach ($this->plugins()->getAllByOp('afterRestore') as $plugin) {
-      $file = $plugin->restore();
-    }
-
-
   }
 
 }

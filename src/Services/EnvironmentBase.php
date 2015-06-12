@@ -62,7 +62,7 @@ class EnvironmentBase implements EnvironmentInterface {
    * @return \BackupMigrate\Core\Services\TempFileManagerInterface;
    */
   public function getTempFileManager() {
-    return $this->$tempFileManager;
+    return $this->tempFileManager;
   }
 
   /**
