@@ -58,7 +58,7 @@ interface PluginManagerInterface
    * Get the app (essentially a dependency injection container for interfacing
    * with the broader app and environment)
    *
-   * @return \BackupMigrate\Core\Services\ApplicationInterface
+   * @return \BackupMigrate\Core\Services\EnvironmentInterface
    */
   public function getApp();
 
