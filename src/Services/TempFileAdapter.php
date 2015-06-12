@@ -75,7 +75,7 @@ class TempFileAdapter implements TempFileAdapterInterface
     else {
       throw new \Exception('Could not create a temporary file to write to.');
     }
-//print_r(scandir($this->dir));
+
     $this->tempfiles[] = $out;
     return $out;
   }
