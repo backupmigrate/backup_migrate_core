@@ -7,6 +7,7 @@ use \BackupMigrate\Core\Destination\ServerDirectoryDestination;
 use \BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Services\TempFileAdapter;
 use BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
 use org\bovigo\vfs\vfsStream;
 
 
@@ -15,6 +16,7 @@ use org\bovigo\vfs\vfsStream;
  */
 class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
 {
+  use TempFileConsumerTestTrait;
 
   /**
    * @var string A URI for a virtual file
@@ -26,45 +28,24 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
    */
   protected $destination;
 
-  /**
-   * @var TempFileManager
-   */
-  protected $manager;
-
-  /**
-   * @var string A URI for a virtual file
-   */
-  protected $adapter;
-
-  /**
-   * @var vfsStream
-   */
-  protected $root;
-
 
   /**
    * {@inheritdoc}
    */
   public function setUp()
   {
+    $this->_setUpFiles([
+      'tmp' => [],
+      'files' => [
+        'item1.txt' => 'Hello, World 1!',
+        'item2.txt' => 'Hello, World 2!',
+        'item3.txt' => 'Hello, World 3!',
+      ]
+    ]);
 
-    $this->root = vfsStream::setup('root', 0777,
-      [
-        'tmp' => [],
-        'files' => [
-          'item1.txt' => 'Hello, World 1!',
-          'item2.txt' => 'Hello, World 2!',
-          'item3.txt' => 'Hello, World 3!',
-        ]
-      ]);
-
-    $this->adapter = new TempFileAdapter($this->root->url() . '/tmp', 'abc');
     $this->destURI = 'vfs://root/files/';
 
     $this->destination = new ServerDirectoryDestination(new Config(['directory' => $this->destURI]));
-
-    // @TODO: have the tmp directory be somewhere else.
-    $this->manager = new TempFileManager($this->adapter);
     $this->destination->setTempFileManager($this->manager);
   }
 
