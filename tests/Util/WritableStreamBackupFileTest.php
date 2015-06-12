@@ -1,7 +1,7 @@
 <?php
 namespace BackupMigrate\Core\Tests\Util;
 
-use \BackupMigrate\Core\Util\TempFile;
+use \BackupMigrate\Core\Util\WritableStreamBackupFile;
 use \BackupMigrate\Core\Services\TempFileAdapter;
 use \BackupMigrate\Core\Tests\Util\BackupFileTest;
 
@@ -31,7 +31,7 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateAndDestroy()
     {
-        $file = new TempFile($this->adapter->createTempFile());
+        $file = new WritableStreamBackupFile($this->adapter->createTempFile());
         // Make sure a temp file has been created somewhere.
         $this->assertNotEmpty(file_exists($file->realpath()));
         $this->assertNotEmpty(is_writable($file->realpath()));
@@ -51,7 +51,7 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
      */
     public function testOpenForWrite()
     {
-      $file = new TempFile($this->adapter->createTempFile());
+      $file = new WritableStreamBackupFile($this->adapter->createTempFile());
 
       // Not open yet
       $this->assertFalse($file->isOpen());
@@ -75,7 +75,7 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
       $this->assertFalse(is_resource($handle));
 
       // Test implicit file open and close.
-      $new_file = new TempFile($this->adapter->createTempFile());
+      $new_file = new WritableStreamBackupFile($this->adapter->createTempFile());
       $path = $new_file->realpath();
       $new_file->write('Hello, World!');
       $this->assertEquals(file_get_contents($new_file->realpath()), 'Hello, World!');

@@ -9,7 +9,7 @@ namespace BackupMigrate\Core\Services;
 use BackupMigrate\Core\Services\TempFileAdapterInterface;
 use BackupMigrate\Core\Util\BackupFileInterface;
 use BackupMigrate\Core\Util\BackupFileWritableInterface;
-use BackupMigrate\Core\Util\TempFile;
+use BackupMigrate\Core\Util\WritableStreamBackupFile;
 
 /**
  * Class TempFileManager
@@ -40,7 +40,7 @@ class TempFileManager implements TempFileManagerInterface {
    * @return BackupFileWritableInterface
    */
   public function create($ext = '') {
-    $file = new TempFile($this->adapter->createTempFile($ext));
+    $file = new WritableStreamBackupFile($this->adapter->createTempFile($ext));
     return $file;
   }
 
@@ -66,7 +66,7 @@ class TempFileManager implements TempFileManagerInterface {
     $new_ext = implode($parts, '.');
 
     // Copy the file metadata to a new TempFile
-    $out = new TempFile($this->adapter->createTempFile($new_ext));
+    $out = new WritableStreamBackupFile($this->adapter->createTempFile($new_ext));
 
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());
@@ -93,7 +93,7 @@ class TempFileManager implements TempFileManagerInterface {
     $new_ext = implode($parts, '.');
 
     // Create a new temp file with the new extension
-    $out = new TempFile($this->adapter->createTempFile($new_ext));
+    $out = new WritableStreamBackupFile($this->adapter->createTempFile($new_ext));
 
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());

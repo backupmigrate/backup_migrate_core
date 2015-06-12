@@ -17,9 +17,14 @@ use BackupMigrate\Core\Services\TempFileAdapterInterface;
  * Class TempFile
  * @package BackupMigrate\Core\Util
  *
- * A temporary file object that can be written to and read from.
+ * A file object which represents an existing PHP stream that can be written to and read from.
  */
-class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInterface, BackupFileWritableInterface  {
+class WritableStreamBackupFile extends ReadableStreamBackupFile implements BackupFileReadableInterface, BackupFileWritableInterface  {
+
+  /**
+   * @var bool Dirty bit. Has the file been written to since it was opened?
+   */
+  protected $dirty = FALSE;
 
   /**
    * Constructor. Create a new file object from 
@@ -68,11 +73,15 @@ class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInt
       if (fwrite($this->handle, $data) === FALSE) {
         throw new \Exception('Cannot write to file: ' . $this->realpath());
       }
+      else {
+        $this->dirty = TRUE;
+      }
     }
     else {
       throw new \Exception('File not open for writing.');
     }
   }
+
 
   /**
    * Update the file time and size when the file is closed.
@@ -80,7 +89,22 @@ class TempFile extends ReadableStreamBackupFile implements BackupFileReadableInt
   function close() {
     parent::close();
 
-    $this->setMeta('filesize', filesize($this->realpath()));
-    $this->setMeta('datestamp', filectime($this->realpath()));
+    // If the file has been modified, update the stats from disk.
+    if ($this->dirty) {
+      $this->_loadFileStats();
+      $this->dirty = FALSE;
+    }
+  }
+
+  /**
+   * A shorthand function to open the file, write the given contents and close
+   * the file. Used for small amounts of data that can fit in memory.
+   *
+   * @param $data
+   */
+  public function writeAll($data) {
+    $this->openForWrite();
+    $this->write($data);
+    $this->close();
   }
 }

@@ -7,6 +7,7 @@ namespace BackupMigrate\Core\Tests\Services;
 
 use \BackupMigrate\Core\Services\TempFileAdapter;
 use \BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
 use \BackupMigrate\Core\Util\BackupFileWritableInterface;
 use org\bovigo\vfs\vfsStream;
 
@@ -16,31 +17,12 @@ use org\bovigo\vfs\vfsStream;
  */
 class TempFileManagerTest extends \PHPUnit_Framework_TestCase
 {
+  use TempFileConsumerTestTrait;
 
-  /**
-   * @var \BackupMigrate\Core\Services\TempFileAdapter
-   */
-  protected $adapter;
-
-  /**
-   * @var \BackupMigrate\Core\Services\TempFileAdapter
-   */
-  protected $manager;
-
-  /**
-   * @var vfsStream
-   */
-  protected $root;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUp()
-  {
-    $this->root = vfsStream::setup('root', 0777, ['tmp' => []]);
-    $this->adapter = new TempFileAdapter($this->root->url() . '/tmp/', 'abc');
-    $this->manager = new TempFileManager($this->adapter);
+  function setUp() {
+    $this->_setUpFiles();
   }
+
 
   /**
    * @covers ::__constructor

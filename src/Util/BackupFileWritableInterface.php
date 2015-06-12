@@ -27,6 +27,14 @@ interface BackupFileWritableInterface extends BackupFileInterface {
    public function write($data);
 
   /**
+   * A shorthand function to open the file, write the given contents and close
+   * the file. Used for small amounts of data that can fit in memory.
+   *
+   * @param string $data The contents to write.
+   */
+   public function writeAll($data);
+
+  /**
    * Get a metadata value
    *
    * @param string $key The key for the metadata item.
