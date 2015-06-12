@@ -123,7 +123,12 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     if ($plugin instanceof ConfigurableInterface) {
       // Configure the plugin with the appropriate subset of the configuration.
       $config = $this->confGet($id);
-      $plugin->setConfig(new Config($config));
+      // Don't override plugin config if there is nothing set.
+      // This is because sources and destinations are configured before they
+      // are passed in to the manager. This maybe something to normalize.
+      if ($config !== NULL) {
+        $plugin->setConfig(new Config($config));
+      }
     }
 
     // Inject the file processor
