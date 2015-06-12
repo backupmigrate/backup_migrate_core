@@ -10,7 +10,7 @@ namespace BackupMigrate\Core\Util;
 /**
  * Provides a service to provision temp files in the correct place for the environment.
  */
-interface BackupFileWritableInterface extends BackupFileInterface {
+interface BackupFileWritableInterface extends BackupFileReadableInterface {
 
   /**
    * Get the realpath of the file
