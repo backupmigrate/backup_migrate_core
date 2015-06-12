@@ -17,7 +17,7 @@ use BackupMigrate\Core\Plugin\PluginCallerInterface;
  * Class MySQLiSource
  * @package BackupMigrate\Core\Source
  */
-class MySQLiSource extends SourceBase implements PluginCallerInterface {
+class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
   use PluginCallerTrait;
 
   /**
@@ -47,8 +47,8 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
     if ($connection = $this->_getConnection()) {
       $file = $this->getTempFileManager()->create('mysql');
 
-      $exclude = $this->confGet('exclude_tables');
-      $nodata = $this->confGet('nodata_tables');
+      $exclude = (array)$this->confGet('exclude_tables');
+      $nodata = (array)$this->confGet('nodata_tables');
 
       $file->write($this->_getSQLHeader());
       $tables = $this->_getTables();
@@ -70,7 +70,7 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
 
       $file->write($this->_getSQLFooter());
       $file->close();
-      return $lines;
+      return $file;
     }
     else {
       return FALSE;
@@ -90,6 +90,9 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
     $num = 0;
 
     if ($conn = $this->_getConnection()) {
+      // Open (or rewind) the file.
+      $file->openForRead();
+
       // Read one line at a time and run the query.
       while ($line = $this->_readSQLCommand($file)) {
 //        if (_backup_migrate_check_timeout()) {
@@ -101,7 +104,7 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
           $num++;
         }
       }
-      // Close the file, we're done writing to it.
+      // Close the file, we're done reading it.
       $file->close();
     }
     return $num;
@@ -125,7 +128,7 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
     );
     // Throw an error on fail
     if ($this->connection->connect_errno) {
-      throw new \Exception("Failed to connect to MySQL");
+      throw new \Exception("Failed to connect to MySQL server");
     }
     return $this->connection;
   }
@@ -141,8 +144,8 @@ class MySQLiSource extends SourceBase implements PluginCallerInterface {
     $version = $info['version'];
     $host =  $this->confGet('host');
     $db = $this->confGet('database');
-    $timestamp = date('r');
-    $generator = $this->plugins()->getApp()->getIDString();
+    $timestamp = gmdate('r');
+    $generator = $this->confGet('generator');
 
     return <<<HEADER
 -- Backup and Migrate MySQL Dump
@@ -211,17 +214,6 @@ FOOTER;
   }
 
   /**
-   * Get a list of tables in the database.
-   */
-  function _getTableNames() {
-    $out = array();
-    foreach ($this->_getTables() as $table) {
-      $out[$table['name']] = $table['name'];
-    }
-    return $out;
-  }
-
-  /**
    * Lock the list of given tables in the database.
    */
   function _lockTables($tables) {
@@ -248,7 +240,7 @@ FOOTER;
     $out = array();
     // get auto_increment values and names of all tables
     $tables = $this->query("SHOW TABLE STATUS");
-    while ($table = $tables->fetch_assoc()) {
+    while ($tables && $table = $tables->fetch_assoc()) {
       // Lowercase the keys for consistency.
       $table = array_change_key_case($table);
       $out[$table['name']] = $table;
@@ -267,12 +259,12 @@ FOOTER;
 
     // If this is a view.
     if (empty($table['engine'])) {
-      // Switch SQL mode to get rid of "CREATE ALGORITHM..." which requires more permissions and has trouble with the DEFINER user
-      $sql_mode  = $this->query("SELECT @@SESSION.sql_mode")->fetch_field();
+      // Switch SQL mode to for a simpler version of the create view syntax
+      $sql_mode = $this->_fetchValue("SELECT @@SESSION.sql_mode");
+      // @TODO: Setting the sql_mode does not seem to work.
       $this->query("SET sql_mode = 'ANSI'");
-      $result = $this->query("SHOW CREATE VIEW `" . $view['name'] . "`");
-
-      while ($create = $result->fetch_assoc()) {
+      $create = $this->_fetchAssoc("SHOW CREATE VIEW `" . $table['name'] . "`");
+      if ($create) {
         // Lowercase the keys for consistency
         $create = array_change_key_case($create);
         $out .= "DROP VIEW IF EXISTS `". $view['name'] ."`;\n";
@@ -287,14 +279,13 @@ FOOTER;
 
     // This is a regular table.
     else {
-      $result = $this->query("SHOW CREATE TABLE `". $table['name'] ."`");
-      while ($create = $result->fetch_assoc()) {
+      $create = $this->_fetchAssoc("SHOW CREATE TABLE `". $table['name'] ."`");
+      if ($create) {
         // Lowercase the keys for consistency.
         $create = array_change_key_case($create);
         $out .= "DROP TABLE IF EXISTS `". $table['name'] ."`;\n";
         // Remove newlines
         $out .= strtr($create['create table'], array("\n" => ' '));
-        $out .= $create['create table'];
         if ($table['auto_increment']) {
           $out .= " AUTO_INCREMENT=". $table['auto_increment'];
         }
@@ -311,7 +302,7 @@ FOOTER;
   function _dumpTableSQLToFile(BackupFileWritableInterface $file, $table) {
 
     // If this is a view, do not export any data
-    if (empty('engine')) {
+    if (empty($table['engine'])) {
       return 0;
     }
 
@@ -327,7 +318,7 @@ FOOTER;
     $search = array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
     $replace = array('\\\\', "''", '\0', '\n', '\r', '\Z');
 
-    while ($row = $result->fetch_assoc()) {
+    while ($result && $row = $result->fetch_assoc()) {
       // DB Escape the values.
       $items = array();
       foreach ($row as $key => $value) {
@@ -373,12 +364,47 @@ FOOTER;
 
   /**
    * Run a db query on this destination's db.
+   * @param $query
+   * @return bool|\mysqli_result
+   * @throws \Exception
    */
-  function query($query, $args = array(), $options = array()) {
+  protected function query($query) {
     if ($conn = $this->_getConnection()) {
       return $conn->query($query);
     }
+    else {
+      throw new \Exception('Could not run any queries on the database as a connection could not be established');
+    }
   }
+
+  /**
+   * Return the first result of the query as an associated array.
+   *
+   * @param string $query A SQL query.
+   * @return array
+   * @throws \Exception
+   */
+  protected function _fetchAssoc($query) {
+    $result = $this->query($query);
+    if ($result) {
+      return $result->fetch_assoc();
+    }
+    return [];
+  }
+
+
+  /**
+   * Return the first field of the first result of a query.
+   *
+   * @param string $query A SQL query.
+   * @return null|object
+   * @throws \Exception
+   */
+  protected function _fetchValue($query) {
+    $result = $this->_fetchAssoc($query);
+    return reset($result);
+  }
+
 
   /**
    * Get the version info for the given DB.

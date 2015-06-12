@@ -21,12 +21,12 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
    * @return array
    */
   public function configSchema() {
-    $form = array();
+    $schema = array();
 
     // @TODO: make this the id of the source.
     $group = 'db';
 
-    $form['fields']['exclude_tables'] = [
+    $schema['fields']['exclude_tables'] = [
       'group' => $group,
       'type' => 'select',
       'multiple' => true,
@@ -34,7 +34,7 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
       'options' => $this->_getTableNames(),
       'actions' => ['backup']
     ];
-    $form['fields']['nodata_tables'] = [
+    $schema['fields']['nodata_tables'] = [
       'group' => $group,
       'type' => 'select',
       'multiple' => true,
@@ -43,8 +43,32 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
       'actions' => ['backup']
     ];
 
+    // Uneditable
+    $schema['fields']['generator'] = [
+      'default' => 'Backup and Migrate Core',
+    ];
+
+
     return $form;
   }
+
+  /**
+   * Get a list of tables in this source
+   */
+  public function getTableNames() {
+    return $this->_getTableNames();
+  }
+
+  /**
+   * Get an array of tables with some info. Each entry must have at least a
+   * 'name' key containing the table name.
+   *
+   * @return array
+   */
+  public function getTables() {
+    return $this->_getTables();
+  }
+
 
   /**
    * Get the list of tables from this db.
@@ -52,6 +76,17 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
    * @return array
    */
   protected function _getTableNames() {
-    return [];
+    $out = array();
+    foreach ($this->_getTables() as $table) {
+      $out[$table['name']] = $table['name'];
+    }
+    return $out;
   }
+
+  /**
+   * Internal overridable function to actually generate table info.
+   *
+   * @return array
+   */
+  abstract protected function _getTables();
 }
