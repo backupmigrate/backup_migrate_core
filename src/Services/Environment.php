@@ -6,8 +6,7 @@
 
 namespace BackupMigrate\Core\Services;
 
-use BackupMigrate\Core\Services\ApplicationInterface;
-
+use BackupMigrate\Core\Services\EnvironmentInterface;
 use BackupMigrate\Core\Util\NullCache;
 use BackupMigrate\Core\Util\NullState;
 use BackupMigrate\Core\Util\StateInterface;
@@ -23,7 +22,7 @@ use Psr\Log\NullLogger;
  *
  * @package BackupMigrate\Core\Services
  */
-class ApplicationBase implements ApplicationInterface {
+class EnvironmentBase implements EnvironmentInterface {
 
   /**
    * @var \BackupMigrate\Core\Util\CacheInterface;
@@ -53,7 +52,7 @@ class ApplicationBase implements ApplicationInterface {
    * @param \Psr\Log\LoggerInterface $logger
    */
   public function __construct(TempFileManagerInterface $tempFileManager, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger) {
-    $this->tempFileManager = $tempFileManager;
+    $this->tempFileManager = $tempFileManager ? $tempFileManager : new TempFileManager(new TempFileAdapter('/tmp'));
     $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
     $this->stateManager = $stateManager ? $stateManager : new NullState();
     $this->logger = $logger ? $logger : new NullLogger();

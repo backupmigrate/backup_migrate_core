@@ -40,7 +40,7 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   /**
    * {@inheritdoc}
    */
-  function __construct(ApplicationInterface $app, ConfigInterface $config = NULL) {
+  function __construct(EnvironmentInterface $app, ConfigInterface $config = NULL) {
     $this->plugins = new PluginManager($app, $config);
   }
 

@@ -19,7 +19,7 @@ use \Psr\Log\LoggerInterface;
  *
  * @package BackupMigrate\Core\Services
  */
-interface ApplicationInterface {
+interface EnvironmentInterface {
 
   /**
    * @return \BackupMigrate\Core\Util\CacheInterface;

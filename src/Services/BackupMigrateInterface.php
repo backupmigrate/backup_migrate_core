@@ -25,10 +25,10 @@ interface BackupMigrateInterface
   /**
    * Backup and Migrate constructor. Takes all of the dependencies for this service.
    *
-   * @param \BackupMigrate\Core\Services\ApplicationInterface $app
+   * @param \BackupMigrate\Core\Services\EnvironmentInterface $app
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
    */
-  public function __construct(ApplicationInterface $app, ConfigInterface $config = NULL);
+  public function __construct(EnvironmentInterface $app, ConfigInterface $config = NULL);
 
   /**
    * Perform the backup from a given source and save it to the given destination.

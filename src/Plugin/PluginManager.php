@@ -11,7 +11,7 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
-use BackupMigrate\Core\Services\ApplicationInterface;
+use BackupMigrate\Core\Services\EnvironmentInterface;
 
 /**
  * Class PluginManager
@@ -26,14 +26,14 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   protected $items;
 
   /**
-   * @var \BackupMigrate\Core\Services\ApplicationInterface
+   * @var \BackupMigrate\Core\Services\EnvironmentInterface
    */
   protected $app;
 
   /**
    * @param $app
    */
-  public function __construct(ApplicationInterface $app, ConfigInterface $config) {
+  public function __construct(EnvironmentInterface $app, ConfigInterface $config) {
     $this->app = $app;
     $this->setConfig($config);
   }
@@ -42,7 +42,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    * Get the app (essentially a dependency injection container for interfacing
    * with the broader app and environment)
    *
-   * @return \BackupMigrate\Core\Services\ApplicationInterface
+   * @return \BackupMigrate\Core\Services\EnvironmentInterface
    */
   public function getApp() {
     return $this->app;
