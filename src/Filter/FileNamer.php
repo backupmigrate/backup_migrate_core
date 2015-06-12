@@ -77,9 +77,10 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
   public function afterBackup(BackupFileReadableInterface $file) {
     $name = $this->confGet('filename');
     if ($this->confGet('timestamp')) {
-      $name .= '-' . date($this->confGet('timestamp_format'));
+      $name .= '-' . gmdate($this->confGet('timestamp_format'));
     }
     $file->setName($name);
+    return $file;
   }
 
 }
