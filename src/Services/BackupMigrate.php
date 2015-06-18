@@ -33,15 +33,10 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   use PluginCallerTrait;
 
   /**
-   * @var \BackupMigrate\Core\Plugin\PluginManagerInterface
-   */
-  protected $plugins;
-
-  /**
    * {@inheritdoc}
    */
   function __construct(EnvironmentInterface $app, ConfigInterface $config = NULL) {
-    $this->plugins = new PluginManager($app, $config);
+    $this->setPluginManager(new PluginManager($app, $config));
   }
 
 
