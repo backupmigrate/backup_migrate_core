@@ -26,21 +26,18 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
     // @TODO: make this the id of the source.
     $group = 'db';
 
-    $schema['fields']['exclude_tables'] = [
+    $table_select = [
       'group' => $group,
       'type' => 'select',
       'multiple' => true,
-      'title' => 'Exclude these tables altogether',
       'options' => $this->_getTableNames(),
       'actions' => ['backup']
     ];
-    $schema['fields']['nodata_tables'] = [
-      'group' => $group,
-      'type' => 'select',
-      'multiple' => true,
+    $schema['fields']['exclude_tables'] = $table_select + [
       'title' => 'Exclude these tables altogether',
-      'options' => $this->_getTableNames(),
-      'actions' => ['backup']
+    ];
+    $schema['fields']['nodata_tables'] = $table_select + [
+      'title' => 'Exclude data from these tables',
     ];
 
     // Uneditable
