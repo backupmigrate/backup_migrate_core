@@ -183,7 +183,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   protected function _gzipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
 
-    if (!$success && @function_exists("gzopen")) {
+    if (!$success && function_exists("gzopen")) {
       if (($fp_out = gzopen($to->realpath(), 'wb9')) && $from->openForRead()) {
         while ($data = $from->readBytes(1024 * 512)) {
           gzwrite($fp_out, $data);
@@ -207,7 +207,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   protected function _gzipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
 
-    if (!$success && @function_exists("gzopen")) {
+    if (!$success && function_exists("gzopen")) {
       if ($fp_in = gzopen($from->realpath(), 'rb9')) {
         while (!feof($fp_in)) {
           $to->write(gzread($fp_in, 1024 * 512));
@@ -230,7 +230,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    */
   protected function _bzipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
-    if (!$success && @function_exists("bzopen")) {
+    if (!$success && function_exists("bzopen")) {
       if (($fp_out = bzopen($to->realpath(), 'w')) && $from->openForRead()) {
         while ($data = $from->readBytes(1024 * 512)) {
           bzwrite($fp_out, $data);
@@ -254,7 +254,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   protected function _bzipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
 
-    if (!$success && @function_exists("bzopen")) {
+    if (!$success && function_exists("bzopen")) {
       if ($fp_in = bzopen($from->realpath(), 'r')) {
         while (!feof($fp_in)) {
           $to->write(bzread($fp_in, 1024 * 512));
@@ -339,10 +339,10 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    */
   protected function _availableCompressionAlgorithms() {
     $compression_options = array("none" => t("No Compression"));
-    if (@function_exists("gzencode")) {
+    if (function_exists("gzencode")) {
       $compression_options['gzip'] = t("GZip");
     }
-    if (@function_exists("bzcompress")) {
+    if (function_exists("bzcompress")) {
       $compression_options['bzip'] = t("BZip");
     }
     if (class_exists('ZipArchive')) {
