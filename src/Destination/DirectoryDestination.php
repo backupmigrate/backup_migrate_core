@@ -139,7 +139,7 @@ class DirectoryDestination extends DestinationBase implements DestinationInterfa
 
     // Read the list of files from the directory.
     $dir = $this->confGet('directory');
-    if ($handle = @opendir($dir)) {
+    if ($handle = opendir($dir)) {
       while (FALSE !== ($file = readdir($handle))) {
         $filepath = $dir . '/' . $file;
         // Don't show hidden or unreadable files
