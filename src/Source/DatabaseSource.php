@@ -11,6 +11,10 @@ use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 
+/**
+ * Class DatabaseSource
+ * @package BackupMigrate\Core\Source
+ */
 abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
@@ -46,7 +50,7 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
     ];
 
 
-    return $form;
+    return $schema;
   }
 
   /**
