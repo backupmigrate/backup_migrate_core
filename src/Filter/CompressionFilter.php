@@ -190,7 +190,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
         }
         $success = TRUE;
         $from->close();
-        @gzclose($fp_out);
+        gzclose($fp_out);
       }
     }
 
