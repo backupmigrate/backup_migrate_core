@@ -213,7 +213,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
           $to->write(gzread($fp_in, 1024 * 512));
         }
         $success = TRUE;
-        @gzclose($fp_in);
+        gzclose($fp_in);
         $to->close();
       }
     }
@@ -237,7 +237,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
         }
         $success = TRUE;
         $from->close();
-        @bzclose($fp_out);
+        bzclose($fp_out);
       }
     }
 
@@ -260,7 +260,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
           $to->write(bzread($fp_in, 1024 * 512));
         }
         $success = TRUE;
-        @bzclose($fp_in);
+        bzclose($fp_in);
         $to->close();
       }
     }
@@ -286,7 +286,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
           while (!feof($fp_in)) {
             $to->write(fread($fp_in, 1024 * 512));
           }
-          @fclose($fp_in);
+          fclose($fp_in);
           $success = TRUE;
         }
       }
