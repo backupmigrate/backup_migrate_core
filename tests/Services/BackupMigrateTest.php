@@ -77,7 +77,7 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     );
     $plugin->method('afterBackup')->willReturn($file);
 
-    $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\ServerDirectoryDestination')
+    $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\DirectoryDestination')
       ->setMethods(['saveFile'])
       ->getMock();
 
@@ -113,7 +113,7 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     );
     $plugin->method('beforeRestore')->willReturn($file);
 
-    $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\ServerDirectoryDestination')
+    $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\DirectoryDestination')
       ->setMethods(['getFile'])
       ->getMock();
     $destination->method('getFile')->willReturn($file);
