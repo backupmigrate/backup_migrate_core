@@ -21,7 +21,7 @@ use BackupMigrate\Core\Util\ReadableStreamBackupFile;
  * Class ServerDirectoryDestination
  * @package BackupMigrate\Core\Destination
  */
-class ServerDirectoryDestination extends DestinationBase implements DestinationInterface, ConfigurableInterface, FileProcessorInterface {
+class DirectoryDestination extends DestinationBase implements DestinationInterface, ConfigurableInterface, FileProcessorInterface {
   use SidecarMetadataDestinationTrait;
 
   /**

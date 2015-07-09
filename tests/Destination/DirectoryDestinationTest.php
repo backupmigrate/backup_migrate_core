@@ -3,18 +3,15 @@
  * @file
  */
 
-use \BackupMigrate\Core\Destination\ServerDirectoryDestination;
+use \BackupMigrate\Core\Destination\DirectoryDestination;
 use \BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Services\TempFileAdapter;
-use BackupMigrate\Core\Services\TempFileManager;
 use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
-use org\bovigo\vfs\vfsStream;
 
 
 /**
- * @coversDefaultClass \BackupMigrate\Core\Destination\ServerDirectoryDestination
+ * @coversDefaultClass \BackupMigrate\Core\Destination\DirectoryDestination
  */
-class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
+class DirectoryDestinationTest extends \PHPUnit_Framework_TestCase
 {
   use TempFileConsumerTestTrait;
 
@@ -24,7 +21,7 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
   protected $destURI;
 
   /**
-   * @var ServerDirectoryDestination
+   * @var DirectoryDestination
    */
   protected $destination;
 
@@ -45,7 +42,7 @@ class ServerDirectoryDestinationTest extends \PHPUnit_Framework_TestCase
 
     $this->destURI = 'vfs://root/files/';
 
-    $this->destination = new ServerDirectoryDestination(new Config(['directory' => $this->destURI]));
+    $this->destination = new DirectoryDestination(new Config(['directory' => $this->destURI]));
     $this->destination->setTempFileManager($this->manager);
   }
 
