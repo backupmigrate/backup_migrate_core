@@ -174,7 +174,7 @@ HEADER;
   /**
    * The footer of the sql dump file.
    */
-  function _getSQLFooter() {
+  protected function _getSQLFooter() {
     return <<<FOOTER
 
 
@@ -195,7 +195,7 @@ FOOTER;
    * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
    * @return string
    */
-  function _readSQLCommand(BackupFileReadableInterface $file) {
+  protected function _readSQLCommand(BackupFileReadableInterface $file) {
     $out = '';
     while ($line = $file->readLine()) {
       $first2 = substr($line, 0, 2);
@@ -216,7 +216,7 @@ FOOTER;
   /**
    * Lock the list of given tables in the database.
    */
-  function _lockTables($tables) {
+  protected function _lockTables($tables) {
     if ($tables) {
       $tables_escaped = array();
       foreach ($tables as $table) {
@@ -229,7 +229,7 @@ FOOTER;
   /**
    * Unlock all tables in the database.
    */
-  function _unlockTables($settings) {
+  protected function _unlockTables($settings) {
     $this->query('UNLOCK TABLES');
   }
 
@@ -254,7 +254,7 @@ FOOTER;
    * @param array $table
    * @return string
    */
-  function _getTableCreateSQL($table) {
+  protected function _getTableCreateSQL($table) {
     $out = "";
 
     // If this is a view.
@@ -299,7 +299,7 @@ FOOTER;
   /**
    *  Get the sql to insert the data for a given table
    */
-  function _dumpTableSQLToFile(BackupFileWritableInterface $file, $table) {
+  protected function _dumpTableSQLToFile(BackupFileWritableInterface $file, $table) {
 
     // If this is a view, do not export any data
     if (empty($table['engine'])) {
@@ -409,7 +409,7 @@ FOOTER;
   /**
    * Get the version info for the given DB.
    */
-  function _dbInfo() {
+  protected function _dbInfo() {
     $conn = $this->_getConnection();
     return array(
       'type' => 'mysql',
