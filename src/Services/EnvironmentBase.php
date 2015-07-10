@@ -6,7 +6,8 @@
 
 namespace BackupMigrate\Core\Services;
 
-use BackupMigrate\Core\Services\EnvironmentInterface;
+use BackupMigrate\Core\Util\Mailer;
+use BackupMigrate\Core\Util\MailerInterface;
 use BackupMigrate\Core\Util\NullCache;
 use BackupMigrate\Core\Util\NullState;
 use BackupMigrate\Core\Util\StateInterface;
@@ -16,9 +17,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class ApplicationBase
+ * Class EnvironmentBase
  *
- * A basic application that can have it's components injected.
+ * A basic environment that can have it's components injected.
  *
  * @package BackupMigrate\Core\Services
  */
@@ -40,9 +41,15 @@ class EnvironmentBase implements EnvironmentInterface {
   protected $tempFileManager;
 
   /**
-   * @var
+   * @var \Psr\Log\LoggerInterface
    */
   protected $logger;
+
+  /**
+   * @var \BackupMigrate\Core\Util\MailerInterface
+   */
+  protected $mailer;
+
 
 
   /**
@@ -50,12 +57,14 @@ class EnvironmentBase implements EnvironmentInterface {
    * @param \BackupMigrate\Core\Util\CacheInterface $cacheManager
    * @param \BackupMigrate\Core\Util\StateInterface $stateManager
    * @param \Psr\Log\LoggerInterface $logger
+   * @param \BackupMigrate\Core\Util\MailerInterface $mailer
    */
-  public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL) {
+  public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL, MailerInterface $mailer = NULL) {
     $this->tempFileManager = $tempFileManager ? $tempFileManager : new TempFileManager(new TempFileAdapter('/tmp'));
     $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
     $this->stateManager = $stateManager ? $stateManager : new NullState();
     $this->logger = $logger ? $logger : new NullLogger();
+    $this->mailer = $mailer ? $mailer : new Mailer();
   }
 
   /**
