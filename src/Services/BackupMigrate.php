@@ -8,10 +8,10 @@
 namespace BackupMigrate\Core\Services;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Environment\EnvironmentInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use \BackupMigrate\Core\Plugin\PluginCallerInterface;
 use \BackupMigrate\Core\Plugin\PluginCallerTrait;
-use \BackupMigrate\Core\Plugin\PluginInterface;
 use \BackupMigrate\Core\Plugin\PluginManager;
 
 /**
@@ -36,8 +36,8 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   /**
    * {@inheritdoc}
    */
-  function __construct(EnvironmentInterface $app, ConfigInterface $config = NULL) {
-    $this->setPluginManager(new PluginManager($app, $config));
+  function __construct(EnvironmentInterface $env, ConfigInterface $config = NULL) {
+    $this->setPluginManager(new PluginManager($env, $config));
   }
 
 

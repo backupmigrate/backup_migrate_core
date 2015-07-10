@@ -4,10 +4,10 @@
  * Contains \BackupMigrate\Core\Services\ApplicationInterface.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\Environment;
 
-use \BackupMigrate\Core\Util\StateInterface;
-use \BackupMigrate\Core\Util\CacheInterface;
+use BackupMigrate\Core\Environment\StateInterface;
+use BackupMigrate\Core\Environment\CacheInterface;
 use \BackupMigrate\Core\Services\TempFileManagerInterface;
 use \Psr\Log\LoggerInterface;
 
@@ -22,12 +22,12 @@ use \Psr\Log\LoggerInterface;
 interface EnvironmentInterface {
 
   /**
-   * @return \BackupMigrate\Core\Util\CacheInterface;
+   * @return \BackupMigrate\Core\Environment\CacheInterface;
    */
   public function getCacheManager();
 
   /**
-   * @return \BackupMigrate\Core\Util\StateInterface;
+   * @return \BackupMigrate\Core\Environment\StateInterface;
    */
   public function getStateManager();
 

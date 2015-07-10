@@ -4,14 +4,17 @@
  * Contains \BackupMigrate\Core\Services\ApplicationBase.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\Environment;
 
-use BackupMigrate\Core\Util\Mailer;
-use BackupMigrate\Core\Util\MailerInterface;
-use BackupMigrate\Core\Util\NullCache;
-use BackupMigrate\Core\Util\NullState;
-use BackupMigrate\Core\Util\StateInterface;
-use BackupMigrate\Core\Util\CacheInterface;
+use BackupMigrate\Core\Environment\EnvironmentInterface;
+use BackupMigrate\Core\Services\TempFileAdapter;
+use BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\Environment\Mailer;
+use BackupMigrate\Core\Environment\MailerInterface;
+use BackupMigrate\Core\Environment\NullCache;
+use BackupMigrate\Core\Environment\NullState;
+use BackupMigrate\Core\Environment\StateInterface;
+use BackupMigrate\Core\Environment\CacheInterface;
 use BackupMigrate\Core\Services\TempFileManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -26,12 +29,12 @@ use Psr\Log\NullLogger;
 class EnvironmentBase implements EnvironmentInterface {
 
   /**
-   * @var \BackupMigrate\Core\Util\CacheInterface;
+   * @var \BackupMigrate\Core\Environment\CacheInterface;
    */
   protected $cacheManager;
 
   /**
-   * @var \BackupMigrate\Core\Util\StateInterface;
+   * @var \BackupMigrate\Core\Environment\StateInterface;
    */
   protected $stateManager;
 
@@ -46,7 +49,7 @@ class EnvironmentBase implements EnvironmentInterface {
   protected $logger;
 
   /**
-   * @var \BackupMigrate\Core\Util\MailerInterface
+   * @var \BackupMigrate\Core\Environment\MailerInterface
    */
   protected $mailer;
 
@@ -54,10 +57,10 @@ class EnvironmentBase implements EnvironmentInterface {
 
   /**
    * @param \BackupMigrate\Core\Services\TempFileManagerInterface $tempFileManager
-   * @param \BackupMigrate\Core\Util\CacheInterface $cacheManager
-   * @param \BackupMigrate\Core\Util\StateInterface $stateManager
+   * @param \BackupMigrate\Core\Environment\CacheInterface $cacheManager
+   * @param \BackupMigrate\Core\Environment\StateInterface $stateManager
    * @param \Psr\Log\LoggerInterface $logger
-   * @param \BackupMigrate\Core\Util\MailerInterface $mailer
+   * @param \BackupMigrate\Core\Environment\MailerInterface $mailer
    */
   public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL, MailerInterface $mailer = NULL) {
     $this->tempFileManager = $tempFileManager ? $tempFileManager : new TempFileManager(new TempFileAdapter('/tmp'));
@@ -75,14 +78,14 @@ class EnvironmentBase implements EnvironmentInterface {
   }
 
   /**
-   * @return \BackupMigrate\Core\Util\CacheInterface;
+   * @return \BackupMigrate\Core\Environment\CacheInterface;
    */
   public function getCacheManager() {
     return $this->cacheManager;
   }
 
   /**
-   * @return \BackupMigrate\Core\Util\StateInterface;
+   * @return \BackupMigrate\Core\Environment\StateInterface;
    */
   public function getStateManager() {
     return $this->stateManager;

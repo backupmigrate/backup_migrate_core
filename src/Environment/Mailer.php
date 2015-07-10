@@ -5,8 +5,10 @@
  */
 
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\Environment;
 
+
+use BackupMigrate\Core\Environment\MailerInterface;
 
 /**
  * Class MailSender

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\Environment;
 
 
 /**

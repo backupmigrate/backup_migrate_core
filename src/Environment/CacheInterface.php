@@ -5,7 +5,7 @@
  * Definition of BackupMigrate\Core\Util\CacheInterface.
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\Environment;
 
 /**
  * Defines an interface for cache implementations. 

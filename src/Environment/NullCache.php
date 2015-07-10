@@ -4,9 +4,7 @@
  * Contains BackupMigrate\Core\Util\NullCache
  */
 
-
-namespace BackupMigrate\Core\Util;
-
+namespace BackupMigrate\Core\Environment;
 
 /**
  * Class NullCache

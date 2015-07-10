@@ -26,7 +26,7 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
   protected $bam;
 
   public function setUp() {
-    $env = new \BackupMigrate\Core\Services\EnvironmentBase();
+    $env = new \BackupMigrate\Core\Environment\EnvironmentBase();
     $conf = new Config(
       [
         'test' => ['foo' => 'bar',],

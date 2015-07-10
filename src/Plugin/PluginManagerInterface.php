@@ -58,7 +58,7 @@ interface PluginManagerInterface
    * Get the environment (essentially a dependency injection container for
    * interfacing with the consuming application)
    *
-   * @return \BackupMigrate\Core\Services\EnvironmentInterface
+   * @return \BackupMigrate\Core\Environment\EnvironmentInterface
    */
   public function getEnv();
 

@@ -4,7 +4,7 @@
  * Contains \BackupMigrate\Core\Util\StateInterface.
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\Environment;
 
 /**
  * Defines the interface for the state system. If a permanent state storage
