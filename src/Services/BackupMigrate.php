@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Services;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Exception\BackupMigrateException;
 use \BackupMigrate\Core\Plugin\PluginCallerInterface;
 use \BackupMigrate\Core\Plugin\PluginCallerTrait;
 use \BackupMigrate\Core\Plugin\PluginInterface;
@@ -45,50 +46,80 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    */
   public function backup($source_id, $destination_id) {
 
-    // Get the source and the destination to use.
-    $source = $this->plugins()->get($source_id);
-    $destination = $this->plugins()->get($destination_id);
+    try {
+      // Get the source and the destination to use.
+      $source = $this->plugins()->get($source_id);
+      $destination = $this->plugins()->get($destination_id);
 
-    // @TODO Check the source and destination and throw appropriate exceptions.
+      if (!$source) {
+        throw new BackupMigrateException('The source !id does not exist.', array('!id' => $source_id));
+      }
+      if (!$destination) {
+        throw new BackupMigrateException('The destination !id does not exist.', array('!id' => $destination_id));
+      }
 
-    // @TODO Add the
+      // Run each of the installed plugins which implements the 'beforeBackup' operation.
+      // $this->plugins()->call('beforeBackup');
 
-    // Run each of the installed plugins which implements the 'afterBackup' operation.
-    foreach ($this->plugins()->getAllByOp('beforeBackup') as $plugin) {
-      $plugin->beforeBackup();
+      $file = $source->exportToFile();
+
+      // Run each of the installed plugins which implements the 'afterBackup' operation.
+      $file = $this->plugins()->call('afterBackup', $file);
+
+      // Save the file to the destination.
+      $destination->saveFile($file);
+
+      // Let plugins react to a successful operation.
+      $this->plugins()->call('backupSucceed', $file);
     }
+    catch (\Exception $e) {
+      // Let plugins react to a failed operation.
+      $this->plugins()->call('backupFail', $e);
 
-    $file = $source->exportToFile();
-
-    // Run each of the installed plugins which implements the 'afterBackup' operation.
-    foreach ($this->plugins()->getAllByOp('afterBackup') as $plugin) {
-      $file = $plugin->afterBackup($file);
+      // The consuming software needs to deal with this.
+      throw $e;
     }
-
-    // Save the file to the destination.
-    $destination->saveFile($file);
   }
 
   /**
    * {@inheritdoc}
    */
   public function restore($source_id, $destination_id, $file_id = NULL) {
-    // Get the source and the destination to use.
-    $source = $this->plugins()->get($source_id);
-    $destination = $this->plugins()->get($destination_id);
+    try {
+      // Get the source and the destination to use.
+      $source = $this->plugins()->get($source_id);
+      $destination = $this->plugins()->get($destination_id);
 
-    // @TODO Check the source and destination and throw appropriate exceptions.
+      if (!$source) {
+        throw new BackupMigrateException('The source !id does not exist.', array('!id' => $source_id));
+      }
+      if (!$destination) {
+        throw new BackupMigrateException('The destination !id does not exist.', array('!id' => $destination_id));
+      }
 
-    // Load the file from the destination.
-    $file = $destination->getFile($file_id);
+      // Load the file from the destination.
+      $file = $destination->getFile($file_id);
 
-    // Run each of the installed plugins which implements the 'backup' operation.
-    foreach ($this->plugins()->getAllByOp('beforeRestore') as $plugin) {
-      $file = $plugin->beforeRestore($file);
+      if (!$file) {
+        throw new BackupMigrateException('The file !id does not exist.', array('!id' => $file_id));
+      }
+
+      // Run each of the installed plugins which implements the 'backup' operation.
+      $file = $this->plugins()->call('beforeRestore', $file);
+
+      // Do the actual source restore.
+      $source->importFromFile($file);
+
+      // Let plugins react to a successful operation.
+      $this->plugins()->call('backupSucceed', $file);
     }
+    catch (\Exception $e) {
+      // Let plugins react to a failed operation.
+      $this->plugins()->call('backupFail', $e);
 
-    // Do the actual source restore.
-    $source->importFromFile($file);
+      // The consuming software needs to deal with this.
+      throw $e;
+    }
   }
 
 }

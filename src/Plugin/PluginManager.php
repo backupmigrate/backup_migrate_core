@@ -92,10 +92,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   }
 
   /**
-   * Get the list of supported file types, optionally for the specified op.
-   *
-   * @param null $op
-   * @return array
+   * {@inheritdoc}
    */
   public function supportedFileTypes($op = NULL) {
     $out = array();
@@ -112,7 +109,25 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     return $out;
   }
 
+
   /**
+   * {@inheritdoc}
+   */
+  public function call($op, $operand = NULL, $params = array()) {
+
+    // Run each of the installed plugins which implements the given operation.
+    foreach ($this->getAllByOp($op) as $plugin) {
+      $operand = $plugin->{$op}($operand, $params);
+    }
+
+    return $operand;
+  }
+
+  /**
+   * Prepare the plugin for use. This is called when a plugin is added to the
+   * manager and it configures the plugin according to the config object
+   * injected into the manager. It also injects other dependencies as needed.
+   *
    * @param \BackupMigrate\Core\Plugin\PluginInterface $plugin
    *   The plugin to prepare for use.
    * @param string $id
@@ -143,5 +158,4 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
 
     // @TODO Inject cache/state/logger dependencies
   }
-
 }
