@@ -111,7 +111,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
    */
   public function afterBackup(BackupFileReadableInterface $file) {
-    $success = FALSE;
+    $out = $success = FALSE;
     if ($this->confGet('compression') == 'gzip') {
       $out = $this->getTempFileManager()->pushExt($file, 'gz');
       $success = $this->_gzipEncode($file, $out);
@@ -126,7 +126,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
     }
 
     // If the file was successfully compressed.
-    if ($success) {
+    if ($out && $success) {
       $out->setMeta('filesize_uncompressed', $file->getMeta('filesize'));
       $out->setMeta('compression', $this->confGet('compression'));
       return $out;
