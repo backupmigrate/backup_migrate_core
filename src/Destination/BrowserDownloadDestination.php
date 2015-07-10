@@ -8,7 +8,7 @@
 namespace BackupMigrate\Core\Destination;
 
 
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 
 /**
  * Class BrowserDownloadDestination

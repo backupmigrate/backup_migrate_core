@@ -8,7 +8,7 @@ namespace BackupMigrate\Core\Environment;
 
 /**
  * Interface MailSenderInterface
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\Environment
  */
 interface MailerInterface {
 

@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \BackupMigrate\Core\Util\TempFile.
+ * Contains \BackupMigrate\Core\File\TempFile.
  */
 
 // Must be injected:
 // Temp directory
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\File;
 
-use BackupMigrate\Core\Util\BackupFile;
-use BackupMigrate\Core\Services\TempFileAdapterInterface;
+use BackupMigrate\Core\File\BackupFile;
+use BackupMigrate\Core\File\TempFileAdapterInterface;
 
 /**
  * Class TempFile
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\File
  *
  * A file object which represents an existing PHP stream that can be written to and read from.
  */

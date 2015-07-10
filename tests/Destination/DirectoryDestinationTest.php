@@ -5,7 +5,7 @@
 
 use \BackupMigrate\Core\Destination\DirectoryDestination;
 use \BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 
 
 /**
@@ -72,9 +72,9 @@ class DirectoryDestinationTest extends \PHPUnit_Framework_TestCase
    */
   public function testLoad() {
     $file = $this->destination->getFile('item1.txt');
-    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileInterface', $file);
+    $this->assertInstanceOf('\BackupMigrate\Core\File\BackupFileInterface', $file);
     $file = $this->destination->loadFileForReading($file);
-    $this->assertInstanceOf('\BackupMigrate\Core\Util\BackupFileReadableInterface', $file);
+    $this->assertInstanceOf('\BackupMigrate\Core\File\BackupFileReadableInterface', $file);
     $this->assertEquals('Hello, World 1!', $file->readAll());
   }
 

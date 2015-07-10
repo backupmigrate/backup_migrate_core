@@ -1,7 +1,7 @@
 <?php
-namespace BackupMigrate\Core\Tests\Util;
+namespace BackupMigrate\Core\Tests\File;
 
-use \BackupMigrate\Core\Util\ReadableStreamBackupFile;
+use BackupMigrate\Core\File\ReadableStreamBackupFile;
 use org\bovigo\vfs\vfsStream;
 
 /**
@@ -11,7 +11,7 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
 {
     
     /**
-     * @var \BackupMigrate\Core\Util\BackupFile
+     * @var \BackupMigrate\Core\File\BackupFile
      */
     protected $file;
 

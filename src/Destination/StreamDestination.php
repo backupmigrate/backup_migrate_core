@@ -11,8 +11,8 @@ namespace BackupMigrate\Core\Destination;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
-use BackupMigrate\Core\Util\BackupFileInterface;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginBase;
 
 /**

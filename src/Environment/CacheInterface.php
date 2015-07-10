@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Definition of BackupMigrate\Core\Util\CacheInterface.
+ * Definition of BackupMigrate\Core\Environment\CacheInterface.
  */
 
 namespace BackupMigrate\Core\Environment;

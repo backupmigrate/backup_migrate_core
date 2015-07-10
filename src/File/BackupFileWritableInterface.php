@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \BackupMigrate\Core\Util\BackupFileInterface.
+ * Contains \BackupMigrate\Core\File\BackupFileInterface.
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\File;
 
 /**
  * Provides a service to provision temp files in the correct place for the environment.

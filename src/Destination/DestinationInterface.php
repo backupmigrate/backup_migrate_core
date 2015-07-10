@@ -7,8 +7,8 @@
 
 namespace BackupMigrate\Core\Destination;
 
-use BackupMigrate\Core\Util\BackupFileInterface;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginInterface;
 
 /**
@@ -19,7 +19,7 @@ interface DestinationInterface extends PluginInterface
   /**
    * Save a file to the destination.
    * 
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
    *        The file to save.
    */
   function saveFile(BackupFileReadableInterface $file);
@@ -33,7 +33,7 @@ interface DestinationInterface extends PluginInterface
    *
    * @param string $id The unique identifier for the file. Usually the filename.
    *
-   * @return \BackupMigrate\Core\Util\BackupFileInterface
+   * @return \BackupMigrate\Core\File\BackupFileInterface
    *    The file if it exists or NULL if it doesn't
    */
   public function getFile($id);
@@ -41,16 +41,16 @@ interface DestinationInterface extends PluginInterface
   /**
    * Load the metadata for the given file however it may be stored.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileInterface
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileInterface
    */
   public function loadFileMetadata(BackupFileInterface $file);
 
   /**
    * Load the file with the given ID from the destination.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface The file if it exists or NULL if it doesn't
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileReadableInterface The file if it exists or NULL if it doesn't
    */
   public function loadFileForReading(BackupFileInterface $file);
 

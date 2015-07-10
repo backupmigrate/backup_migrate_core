@@ -1,9 +1,9 @@
 <?php
 use BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Services\TempFileAdapter;
-use BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileManager;
 use BackupMigrate\Core\Source\MySQLiSource;
-use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 use org\bovigo\vfs\vfsStream;
 
 /**

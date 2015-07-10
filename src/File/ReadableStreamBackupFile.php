@@ -1,16 +1,16 @@
 <?php
 /**
  * @file
- * Contains BackupMigrate\Core\Util\ReadableStream
+ * Contains BackupMigrate\Core\File\ReadableStream
  */
 
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\File;
 
 
 /**
  * Class ReadableStreamBackupFile
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\File
  *
  * An implementation of the BackupFileReadableInterface which uses a readable
  * php stream such as a local file.

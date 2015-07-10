@@ -4,12 +4,13 @@
  * Contains \BackupMigrate\Core\Services\TempFileManagerInterface.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\File;
 
-use BackupMigrate\Core\Services\TempFileAdapterInterface;
-use BackupMigrate\Core\Util\BackupFileInterface;
-use BackupMigrate\Core\Util\BackupFileWritableInterface;
-use BackupMigrate\Core\Util\WritableStreamBackupFile;
+use BackupMigrate\Core\File\TempFileAdapterInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileWritableInterface;
+use BackupMigrate\Core\File\WritableStreamBackupFile;
+use BackupMigrate\Core\File\TempFileManagerInterface;
 
 /**
  * Class TempFileManager
@@ -18,7 +19,7 @@ use BackupMigrate\Core\Util\WritableStreamBackupFile;
 class TempFileManager implements TempFileManagerInterface {
 
   /**
-   * @var \BackupMigrate\Core\Services\TempFileAdapterInterface
+   * @var \BackupMigrate\Core\File\TempFileAdapterInterface
    */
   protected $adapter;
 
@@ -26,7 +27,7 @@ class TempFileManager implements TempFileManagerInterface {
    * Build the manager with the given adapter. This manager needs the adapter
    * to create the actual temp files.
    *
-   * @param \BackupMigrate\Core\Services\TempFileAdapterInterface $adapter
+   * @param \BackupMigrate\Core\File\TempFileAdapterInterface $adapter
    */
   public function __construct(TempFileAdapterInterface $adapter) {
     $this->adapter = $adapter;
@@ -51,11 +52,11 @@ class TempFileManager implements TempFileManagerInterface {
    * For example: xxx.mysql would become xxx.mysql.gz
    *
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
    *        The file to add the extension to.
    * @param $ext
    *        The new file extension.
-   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   * @return \BackupMigrate\Core\File\BackupFileWritableInterface
    *        A new writable backup file with the new extension and all of the metadata
    *        from the previous file.
    */
@@ -81,8 +82,8 @@ class TempFileManager implements TempFileManagerInterface {
    * For example: xxx.mysql.gz would become xxx.mysql
    *
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileWritableInterface
    *        A new writable backup file with the last extension removed and
    *        all of the metadata from the previous file.
    */

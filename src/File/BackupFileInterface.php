@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \BackupMigrate\Core\Util\BackupFileInterface.
+ * Contains \BackupMigrate\Core\File\BackupFileInterface.
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\File;
 
 /**
  * Provides a metadata-only file object. If the file needs to be readable or
- * writable use \BackupMigrate\Core\Util\BackupFileReadableInterface or
- * \BackupMigrate\Core\Util\BackupFileWritableInterface
+ * writable use \BackupMigrate\Core\File\BackupFileReadableInterface or
+ * \BackupMigrate\Core\File\BackupFileWritableInterface
  */
 interface BackupFileInterface {
 

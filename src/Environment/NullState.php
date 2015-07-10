@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains BackupMigrate\Core\Util\NullState
+ * Contains BackupMigrate\Core\File\NullState
  */
 
 
@@ -11,7 +11,7 @@ use BackupMigrate\Core\Environment\StateInterface;
 
 /**
  * Class NullState
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\File
  *
  * A fake state manager. Always returns the default.
  */

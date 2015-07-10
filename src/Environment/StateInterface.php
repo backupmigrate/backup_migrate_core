@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \BackupMigrate\Core\Util\StateInterface.
+ * Contains \BackupMigrate\Core\File\StateInterface.
  */
 
 namespace BackupMigrate\Core\Environment;

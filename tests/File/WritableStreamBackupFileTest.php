@@ -1,9 +1,9 @@
 <?php
-namespace BackupMigrate\Core\Tests\Util;
+namespace BackupMigrate\Core\Tests\File;
 
-use \BackupMigrate\Core\Util\WritableStreamBackupFile;
-use \BackupMigrate\Core\Services\TempFileAdapter;
-use \BackupMigrate\Core\Tests\Util\BackupFileTest;
+use BackupMigrate\Core\File\WritableStreamBackupFile;
+use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\Tests\File\BackupFileTest;
 
 /**
  * @coversDefaultClass \BackupMigrate\Core\Util\TempFile

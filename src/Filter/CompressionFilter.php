@@ -10,8 +10,8 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
-use BackupMigrate\Core\Util\BackupFileWritableInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileWritableInterface;
 
 /**
  * Class CompressionFilter
@@ -107,8 +107,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Run on a backup
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileReadableInterface
    */
   public function afterBackup(BackupFileReadableInterface $file) {
     $out = $success = FALSE;
@@ -139,8 +139,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Run on a restore
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileReadableInterface
    */
   public function beforeRestore(BackupFileReadableInterface $file) {
     // If the file is not a supported compression type then simply return the same input file.
@@ -176,8 +176,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Gzip encode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _gzipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
@@ -200,8 +200,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Gzip decode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _gzipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
@@ -224,8 +224,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * BZip encode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _bzipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
@@ -247,8 +247,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * BZip decode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _bzipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
@@ -271,8 +271,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Gzip encode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _ZipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
@@ -298,8 +298,8 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   /**
    * Gzip decode a file.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $from
-   * @param \BackupMigrate\Core\Util\BackupFileWritableInterface $to
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
    * @return bool
    */
   protected function _ZipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {

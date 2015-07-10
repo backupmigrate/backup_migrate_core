@@ -11,7 +11,7 @@ namespace BackupMigrate\Core\Filter;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 
 /**
  * Class FileNamer
@@ -71,8 +71,8 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
   /**
    * Run on a backup. Name the backup file according to the configuration
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileReadableInterface
    */
   public function afterBackup(BackupFileReadableInterface $file) {
     $name = $this->confGet('filename');

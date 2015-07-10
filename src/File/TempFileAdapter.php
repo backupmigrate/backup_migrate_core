@@ -5,7 +5,8 @@
  * Contains \BackupMigrate\Core\Services\TempFileManager.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\File;
+use BackupMigrate\Core\File\TempFileAdapterInterface;
 
 /**
  * Provides a very basic temp file manager which assumes read/write access to a

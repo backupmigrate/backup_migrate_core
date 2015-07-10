@@ -14,7 +14,7 @@ use BackupMigrate\Core\Exception\IgnorableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 
 /**
  * Class FileDirectorySource

@@ -6,7 +6,7 @@
 namespace BackupMigrate\Core\Plugin;
 
 
-use BackupMigrate\Core\Services\TempFileManagerInterface;
+use BackupMigrate\Core\File\TempFileManagerInterface;
 
 /**
  * Class FileProcessorPluginTrait
@@ -24,7 +24,7 @@ trait FileProcessorTrait
   /**
    * Inject the temp file manager.
    *
-   * @param \BackupMigrate\Core\Services\TempFileManagerInterface $tempfilemanager
+   * @param \BackupMigrate\Core\File\TempFileManagerInterface $tempfilemanager
    * @return mixed
    */
   public function setTempFileManager(TempFileManagerInterface $tempfilemanager) {
@@ -33,7 +33,7 @@ trait FileProcessorTrait
 
   /**
    * Get the temp file manager.
-   * @return \BackupMigrate\Core\Services\TempFileManagerInterface
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface
    */
   public function getTempFileManager() {
     return $this->tempfilemanager;

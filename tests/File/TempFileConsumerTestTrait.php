@@ -3,10 +3,10 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Tests;
+namespace BackupMigrate\Core\Tests\File;
 
-use BackupMigrate\Core\Services\TempFileAdapter;
-use BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileManager;
 use org\bovigo\vfs\vfsStream;
 
 
@@ -15,12 +15,12 @@ use org\bovigo\vfs\vfsStream;
  */
 trait TempFileConsumerTestTrait {
   /**
-   * @var \BackupMigrate\Core\Services\TempFileAdapter
+   * @var \BackupMigrate\Core\File\TempFileAdapter
    */
   protected $adapter;
 
   /**
-   * @var \BackupMigrate\Core\Services\TempFileManager
+   * @var \BackupMigrate\Core\File\TempFileManager
    */
   protected $manager;
 

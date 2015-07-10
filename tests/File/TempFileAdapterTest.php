@@ -1,7 +1,7 @@
 <?php
-namespace BackupMigrate\Core\Tests\Services;
+namespace BackupMigrate\Core\Tests\File;
 
-use \BackupMigrate\Core\Services\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileAdapter;
 use org\bovigo\vfs\vfsStream;
 
 /**

@@ -6,7 +6,7 @@
 namespace BackupMigrate\Core\Plugin;
 
 
-use BackupMigrate\Core\Services\TempFileManagerInterface;
+use BackupMigrate\Core\File\TempFileManagerInterface;
 
 /**
  * Interface FileProcessorPluginInterface
@@ -20,7 +20,7 @@ interface FileProcessorInterface {
   /**
    * Inject the temp file manager.
    *
-   * @param \BackupMigrate\Core\Services\TempFileManagerInterface $tempfilemanager
+   * @param \BackupMigrate\Core\File\TempFileManagerInterface $tempfilemanager
    * @return mixed
    */
   public function setTempFileManager(TempFileManagerInterface $tempfilemanager);
@@ -28,7 +28,7 @@ interface FileProcessorInterface {
   /**
    * Get the temp file manager.
 
-   * @return \BackupMigrate\Core\Services\TempFileManagerInterface
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface
    */
   public function getTempFileManager();
 

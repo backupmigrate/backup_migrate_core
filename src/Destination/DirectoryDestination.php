@@ -12,10 +12,10 @@ use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
-use BackupMigrate\Core\Util\BackupFile;
-use BackupMigrate\Core\Util\BackupFileInterface;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
-use BackupMigrate\Core\Util\ReadableStreamBackupFile;
+use BackupMigrate\Core\File\BackupFile;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\File\ReadableStreamBackupFile;
 
 /**
  * Class ServerDirectoryDestination
@@ -35,7 +35,7 @@ class DirectoryDestination extends DestinationBase implements DestinationInterfa
   /**
    * Do the actual file save. This function is called to save the data file AND
    * the metadata sidecar file.
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
    */
   function _saveFile(BackupFileReadableInterface $file) {
     rename($file->realpath(), $this->confGet('directory') . $file->getFullName());

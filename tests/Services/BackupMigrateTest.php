@@ -7,8 +7,8 @@ namespace BackupMigrate\Core\Tests\Services;
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginManager;
 use BackupMigrate\Core\Services\BackupMigrate;
-use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
-use BackupMigrate\Core\Util\ReadableStreamBackupFile;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
+use \BackupMigrate\Core\File\ReadableStreamBackupFile;
 
 
 /**

@@ -7,15 +7,15 @@
 namespace BackupMigrate\Core\Environment;
 
 use BackupMigrate\Core\Environment\EnvironmentInterface;
-use BackupMigrate\Core\Services\TempFileAdapter;
-use BackupMigrate\Core\Services\TempFileManager;
+use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileManager;
 use BackupMigrate\Core\Environment\Mailer;
 use BackupMigrate\Core\Environment\MailerInterface;
 use BackupMigrate\Core\Environment\NullCache;
 use BackupMigrate\Core\Environment\NullState;
 use BackupMigrate\Core\Environment\StateInterface;
 use BackupMigrate\Core\Environment\CacheInterface;
-use BackupMigrate\Core\Services\TempFileManagerInterface;
+use BackupMigrate\Core\File\TempFileManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -39,7 +39,7 @@ class EnvironmentBase implements EnvironmentInterface {
   protected $stateManager;
 
   /**
-   * @var \BackupMigrate\Core\Services\TempFileManagerInterface
+   * @var \BackupMigrate\Core\File\TempFileManagerInterface
    */
   protected $tempFileManager;
 
@@ -56,7 +56,7 @@ class EnvironmentBase implements EnvironmentInterface {
 
 
   /**
-   * @param \BackupMigrate\Core\Services\TempFileManagerInterface $tempFileManager
+   * @param \BackupMigrate\Core\File\TempFileManagerInterface $tempFileManager
    * @param \BackupMigrate\Core\Environment\CacheInterface $cacheManager
    * @param \BackupMigrate\Core\Environment\StateInterface $stateManager
    * @param \Psr\Log\LoggerInterface $logger
@@ -71,7 +71,7 @@ class EnvironmentBase implements EnvironmentInterface {
   }
 
   /**
-   * @return \BackupMigrate\Core\Services\TempFileManagerInterface;
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
    */
   public function getTempFileManager() {
     return $this->tempFileManager;
@@ -93,7 +93,7 @@ class EnvironmentBase implements EnvironmentInterface {
 
 
   /**
-   * @return \BackupMigrate\Core\Services\TempFileManagerInterface;
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
    */
   public function getLogger() {
     return $this->logger;

@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \BackupMigrate\Core\Util\BackupFile.
+ * Contains \BackupMigrate\Core\File\BackupFile.
  */
 
-namespace BackupMigrate\Core\Util;
+namespace BackupMigrate\Core\File;
 
-use \BackupMigrate\Core\Util\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
 
 /**
  * Class BackupFile
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\File
  */
 class BackupFile implements BackupFileInterface {
   /**

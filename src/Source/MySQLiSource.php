@@ -8,8 +8,8 @@
 namespace BackupMigrate\Core\Source;
 
 
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
-use BackupMigrate\Core\Util\BackupFileWritableInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileWritableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
 
@@ -39,7 +39,7 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    * Export this source to the given temp file. This should be the main
    * back up function for this source.
    *
-   * @return \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileReadableInterface $file
    *    A backup file with the contents of the source dumped to it..
    */
   public function exportToFile() {
@@ -82,7 +82,7 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    * Import to this source from the given backup file. This is the main restore
    * function for this source.
    *
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
    *    The file to read the backup from. It will not be opened for reading
    * @return bool|int
    */
@@ -192,7 +192,7 @@ FOOTER;
    * Read a multiline sql command from a file.
    *
    * Supports the formatting created by mysqldump, but won't handle multiline comments.
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
    * @return string
    */
   protected function _readSQLCommand(BackupFileReadableInterface $file) {

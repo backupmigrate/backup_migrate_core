@@ -4,10 +4,10 @@
  * Contains \BackupMigrate\Core\Services\TempFileManagerInterface.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\File;
 
-use \BackupMigrate\Core\Util\BackupFileInterface;
-use \BackupMigrate\Core\Util\BackupFileWritableInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileWritableInterface;
 
 /**
  * Interface TempFileManagerInterface
@@ -36,11 +36,11 @@ interface TempFileManagerInterface {
    * For example: xxx.mysql would become xxx.mysql.gz
    *
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
    *        The file to add the extension to.
    * @param $ext
    *        The new file extension.
-   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   * @return \BackupMigrate\Core\File\BackupFileWritableInterface
    *        A new writable backup file with the new extension and all of the metadata
    *        from the previous file.
    */
@@ -52,8 +52,8 @@ interface TempFileManagerInterface {
    * For example: xxx.mysql.gz would become xxx.mysql
    *
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
-   * @return \BackupMigrate\Core\Util\BackupFileWritableInterface
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
+   * @return \BackupMigrate\Core\File\BackupFileWritableInterface
    *        A new writable backup file with the last extension removed and
    *        all of the metadata from the previous file.
    */

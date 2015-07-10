@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains BackupMigrate\Core\Util\MailSender
+ * Contains BackupMigrate\Core\Environment\MailSender
  */
 
 
@@ -17,7 +17,7 @@ use BackupMigrate\Core\Environment\MailerInterface;
  * will be replaced by a wrapper around whatever mail library is used in that
  * system.
  *
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\Environment
  */
 class Mailer implements MailerInterface {
 

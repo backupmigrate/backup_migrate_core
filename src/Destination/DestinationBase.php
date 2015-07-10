@@ -9,8 +9,8 @@ namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\Util\BackupFileInterface;
-use BackupMigrate\Core\Util\BackupFileReadableInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
 
 /**
  * Class DestinationBase
@@ -76,21 +76,21 @@ abstract class DestinationBase extends PluginBase implements DestinationInterfac
   /**
    * Do the actual file save. Should take care of the actual creation of a file
    * in the destination without regard for metadata.
-   * @param \BackupMigrate\Core\Util\BackupFileReadableInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
    */
   abstract protected function _saveFile(BackupFileReadableInterface $file);
 
   /**
    * Do the metadata save. This function is called to save the data file AND
    * the metadata sidecar file.
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
    */
   abstract protected function _saveFileMetadata(BackupFileInterface $file);
 
   /**
    * Load the actual metadata for the file
    *
-   * @param \BackupMigrate\Core\Util\BackupFileInterface $file
+   * @param \BackupMigrate\Core\File\BackupFileInterface $file
    */
   abstract protected function _loadFileMetadataArray(BackupFileInterface $file);
 

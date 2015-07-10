@@ -1,7 +1,7 @@
 <?php
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Destination\StreamDestination;
-use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 
 /**
  * @file

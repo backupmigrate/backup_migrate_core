@@ -8,7 +8,7 @@ namespace BackupMigrate\Core\Environment;
 
 use BackupMigrate\Core\Environment\StateInterface;
 use BackupMigrate\Core\Environment\CacheInterface;
-use \BackupMigrate\Core\Services\TempFileManagerInterface;
+use BackupMigrate\Core\File\TempFileManagerInterface;
 use \Psr\Log\LoggerInterface;
 
 /**
@@ -32,7 +32,7 @@ interface EnvironmentInterface {
   public function getStateManager();
 
   /**
-   * @return \BackupMigrate\Core\Services\TempFileManagerInterface;
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
    */
   public function getTempFileManager();
 

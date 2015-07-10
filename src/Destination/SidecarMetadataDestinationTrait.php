@@ -7,7 +7,7 @@ namespace BackupMigrate\Core\Destination;
 
 
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
-use BackupMigrate\Core\Util\BackupFileInterface;
+use BackupMigrate\Core\File\BackupFileInterface;
 
 /**
  * Class SidecarMetadataDestinationTrait

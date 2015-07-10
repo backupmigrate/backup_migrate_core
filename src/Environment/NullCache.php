@@ -1,14 +1,14 @@
 <?php
 /**
  * @file
- * Contains BackupMigrate\Core\Util\NullCache
+ * Contains BackupMigrate\Core\File\NullCache
  */
 
 namespace BackupMigrate\Core\Environment;
 
 /**
  * Class NullCache
- * @package BackupMigrate\Core\Util
+ * @package BackupMigrate\Core\File
  *
  * Does nothing. Can be used when there is no cache system in place.
  */

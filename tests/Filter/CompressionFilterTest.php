@@ -5,9 +5,9 @@
 
 use BackupMigrate\Core\Config\Config;
 use \BackupMigrate\Core\Filter\CompressionFilter;
-use BackupMigrate\Core\Services\TempFileAdapter;
-use BackupMigrate\Core\Services\TempFileManager;
-use BackupMigrate\Core\Util\ReadableStreamBackupFile;
+use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileManager;
+use BackupMigrate\Core\File\ReadableStreamBackupFile;
 use org\bovigo\vfs\vfsStream;
 
 

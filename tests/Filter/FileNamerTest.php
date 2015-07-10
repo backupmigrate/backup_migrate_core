@@ -6,7 +6,7 @@
 namespace BackupMigrate\Core\Tests\Filter;
 
 use BackupMigrate\Core\Filter\FileNamer;
-use BackupMigrate\Core\Tests\TempFileConsumerTestTrait;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 use PHPUnit_Framework_TestCase;
 
 
