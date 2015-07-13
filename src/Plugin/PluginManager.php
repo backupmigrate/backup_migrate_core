@@ -59,7 +59,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    *
    * @return \BackupMigrate\Core\Environment\EnvironmentInterface
    */
-  public function getEnv() {
+  public function env() {
     // Create a default Environment with mostly Null providers.
     if ($this->env == NULL) {
       $this->env = new EnvironmentBase();
@@ -78,7 +78,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     // Create a tempFileManager from the environment's temp file adapter.
     if (!$this->tempFileManager) {
       $this->tempFileManager = new TempFileManager(
-        $this->getEnv()->getTempFileAdapter()
+        $this->env()->getTempFileAdapter()
       );
     }
 

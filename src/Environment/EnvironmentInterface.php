@@ -24,27 +24,27 @@ interface EnvironmentInterface {
   /**
    * @return \BackupMigrate\Core\Environment\CacheInterface;
    */
-  public function getCacheManager();
+  public function cache();
 
   /**
    * @return \BackupMigrate\Core\Environment\StateInterface;
    */
-  public function getStateManager();
+  public function state();
+
+  /**
+   * @return \Psr\Log\LoggerInterface;
+   */
+  public function logger();
+
+  /**
+   * @return \BackupMigrate\Core\Environment\MailerInterface;
+   */
+  public function mailer();
 
   /**
    * @return \BackupMigrate\Core\File\TempFileAdapterInterface;
    */
   public function getTempFileAdapter();
-
-  /**
-   * @return \Psr\Log\LoggerInterface;
-   */
-  public function getLogger();
-
-  /**
-   * @return \BackupMigrate\Core\Environment\MailerInterface;
-   */
-  public function getMailer();
 
   /**
    * Get the full ID string for the application.

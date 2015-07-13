@@ -32,17 +32,12 @@ class EnvironmentBase implements EnvironmentInterface {
   /**
    * @var \BackupMigrate\Core\Environment\CacheInterface;
    */
-  protected $cacheManager;
+  protected $cache;
 
   /**
    * @var \BackupMigrate\Core\Environment\StateInterface;
    */
-  protected $stateManager;
-
-  /**
-   * @var \BackupMigrate\Core\File\$tempFileAdapterInterface
-   */
-  protected $tempFileAdapter;
+  protected $state;
 
   /**
    * @var \Psr\Log\LoggerInterface
@@ -54,6 +49,11 @@ class EnvironmentBase implements EnvironmentInterface {
    */
   protected $mailer;
 
+  /**
+   * @var \BackupMigrate\Core\File\$tempFileAdapterInterface
+   */
+  protected $tempFileAdapter;
+
 
   /**
    * @param \BackupMigrate\Core\File\TempFileAdapterInterface $tempFileAdapter
@@ -64,10 +64,38 @@ class EnvironmentBase implements EnvironmentInterface {
    */
   public function __construct(TempFileAdapterInterface $tempFileAdapter = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL, MailerInterface $mailer = NULL) {
     $this->tempFileAdapter = $tempFileAdapter? $tempFileAdapter: new TempFileAdapter('/tmp');
-    $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
-    $this->stateManager = $stateManager ? $stateManager : new NullState();
+    $this->cache = $cacheManager ? $cacheManager : new NullCache();
+    $this->state = $stateManager ? $stateManager : new NullState();
     $this->logger = $logger ? $logger : new NullLogger();
     $this->mailer = $mailer ? $mailer : new Mailer();
+  }
+
+  /**
+   * @return \BackupMigrate\Core\Environment\CacheInterface;
+   */
+  public function cache() {
+    return $this->cache;
+  }
+
+  /**
+   * @return \BackupMigrate\Core\Environment\StateInterface;
+   */
+  public function state() {
+    return $this->state;
+  }
+
+  /**
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
+   */
+  public function logger() {
+    return $this->logger;
+  }
+
+  /**
+   * @return \BackupMigrate\Core\Environment\MailerInterface;
+   */
+  public function mailer() {
+    return $this->mailer;
   }
 
   /**
@@ -75,34 +103,6 @@ class EnvironmentBase implements EnvironmentInterface {
    */
   public function getTempFileAdapter() {
     return $this->tempFileAdapter;
-  }
-
-  /**
-   * @return \BackupMigrate\Core\Environment\CacheInterface;
-   */
-  public function getCacheManager() {
-    return $this->cacheManager;
-  }
-
-  /**
-   * @return \BackupMigrate\Core\Environment\StateInterface;
-   */
-  public function getStateManager() {
-    return $this->stateManager;
-  }
-
-  /**
-   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
-   */
-  public function getLogger() {
-    return $this->logger;
-  }
-
-  /**
-   * @return \BackupMigrate\Core\Environment\MailerInterface;
-   */
-  public function getMailer() {
-    return $this->mailer;
   }
 
   /**

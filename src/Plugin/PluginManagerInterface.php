@@ -60,7 +60,7 @@ interface PluginManagerInterface
    *
    * @return \BackupMigrate\Core\Environment\EnvironmentInterface
    */
-  public function getEnv();
+  public function env();
 
   /**
    * Get the list of supported file types, optionally for the specified op.
