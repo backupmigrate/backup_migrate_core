@@ -13,8 +13,7 @@ use BackupMigrate\Core\Plugin\PluginCallerTrait;
  * Class TempFileManager
  * @package BackupMigrate\Core\Services
  */
-class TempFileManager implements TempFileManagerInterface, PluginCallerInterface {
-  use PluginCallerTrait;
+class TempFileManager implements TempFileManagerInterface {
 
   /**
    * @var \BackupMigrate\Core\File\TempFileAdapterInterface
@@ -70,11 +69,6 @@ class TempFileManager implements TempFileManagerInterface, PluginCallerInterface
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());
     $out->setName($file->getName());
-
-    // Get the mime type for this file if possible
-    $mime = 'application/octet-stream';
-    $this->plugins()->call('alterMime', $mime, array('ext' => $ext));
-    $out->setMeta('filemime', $mime);
 
     return $out;
   }

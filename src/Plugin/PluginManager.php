@@ -80,7 +80,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
       $this->tempFileManager = new TempFileManager(
         $this->getEnv()->getTempFileAdapter()
       );
-      $this->tempFileManager->setPluginManager($this);
     }
 
     return $this->tempFileManager;
@@ -193,6 +192,8 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
       $plugin->setPluginManager($this);
     }
 
-    // @TODO Inject cache/state/logger dependencies
+    // @TODO Inject cache/state/logger/mailer dependencies
+    // OR: simply inject the entire environment and let the plugin use what it
+    // wants.
   }
 }

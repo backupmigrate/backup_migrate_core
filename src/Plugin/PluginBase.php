@@ -38,6 +38,11 @@ abstract class PluginBase implements PluginInterface, ConfigurableInterface {
    * @return bool
    */
   public function supportsOp($op) {
+    // If the function has the method then it supports the op.
+    if (method_exists($this, $op)) {
+      return TRUE;
+    }
+    // If the supported ops array contains the op then it is supported.
     $ops = $this->supportedOps();
     return isset($ops[$op]);
   }

@@ -54,7 +54,7 @@ class EnvironmentBase implements EnvironmentInterface {
    */
   protected $mailer;
 
-  
+
   /**
    * @param \BackupMigrate\Core\File\TempFileAdapterInterface $tempFileAdapter
    * @param \BackupMigrate\Core\Environment\CacheInterface $cacheManager

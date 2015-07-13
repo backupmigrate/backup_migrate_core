@@ -9,26 +9,37 @@ namespace BackupMigrate\Core\Destination;
 
 
 use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
+use BackupMigrate\Core\Plugin\PluginManagerInterface;
 
 /**
  * Class BrowserDownloadDestination
  * @package BackupMigrate\Core\Destination
  */
-class BrowserDownloadDestination extends StreamDestination implements DestinationInterface {
+class BrowserDownloadDestination extends StreamDestination implements DestinationInterface, PluginCallerInterface {
+  use PluginCallerTrait;
 
   /**
    * {@inheritdoc}
    */
   function saveFile(BackupFileReadableInterface $file) {
+    // Set some default download headers.
     $headers = array(
       array('key' => 'Content-Disposition', 'value' => 'attachment; filename="'. $file->getFullName() .'"'),
       array('key' => 'Cache-Control', 'no-cache'),
     );
+
+    // Set a mime-type header.
     if ($mime = $file->getMeta('mimetype')) {
       $headers[] = array('key' => 'Content-Type', 'value' => $mime);
     }
     else {
-      $headers[] = array('key' => 'Content-Type', 'value' => 'application/octet-stream');
+      // Get the mime type for this file if possible
+      $mime = 'application/octet-stream';
+      $mime = $this->plugins()->call('alterMime', $mime, array('ext' => $file->getExtLast()));
+
+      $headers[] = array('key' => 'Content-Type', 'value' => $mime);
     }
 
     // In some circumstances, web-servers will double compress gzipped files.
@@ -62,4 +73,5 @@ class BrowserDownloadDestination extends StreamDestination implements Destinatio
     }
     // @TODO Throw exception.
   }
+
 }

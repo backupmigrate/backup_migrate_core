@@ -39,6 +39,29 @@ trait FileProcessorTrait
     return $this->tempfilemanager;
   }
 
+  /**
+   * Provide the file mime for the given file extension if known.
+   *
+   * @param string $filemime
+   *  The best guess so far for the file's mime type.
+   * @param array $params
+   *  A list of parameters where
+   *    'ext' is the file extension we are testing.
+   * @return string
+   *    The mime type of the file (or the passed in mime type if unknown)
+   */
+  public function alterMime($filemime, $params) {
+    // Check all of the provided file types for the given extension.
+    if (method_exists($this, 'getFileTypes')) {
+      $file_types = $this->getFileTypes();
+      foreach ($file_types as $info) {
+        if (isset($info['extension']) && $info['extension'] == $params['ext'] && isset($info['filemime'])) {
+          return $info['filemime'];
+        }
+      }
+    }
+    return $filemime;
+  }
 
 
 }
