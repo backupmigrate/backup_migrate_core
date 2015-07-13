@@ -11,7 +11,8 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
-use BackupMigrate\Core\Environment\EnvironmentBase;
+use BackupMigrate\Core\Environment\EnvironmentCallerInterface;
+use BackupMigrate\Core\Environment\EnvironmentCallerTrait;
 use BackupMigrate\Core\Environment\EnvironmentInterface;
 use BackupMigrate\Core\File\TempFileManager;
 
@@ -19,18 +20,14 @@ use BackupMigrate\Core\File\TempFileManager;
  * Class PluginManager
  * @package BackupMigrate\Core\Plugin
  */
-class PluginManager implements PluginManagerInterface, ConfigurableInterface {
+class PluginManager implements PluginManagerInterface, ConfigurableInterface, EnvironmentCallerInterface {
   use ConfigurableTrait;
+  use EnvironmentCallerTrait;
 
   /**
    * @var \BackupMigrate\Core\Plugin\PluginInterface[]
    */
   protected $items;
-
-  /**
-   * @var \BackupMigrate\Core\Environment\EnvironmentInterface
-   */
-  protected $env;
 
   /**
    * @var \BackupMigrate\Core\File\TempFileManagerInterface
@@ -43,7 +40,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    */
   public function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL) {
     // Add the injected environment or a placeholder version.
-    $this->env = $env;
+    $this->setEnvironment($env);
 
     // Set the configuration or a null object if no config was specified.
     $this->setConfig($config ? $config : new Config());
@@ -53,22 +50,9 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
 
   }
 
-  /**
-   * Get the app (essentially a dependency injection container for interfacing
-   * with the broader app and environment)
-   *
-   * @return \BackupMigrate\Core\Environment\EnvironmentInterface
-   */
-  public function env() {
-    // Create a default Environment with mostly Null providers.
-    if ($this->env == NULL) {
-      $this->env = new EnvironmentBase();
-    }
-    return $this->env;
-  }
 
   /**
-   * Get the temporary file manager controlled by this plugin mamanger to be
+   * Get the temporary file manager controlled by this plugin manager to be
    * passed as a dependency to plugins. Lazily creates the manager so that
    * a 'blank' plugin manager doesn't take much to initiate.
    *
@@ -190,6 +174,11 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     // Inject the plugin manager.
     if ($plugin instanceof PluginCallerInterface) {
       $plugin->setPluginManager($this);
+    }
+
+    // Inject the environment dependency container.
+    if ($plugin instanceof EnvironmentCallerInterface) {
+      $plugin->setEnvironment($this->env());
     }
 
     // @TODO Inject cache/state/logger/mailer dependencies
