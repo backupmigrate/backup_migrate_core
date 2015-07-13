@@ -32,14 +32,19 @@ interface EnvironmentInterface {
   public function getStateManager();
 
   /**
-   * @return \BackupMigrate\Core\File\TempFileManagerInterface;
+   * @return \BackupMigrate\Core\File\TempFileAdapterInterface;
    */
-  public function getTempFileManager();
+  public function getTempFileAdapter();
 
   /**
    * @return \Psr\Log\LoggerInterface;
    */
   public function getLogger();
+
+  /**
+   * @return \BackupMigrate\Core\Environment\MailerInterface;
+   */
+  public function getMailer();
 
   /**
    * Get the full ID string for the application.

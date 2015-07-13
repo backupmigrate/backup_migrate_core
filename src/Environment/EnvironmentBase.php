@@ -8,6 +8,7 @@ namespace BackupMigrate\Core\Environment;
 
 use BackupMigrate\Core\Environment\EnvironmentInterface;
 use BackupMigrate\Core\File\TempFileAdapter;
+use BackupMigrate\Core\File\TempFileAdapterInterface;
 use BackupMigrate\Core\File\TempFileManager;
 use BackupMigrate\Core\Environment\Mailer;
 use BackupMigrate\Core\Environment\MailerInterface;
@@ -39,9 +40,9 @@ class EnvironmentBase implements EnvironmentInterface {
   protected $stateManager;
 
   /**
-   * @var \BackupMigrate\Core\File\TempFileManagerInterface
+   * @var \BackupMigrate\Core\File\$tempFileAdapterInterface
    */
-  protected $tempFileManager;
+  protected $tempFileAdapter;
 
   /**
    * @var \Psr\Log\LoggerInterface
@@ -53,17 +54,16 @@ class EnvironmentBase implements EnvironmentInterface {
    */
   protected $mailer;
 
-
-
+  
   /**
-   * @param \BackupMigrate\Core\File\TempFileManagerInterface $tempFileManager
+   * @param \BackupMigrate\Core\File\TempFileAdapterInterface $tempFileAdapter
    * @param \BackupMigrate\Core\Environment\CacheInterface $cacheManager
    * @param \BackupMigrate\Core\Environment\StateInterface $stateManager
    * @param \Psr\Log\LoggerInterface $logger
    * @param \BackupMigrate\Core\Environment\MailerInterface $mailer
    */
-  public function __construct(TempFileManagerInterface $tempFileManager = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL, MailerInterface $mailer = NULL) {
-    $this->tempFileManager = $tempFileManager ? $tempFileManager : new TempFileManager(new TempFileAdapter('/tmp'));
+  public function __construct(TempFileAdapterInterface $tempFileAdapter = NULL, CacheInterface $cacheManager = NULL, StateInterface $stateManager = NULL, LoggerInterface $logger = NULL, MailerInterface $mailer = NULL) {
+    $this->tempFileAdapter = $tempFileAdapter? $tempFileAdapter: new TempFileAdapter('/tmp');
     $this->cacheManager = $cacheManager ? $cacheManager : new NullCache();
     $this->stateManager = $stateManager ? $stateManager : new NullState();
     $this->logger = $logger ? $logger : new NullLogger();
@@ -73,8 +73,8 @@ class EnvironmentBase implements EnvironmentInterface {
   /**
    * @return \BackupMigrate\Core\File\TempFileManagerInterface;
    */
-  public function getTempFileManager() {
-    return $this->tempFileManager;
+  public function getTempFileAdapter() {
+    return $this->tempFileAdapter;
   }
 
   /**
@@ -91,12 +91,18 @@ class EnvironmentBase implements EnvironmentInterface {
     return $this->stateManager;
   }
 
-
   /**
    * @return \BackupMigrate\Core\File\TempFileManagerInterface;
    */
   public function getLogger() {
     return $this->logger;
+  }
+
+  /**
+   * @return \BackupMigrate\Core\Environment\MailerInterface;
+   */
+  public function getMailer() {
+    return $this->mailer;
   }
 
   /**

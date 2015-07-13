@@ -37,6 +37,7 @@ trait PluginCallerTrait {
    * @return \BackupMigrate\Core\Plugin\PluginManagerInterface
    */
   public function plugins() {
-    return $this->plugins;
+    // Return the list of plugins or a blank placeholder.
+    return $this->plugins ? $this->plugins : new PluginManager();
   }
 }

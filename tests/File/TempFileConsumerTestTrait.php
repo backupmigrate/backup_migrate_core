@@ -5,8 +5,11 @@
 
 namespace BackupMigrate\Core\Tests\File;
 
+use BackupMigrate\Core\Config\Config;
+use BackupMigrate\Core\Environment\EnvironmentBase;
 use BackupMigrate\Core\File\TempFileAdapter;
 use BackupMigrate\Core\File\TempFileManager;
+use BackupMigrate\Core\Plugin\PluginManager;
 use org\bovigo\vfs\vfsStream;
 
 
@@ -39,5 +42,6 @@ trait TempFileConsumerTestTrait {
     $this->root = vfsStream::setup('root', 0777, $structure);
     $this->adapter = new TempFileAdapter($this->root->url() . '/tmp/', 'bmtest_');
     $this->manager = new TempFileManager($this->adapter);
+
   }
 }

@@ -6,17 +6,15 @@
 
 namespace BackupMigrate\Core\File;
 
-use BackupMigrate\Core\File\TempFileAdapterInterface;
-use BackupMigrate\Core\File\BackupFileInterface;
-use BackupMigrate\Core\File\BackupFileWritableInterface;
-use BackupMigrate\Core\File\WritableStreamBackupFile;
-use BackupMigrate\Core\File\TempFileManagerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
 
 /**
  * Class TempFileManager
  * @package BackupMigrate\Core\Services
  */
-class TempFileManager implements TempFileManagerInterface {
+class TempFileManager implements TempFileManagerInterface, PluginCallerInterface {
+  use PluginCallerTrait;
 
   /**
    * @var \BackupMigrate\Core\File\TempFileAdapterInterface
@@ -72,6 +70,11 @@ class TempFileManager implements TempFileManagerInterface {
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());
     $out->setName($file->getName());
+
+    // Get the mime type for this file if possible
+    $mime = 'application/octet-stream';
+    $this->plugins()->call('alterMime', $mime, array('ext' => $ext));
+    $out->setMeta('filemime', $mime);
 
     return $out;
   }

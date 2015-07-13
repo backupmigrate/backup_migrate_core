@@ -11,7 +11,9 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
+use BackupMigrate\Core\Environment\EnvironmentBase;
 use BackupMigrate\Core\Environment\EnvironmentInterface;
+use BackupMigrate\Core\File\TempFileManager;
 
 /**
  * Class PluginManager
@@ -31,12 +33,24 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   protected $env;
 
   /**
-   * @param $app
+   * @var \BackupMigrate\Core\File\TempFileManagerInterface
    */
-  public function __construct(EnvironmentInterface $env, ConfigInterface $config) {
+  protected $tempFileManager;
+
+  /**
+   * @param \BackupMigrate\Core\Environment\EnvironmentInterface $env
+   * @param \BackupMigrate\Core\Config\ConfigInterface $config
+   */
+  public function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL) {
+    // Add the injected environment or a placeholder version.
     $this->env = $env;
-    $this->setConfig($config);
+
+    // Set the configuration or a null object if no config was specified.
+    $this->setConfig($config ? $config : new Config());
+
+    // Create an array to store the plugins themselves.
     $this->items = array();
+
   }
 
   /**
@@ -46,7 +60,30 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    * @return \BackupMigrate\Core\Environment\EnvironmentInterface
    */
   public function getEnv() {
+    // Create a default Environment with mostly Null providers.
+    if ($this->env == NULL) {
+      $this->env = new EnvironmentBase();
+    }
     return $this->env;
+  }
+
+  /**
+   * Get the temporary file manager controlled by this plugin mamanger to be
+   * passed as a dependency to plugins. Lazily creates the manager so that
+   * a 'blank' plugin manager doesn't take much to initiate.
+   *
+   * @return \BackupMigrate\Core\File\TempFileManagerInterface
+   */
+  public function getTempFileManager() {
+    // Create a tempFileManager from the environment's temp file adapter.
+    if (!$this->tempFileManager) {
+      $this->tempFileManager = new TempFileManager(
+        $this->getEnv()->getTempFileAdapter()
+      );
+      $this->tempFileManager->setPluginManager($this);
+    }
+
+    return $this->tempFileManager;
   }
 
   /**
@@ -148,7 +185,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
 
     // Inject the file processor
     if ($plugin instanceof FileProcessorInterface) {
-      $plugin->setTempFileManager($this->getEnv()->getTempFileManager());
+      $plugin->setTempFileManager($this->getTempFileManager());
     }
 
     // Inject the plugin manager.
