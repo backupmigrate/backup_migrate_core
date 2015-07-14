@@ -18,11 +18,12 @@ use \BackupMigrate\Core\Plugin\PluginManager;
  * The core Backup and Migrate service.
  *
  * Usage:
- *   // Instantiate an application container to provide access to the file system etc.
- *   $app = new ApplicationBase();
- *   // Pass in the configuration
+ *   // (Optional) Instantiate an application container
+ *   // to provide access to the file system etc.
+ *   $env = new EnvironmentBase();
+ *   // (Optional) Pass in the configuration
  *   $config = new ConfigBase(...);
- *   $bam = new BackupMigrate($app, $config);
+ *   $bam = new BackupMigrate($env, $config);
  *   $bam->plugins()->add(new MySQLSource(...), 'db');
  *   $bam->plugins()->add(new MySQLSource(...), 'another');
  *   $bam->plugins()->add(new DirectoryDestination(...), 'manual');
@@ -36,7 +37,7 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   /**
    * {@inheritdoc}
    */
-  function __construct(EnvironmentInterface $env, ConfigInterface $config = NULL) {
+  function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL) {
     $this->setPluginManager(new PluginManager($env, $config));
   }
 
