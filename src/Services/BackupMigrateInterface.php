@@ -27,9 +27,11 @@ interface BackupMigrateInterface
    * Backup and Migrate constructor. Takes all of the dependencies for this service.
    *
    * @param \BackupMigrate\Core\Environment\EnvironmentInterface $env
+   *    The environment object to allow Backup and Migrate to access logs, cache etc.
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
+   *    A config object containing the configuration to run Backup and Migrate with.
    */
-  public function __construct(EnvironmentInterface $env, ConfigInterface $config = NULL);
+  public function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL);
 
   /**
    * Perform the backup from a given source and save it to the given destination.
