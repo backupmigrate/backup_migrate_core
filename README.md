@@ -76,6 +76,8 @@ Plugins are the meat of the library. All of the actual work is done by plugins. 
 
 While these three types of plugin are conceptually separate they are technically identical.
 
+See: [Plugins](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Plugin)
+
 ##### Sources
 Each backup and restore operation works on a single source. For simplicity more than one source may be added to the BackupMigrate object. The source to be backed up is identified by id when `backup()` or `restore()` is called.
 
