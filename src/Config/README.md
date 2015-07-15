@@ -1,11 +1,11 @@
 # Configuration
 
-Backup and Migrate core is configured when it is instantiated by passing a `\BackupMigrate\Core\Config\ConfigInterface` object. This object is a simple key-value store which should contain the configuration for each of the available plugins (sources, destinations and filters). Each plugin should have it's own entry in the config object which contains an array of all of the configuration for that item. The key for this entry should be the same as the key assigned to the plugin when it is added to the `BackupMigrate` object using `->plugins()->add()`.
+Backup and Migrate core is configured by the consuming software when the library is instantiated using a `\BackupMigrate\Core\Config\ConfigInterface` object. This object is a simple key-value store which should contain the configuration for each of the available plugins (sources, destinations and filters). Each plugin should have it's own entry in the config object which contains an array of all of the configuration for that item. The key for this entry must be the same as the key assigned to the plugin when it is added to the `BackupMigrate` object using `->plugins()->add()`.
 
-Any object that implements the `\BackupMigrate\Core\Config\ConfigInterface` may be used to configure Backup and Migrate. For example, a consuming application may want to implement a class that directly accesses the applications's persistence layer to retrieve configuration values. In many cases, however the simple default `\BackupMigrate\Core\Config\Config` will suffice.
+Any object that implements the `\BackupMigrate\Core\Config\ConfigInterface` may be used to configure Backup and Migrate. For example, a consuming application may want to implement a class that directly accesses the application's persistence layer to retrieve configuration values. In many cases, however the simple default `\BackupMigrate\Core\Config\Config` will suffice.
 
 ## The Config Class
-The built in `\BackupMigrate\Core\Config\Config` is a simple implementation of the configuration interface which can be instatiated using a PHP associative array:
+The built in `\BackupMigrate\Core\Config\Config` is a simple implementation of the configuration interface which can be instantiated using a PHP associative array:
 
 	<?php
 	

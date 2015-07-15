@@ -1,6 +1,6 @@
 # Plugins and the Plugin Manager
 
-**Plugins** do the actual work of Backup and Migrate. **The Plugin Manager** manages the configuration of all installed plugins as well as the calling of plugins during an operation.
+**Plugins** do the actual work in Backup and Migrate. **The Plugin Manager** manages the configuration of all installed plugins as well as the calling of plugins during an operation.
 
 ## Plugins
 
@@ -18,12 +18,12 @@ Each backup and restore operation works on a single source. For simplicity more 
 See: [Sources](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Source)
 
 ##### Destinations
-Destinations act the same way as sources. These are the places where the backup files are sent (during `backup()`) or from which they are loaded (uring `restore()`).
+Destinations are the places where the backup files are sent (during `backup()`) or from which they are loaded (uring `restore()`). Each backup and restore operation saves to or loads from a single destination.
 
 See: [Destinations](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Destination)
 
 ##### Filters
-Filters can alter backup files before `restore()` or after `backup()`. Unlike sources and destinations there can be many filters run per operation.
+Filters can alter backup files before `restore()` or after `backup()`. Unlike sources and destinations there can be many filters run per operation. During an operation all installed filters will run unless they are configured not to (e.g: if compression type is set to 'none' for a compression filter).
 
 See: [Filters](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Filter)
 
@@ -57,13 +57,13 @@ The call method takes 3 parameters:
 * **Operand**: The object being operated on (optional)
 * **Params**: An associative array of additional parameters
 
-Each plugin that implements the **operation** will be called in order. The  **operand** will be passed to the plugin and will be overwriten by the return value from the plugin. In this way plugin operations are chained. A plugin is responsible for returning the operand that was passed in if it does not wish to override it. The **params** array can contain additional information needed to run the operation but it cannot be modified by plugins.
+Each plugin that implements the **operation** will be called in order. The  **operand** will be passed to the plugin and will be overwritten by the return value from the plugin. In this way plugin operations are chained. A plugin is responsible for returning the operand that was passed in if it does not wish to overwrite it. The **params** array can contain additional information needed to run the operation but it cannot be modified by plugins.
 
-### Implmenting Operations ###
+### Implementing Operations ###
 If a plugin wishes to be called for a given operation it simply needs to define a method with the same name as the operation. For example, to compress a backup file after it has been created, the plugin must have a method called `afterBackup()` which takes a file as the operand and returns the a new, compressed file.
 
 #### Operation Weights ####
-The order in which plugins are called cannot be guaranteed. However, if a plugin needs to run in a specific order it may specify a weight for each operation it implements. To specify a weight it must implement a `opWeight()` method which takes an operation name and returns a numerical weight. Plugins are called from lowest to highest and plugins which do not specify a weight are concidered to have a weight of `0`.
+The order in which plugins are called cannot be guaranteed. However, if a plugin needs to run in a specific order it may specify a weight for each operation it implements. To specify a weight it must implement a `opWeight()` method which takes an operation name and returns a numerical weight. Plugins are called from lowest to highest and plugins which do not specify a weight are considered to have a weight of `0`.
 
 To specify the weight of may operations it may be easier to extend the `\BackupMigrate\Core\Plugin\PluginBase` class and override the `supportedOps()` method which returns an array of supported operations and their weight:
 
@@ -87,7 +87,7 @@ By default plugins are not given access to the plugin manager. However, if a plu
 		}
 	}
 
-### Acessing The Environment ###
+### Accessing The Environment ###
 If a plugin requires the use of a cache, logger, state or mailer it may implement the `\BackupMigrate\Core\Environment\EnvironmentCallerInterface` to have the environment object injected by the plugin manager. There is also a `\BackupMigrate\Core\Environment\EnvironmentCallerTrait` to help implement the interface. Once this is done plugins will have access to the environment by calling the `env()` method:
 
 	class MyOtherPlugin implements EnvironmentCallerInterface {
@@ -122,3 +122,5 @@ See: [Backup Files](https://github.com/backupmigrate/backup_migrate_core/tree/ma
 ## Sources and Destinations ##
   
 Sources and destinations are special case plugins. While they technically identical to filter plugins they are not called using the plugin manager's `call()` method. Only one source and one destination can be use for each backup or restore operation so they are called individually rather than being chained like most plugin operations. These plugin types are different by convention only and are injected and configured in the same way as filters.
+
+See: [Sources](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Source), [Destinations](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Destination)
