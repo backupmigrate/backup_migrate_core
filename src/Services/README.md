@@ -124,10 +124,10 @@ unique string specified by the destination.
 
 
     // ...
-
+    
     // Create a Backup and Migrate Service object
     $bam = new BackupMigrate($env, $conf);
-
+    
     // Add plugins ...
     
     // Run the restore.
