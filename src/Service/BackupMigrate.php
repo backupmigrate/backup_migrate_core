@@ -46,29 +46,39 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    * {@inheritdoc}
    */
   public function backup($source_id, $destination_id) {
-
     try {
       // Get the source and the destination to use.
       $source = $this->plugins()->get($source_id);
-      $destination = $this->plugins()->get($destination_id);
+      $destinations = array();
 
+      // Allow a single destination or multiple destinations.
+      foreach ((array)$destination_id as $id) {
+        $destinations[$id] = $this->plugins()->get($id);
+
+        // Check that the destination is valid.
+        if (!$destinations[$id]) {
+          throw new BackupMigrateException('The destination !id does not exist.', array('!id' => $destination_id));
+        }
+      }
+
+      // Check that the source is valid.
       if (!$source) {
         throw new BackupMigrateException('The source !id does not exist.', array('!id' => $source_id));
-      }
-      if (!$destination) {
-        throw new BackupMigrateException('The destination !id does not exist.', array('!id' => $destination_id));
       }
 
       // Run each of the installed plugins which implements the 'beforeBackup' operation.
       // $this->plugins()->call('beforeBackup');
 
+      // Do the actual backup.
       $file = $source->exportToFile();
 
       // Run each of the installed plugins which implements the 'afterBackup' operation.
       $file = $this->plugins()->call('afterBackup', $file);
 
-      // Save the file to the destination.
-      $destination->saveFile($file);
+      // Save the file to each destination.
+      foreach ($destinations as $destination) {
+        $destination->saveFile($file);
+      }
 
       // Let plugins react to a successful operation.
       $this->plugins()->call('backupSucceed', $file);

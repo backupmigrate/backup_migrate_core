@@ -10,4 +10,4 @@ Like other plugins, destinations are passed to the Backup and Migrate object by 
 
 	$backup_migrate->plugins()->add(new MyDestinationPlugin(), 'destination1');
 
-A single Backup and Migrate instance can have more than one destination of a given type. Each destination will have a unique key that will be used to pass the configuration to the destination object as well as to identify the destination when running a `backup()` or `restore()` operation. Only one destination will be used during each backup or restore operation.
+A single Backup and Migrate instance can have more than one destination of a given type. Each destination will have a unique key that will be used to pass the configuration to the destination object as well as to specify the destination(s) when running a `backup()` or `restore()` operation. Only one destination will be used during each backup or restore operation.

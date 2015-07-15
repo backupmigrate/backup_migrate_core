@@ -86,7 +86,7 @@ Each backup and restore operation works on a single source. For simplicity more 
 See: [Sources](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Source)
 
 ##### Destinations
-Destinations act the same way as sources. These are the places where the backup files are sent (during `backup()`) or from which they are loaded (uring `restore()`).
+Destinations act the same way as sources. These are the places where the backup files are sent (during `backup()`) or from which they are loaded (during `restore()`).
 
 See: [Destinations](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Destination)
 

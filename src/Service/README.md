@@ -97,7 +97,8 @@ The `backup()` operation creates a backup file from the specified source, post-p
 filters and saves the file to the specified destination. The parameters for this operation are:
 
 * **$source_id** ***(string)*** - The id of the source as specified when it is added to the plugin manager.
-* **$destination_id** ***(string)*** - The id of the destination as specified when it is added to the plugin manager.
+* **$destination_id** ***(string|array)*** - The id of the destination as specified when it is added to the plugin manager. 
+This can also be an array of destination ids to send the backup to multiple destinations.
 
 There is no return value but it may throw an exception if there is an error.
 
