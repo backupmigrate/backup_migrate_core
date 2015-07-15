@@ -5,7 +5,7 @@
  * Contains \BackupMigrate\Core\Services\BackupMigrate.
  */
 
-namespace BackupMigrate\Core\Services;
+namespace BackupMigrate\Core\Service;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Environment\EnvironmentInterface;

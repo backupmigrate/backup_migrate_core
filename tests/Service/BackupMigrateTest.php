@@ -3,10 +3,10 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Tests\Services;
+namespace BackupMigrate\Core\Tests\Service;
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginManager;
-use BackupMigrate\Core\Services\BackupMigrate;
+use BackupMigrate\Core\Service\BackupMigrate;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 use \BackupMigrate\Core\File\ReadableStreamBackupFile;
 
