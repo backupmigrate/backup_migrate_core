@@ -66,7 +66,7 @@ class BrowserDownloadDestination extends StreamDestination implements Destinatio
         header($header['key'] . ': ' . $header['value']);
       }
       // Transfer file in 1024 byte chunks to save memory usage.
-      while ($data = $from->readBytes(1024 * 512)) {
+      while ($data = $file->readBytes(1024 * 512)) {
         print $data;
       }
       $file->close();
