@@ -31,7 +31,6 @@ trait ConfigurableTrait {
     if ($init instanceof ConfigInterface) {
       $this->setConfig($init);
     }
-    $this->defaults = new Config();
   }
 
   /**

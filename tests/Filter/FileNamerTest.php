@@ -28,7 +28,7 @@ class FileNamerTest extends PHPUnit_Framework_TestCase {
     $file = $this->manager->create('txt');
 
     $filter = new FileNamer(
-      ['filename' => 'testfile']
+      ['filename' => 'testfile', 'timestamp' => FALSE]
     );
     $file = $filter->afterBackup($file);
     $this->assertEquals('testfile.txt', $file->getFullName());
@@ -47,4 +47,19 @@ class FileNamerTest extends PHPUnit_Framework_TestCase {
     $date = gmdate('Y-m-d');
     $this->assertEquals("testfile-$date.txt", $file->getFullName());
   }
+
+  /**
+   * covers ::getSchema;
+   */
+  function testDefaults() {
+    $file = $this->manager->create('txt');
+
+    $filter = new FileNamer();
+
+
+    $this->assertEquals("backup", $filter->confGet('filename'));
+    $this->assertEquals(TRUE, $filter->confGet('timestamp'));
+    $this->assertEquals('Y-m-d\TH-i-s', $filter->confGet('timestamp_format'));
+  }
+
 }
