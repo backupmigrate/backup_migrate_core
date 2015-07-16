@@ -120,7 +120,7 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
   protected function _getConnection() {
     $this->connection = new \mysqli(
       $this->confGet('host'),
-      $this->confGet('user'),
+      $this->confGet('username'),
       $this->confGet('password'),
       $this->confGet('database'),
       $this->confGet('port'),
