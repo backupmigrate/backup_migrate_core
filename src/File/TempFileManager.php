@@ -39,7 +39,7 @@ class TempFileManager implements TempFileManagerInterface {
    */
   public function create($ext = '') {
     $file = new WritableStreamBackupFile($this->adapter->createTempFile($ext));
-    $file->setExtList(array($ext));
+    $file->setExtList(explode('.', $ext));
     return $file;
   }
 
@@ -66,11 +66,11 @@ class TempFileManager implements TempFileManagerInterface {
 
     // Copy the file metadata to a new TempFile
     $out = new WritableStreamBackupFile($this->adapter->createTempFile($new_ext));
-    $out->setExtList($parts);
 
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());
     $out->setName($file->getName());
+    $out->setExtList($parts);
 
     return $out;
   }
@@ -94,11 +94,11 @@ class TempFileManager implements TempFileManagerInterface {
 
     // Create a new temp file with the new extension
     $out = new WritableStreamBackupFile($this->adapter->createTempFile($new_ext));
-    $out->setExtList($parts);
 
     // Copy the file metadata to a new TempFile
     $out->setMetaMultiple($file->getMetaAll());
     $out->setName($file->getName());
+    $out->setExtList($parts);
 
     return $out;
   }

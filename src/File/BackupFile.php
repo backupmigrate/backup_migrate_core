@@ -149,6 +149,6 @@ class BackupFile implements BackupFileInterface {
    *  The list of file extensions for the file*  The list of file extensions for the file
    */
   public function setExtList($ext) {
-    $this->ext = $ext;
+    $this->ext = array_filter($ext);
   }
 }
