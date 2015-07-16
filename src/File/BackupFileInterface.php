@@ -101,4 +101,13 @@ interface BackupFileInterface {
    * @return mixed
    */
   public function getExt();
+
+  /**
+   * Set the extension array for the file to the given array.
+   *
+   * @param array $ext
+   *  The list of file extensions for the file
+   */
+  public function setExtList($ext);
+
 }

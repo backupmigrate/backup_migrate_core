@@ -119,7 +119,7 @@ class BackupFile implements BackupFileInterface {
     // Break the file name into name and extension array.
     $parts = explode('.', $fullname);
     $this->setName(array_shift($parts));
-    $this->ext = $parts;
+    $this->setExtList($parts);
   }
 
 
@@ -144,4 +144,11 @@ class BackupFile implements BackupFileInterface {
     return implode($this->getExtList(), '.');
   }
 
+  /**
+   * @param array $ext
+   *  The list of file extensions for the file*  The list of file extensions for the file
+   */
+  public function setExtList($ext) {
+    $this->ext = $ext;
+  }
 }
