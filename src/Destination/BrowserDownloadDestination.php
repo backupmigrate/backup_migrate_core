@@ -27,7 +27,7 @@ class BrowserDownloadDestination extends StreamDestination implements Destinatio
     // Set some default download headers.
     $headers = array(
       array('key' => 'Content-Disposition', 'value' => 'attachment; filename="'. $file->getFullName() .'"'),
-      array('key' => 'Cache-Control', 'no-cache'),
+      array('key' => 'Cache-Control', 'value' => 'no-cache'),
     );
 
     // Set a mime-type header.
