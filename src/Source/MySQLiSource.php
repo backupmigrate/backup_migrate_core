@@ -73,7 +73,8 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
       return $file;
     }
     else {
-      return FALSE;
+      // @TODO: Throw exception
+      return $this->getTempFileManager()->create('mysql');
     }
 
   }
