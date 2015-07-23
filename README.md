@@ -41,7 +41,8 @@ The following is a simplified version of how to call the library to perform a ba
 	// Create a new Backup and Migrate object with this configuration.
 	$bam = new BackupMigrate(NULL, $config);
 	
-	// Add the database source. This will read the configuration with the same key 	$bam->plugins()->add(new MySQLiSource(), 'database1');
+	// Add the database source. This will read the configuration with the same key 	
+	$bam->plugins()->add(new MySQLiSource(), 'database1');
 	// Add the destination.
 	$bam->plugins()->add(new DirectoryDestination(), 'mybackups');
 
