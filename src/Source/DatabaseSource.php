@@ -7,6 +7,7 @@
 
 namespace BackupMigrate\Core\Source;
 
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
@@ -34,23 +35,33 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
       'group' => $group,
       'type' => 'select',
       'multiple' => true,
-      'options' => $this->_getTableNames(),
+      'options' => $this->getTableNames(),
       'actions' => ['backup']
     ];
     $schema['fields']['exclude_tables'] = $table_select + [
       'title' => 'Exclude these tables altogether',
     ];
-    $schema['fields']['nodata_tables'] = $table_select + [
-      'title' => 'Exclude data from these tables',
-    ];
-
-    // Uneditable
-    $schema['fields']['generator'] = [
-      'default' => 'Backup and Migrate Core',
-    ];
-
+//    $schema['fields']['nodata_tables'] = $table_select + [
+//      'title' => 'Exclude data from these tables',
+//    ];
+//
+//    // Uneditable
+//    $schema['fields']['generator'] = [
+//      'default' => 'Backup and Migrate Core',
+//    ];
 
     return $schema;
+  }
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Config\Config
+   */
+  public function confDefaults() {
+    return new Config([
+      'generator' => 'Backup and Migrate Core',
+    ]);
   }
 
   /**

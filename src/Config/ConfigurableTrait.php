@@ -76,18 +76,7 @@ trait ConfigurableTrait {
    * @return \BackupMigrate\Core\Config\Config
    */
   public function confDefaults() {
-    $schema = $this->configSchema();
-    $defaults = new Config();
-
-    // Read the defaults from the schema if avialable.
-    if (isset($schema['fields'])) {
-      foreach ($schema['fields'] as $key => $field) {
-        if (isset($field['default'])) {
-          $defaults->set($key, $field['default']);
-        }
-      }
-    }
-    return $defaults;
+    return new Config();
   }
 
   /**
