@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Filter;
 
 
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
@@ -35,26 +36,36 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
       'group' => 'file',
       'type' => 'textfield',
       'title' => 'File Name',
-      'default' => 'backup',
       'actions' => ['backup']
     ];
     $schema['fields']['timestamp'] = [
       'group' => 'file',
       'type' => 'checkbox',
       'title' => 'Append a timestamp',
-      'default' => TRUE,
       'actions' => ['backup']
     ];
     $schema['fields']['timestamp_format'] = [
       'group' => 'file',
       'type' => 'textfield',
       'title' => 'Timestamp Format',
-      'default' => 'Y-m-d\TH-i-s',
       'dependencies' => ['timestamp' => TRUE],
       'actions' => ['backup']
     ];
 
     return $schema;
+  }
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Config\Config
+   */
+  public function confDefaults() {
+    return new Config([
+      'filename' => 'backup',
+      'timestamp' => TRUE,
+      'timestamp_format' => 'Y-m-d\TH-i-s',
+    ]);
   }
 
   /**

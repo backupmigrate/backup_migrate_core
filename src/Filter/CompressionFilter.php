@@ -97,12 +97,24 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
       'type' => count($compression_options) > 1 ? "select" : 'value',
       'title' => 'Compression',
       'options' => $compression_options,
-      'default' => $this->_defaultCompressionAlgorithm(),
       'actions' => ['backup']
     ];
 
     return $form;
   }
+
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Config\Config
+   */
+  public function confDefaults() {
+    return new Config([
+      'compression' => $this->_defaultCompressionAlgorithm(),
+    ]);
+  }
+
 
   /**
    * Run on a backup
