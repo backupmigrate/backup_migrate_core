@@ -118,17 +118,19 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    * @throws \Exception
    */
   protected function _getConnection() {
-    $this->connection = new \mysqli(
-      $this->confGet('host'),
-      $this->confGet('username'),
-      $this->confGet('password'),
-      $this->confGet('database'),
-      $this->confGet('port'),
-      $this->confGet('socket')
-    );
-    // Throw an error on fail
-    if ($this->connection->connect_errno) {
-      throw new \Exception("Failed to connect to MySQL server");
+    if (!$this->connection) {
+     $this->connection = new \mysqli(
+        $this->confGet('host'),
+        $this->confGet('username'),
+        $this->confGet('password'),
+        $this->confGet('database'),
+        $this->confGet('port'),
+        $this->confGet('socket')
+      );
+      // Throw an error on fail
+      if ($this->connection->connect_errno) {
+        throw new \Exception("Failed to connect to MySQL server");
+      }
     }
     return $this->connection;
   }
