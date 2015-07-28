@@ -52,6 +52,21 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
 
 
   /**
+   * Set the configuration. Reconfigure all of the installed plugins.
+   *
+   * @param \BackupMigrate\Core\Config\ConfigInterface $config
+   */
+  public function setConfig(ConfigInterface $config) {
+    // Set the configuration object to the one passed in.
+    $this->config = $config;
+
+    // Pass the appropriate configuration to each of the installed plugins.
+    foreach ($this->getAll() as $key => $plugin) {
+      $this->_configurePlugin($plugin, $key);
+    }
+  }
+
+  /**
    * Get the temporary file manager controlled by this plugin manager to be
    * passed as a dependency to plugins. Lazily creates the manager so that
    * a 'blank' plugin manager doesn't take much to initiate.
@@ -88,7 +103,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
    * {@inheritdoc}
    */
   public function getAll() {
-    return $this->items;
+    return empty($this->items) ? array() : $this->items;
   }
 
   /**
@@ -168,18 +183,9 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
    * @param string $id
    *   The id of the plugin (to extract the correct settings).
    */
-  protected function _preparePlugin($plugin, $id) {
+  protected function _preparePlugin(PluginInterface $plugin, $id) {
     // If this plugin can be configured, then pass in the configuration.
-    if ($plugin instanceof ConfigurableInterface) {
-      // Configure the plugin with the appropriate subset of the configuration.
-      $config = $this->confGet($id);
-      // Don't override plugin config if there is nothing set.
-      // This is because sources and destinations are configured before they
-      // are passed in to the manager. This maybe something to normalize.
-      if ($config !== NULL) {
-        $plugin->setConfig(new Config($config));
-      }
-    }
+    $this->_configurePlugin($plugin, $id);
 
     // Inject the file processor
     if ($plugin instanceof FileProcessorInterface) {
@@ -199,5 +205,29 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
     // @TODO Inject cache/state/logger/mailer dependencies
     // OR: simply inject the entire environment and let the plugin use what it
     // wants.
+  }
+
+  /**
+   * Set the configuration for the given plugin.
+   *
+   * @param $plugin
+   * @param $id
+   */
+  protected function _configurePlugin(PluginInterface $plugin, $id) {
+    // If this plugin can be configured, then pass in the configuration.
+    if ($plugin instanceof ConfigurableInterface) {
+      // Configure the plugin with the appropriate subset of the configuration.
+      $config = $this->confGet($id);
+
+      // Don't override plugin config if there is nothing set.
+      // This is because sources and destinations may be configured before they
+      // are passed in to the manager. This maybe something to normalize.
+      if ($config !== NULL) {
+        $plugin->setConfig(new Config($config));
+      }
+
+      // Get the configuration back from the plugin to populate defaults within the manager.
+      $this->config()->set($id, $plugin->config());
+    }
   }
 }

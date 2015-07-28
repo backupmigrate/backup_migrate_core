@@ -74,6 +74,55 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
     $this->plugins->add($plugin2, 'test2');
   }
 
+  /**
+   * Test if configuration can be changed after initialization
+   *
+   * @covers ::add
+   * @covers ::get
+   * @covers ::setConfig
+   */
+  public function testReConfigure() {
+    // Create a stub for the SomeClass class.
+    $plugin = $this->getMockBuilder('\BackupMigrate\Core\Plugin\PluginBase')
+      ->setMethods(['setConfig'])
+      ->getMock();
+    $plugin2 = $this->getMockBuilder('\BackupMigrate\Core\Plugin\PluginBase')
+      ->setMethods(['setConfig'])
+      ->getMock();
+
+    $plugin->expects($this->at(0))
+      ->method('setConfig')
+      ->with(
+        $this->equalTo(new Config(['foo' => 'bar']))
+      );
+    $plugin->expects($this->at(1))
+      ->method('setConfig')
+      ->with(
+        $this->equalTo(new Config(['foo' => 'bar2']))
+      );
+    $plugin2->expects($this->at(0))
+      ->method('setConfig')
+      ->with(
+        $this->equalTo(new Config(['foo' => 'baz', 'hello' => 'world']))
+      );
+    $plugin2->expects($this->at(1))
+      ->method('setConfig')
+      ->with(
+        $this->equalTo(new Config(['foo' => 'baz2', 'hello' => 'planet!', 'abc' => 123]))
+      );
+
+    $this->plugins->add($plugin, 'test');
+    $this->plugins->add($plugin2, 'test2');
+
+    $this->plugins->setConfig(
+      new Config([
+        'test' => ['foo' => 'bar2',],
+        'test2' => ['foo' => 'baz2', 'hello' => 'planet!', 'abc' => 123]
+      ])
+    );
+
+  }
+
 
   /**
    * @covers ::add

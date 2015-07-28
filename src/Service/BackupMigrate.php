@@ -133,4 +133,17 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
     }
   }
 
+  /**
+   * Set the configuration for the service. This simply passes the configuration
+   * on to the plugin manager as all work is done by plugins.
+   *
+   * This can be called after the service is instantiated to pass new configuration
+   * to the plugins.
+   *
+   * @param \BackupMigrate\Core\Config\ConfigInterface $config
+   */
+  public function setConfig(ConfigInterface $config) {
+    $this->plugins()->setConfig($config);
+  }
+
 }
