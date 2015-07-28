@@ -37,11 +37,18 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'group' => 'file',
         'type' => 'text',
         'title' => 'File Name',
-        'actions' => ['backup']
+        'must_match' => '/^[\w\-_]+$/',
+        'must_match_error' => (('%title must contain only letters, numbers, dashes (-) and underscores (_).')),
+        'min_length' => 1,
+        // Allow a 200 character backup name leaving a generous 55 characters
+        // for timestamp and extension.
+        'max_length' => 200,
+        'required' => TRUE,
+        'description' => (''),
       ];
       $schema['fields']['timestamp'] = [
         'group' => 'file',
-        'type' => 'checkbox',
+        'type' => 'boolean',
         'title' => 'Append a timestamp',
         'actions' => ['backup']
       ];
@@ -49,6 +56,7 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'group' => 'file',
         'type' => 'text',
         'title' => 'Timestamp Format',
+        'max_length' => 32,
         'dependencies' => ['timestamp' => TRUE],
         'actions' => ['backup']
       ];
@@ -68,21 +76,6 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
       'timestamp' => TRUE,
       'timestamp_format' => 'Y-m-d\TH-i-s',
     ]);
-  }
-
-
-  /**
-   * Get any validation errors in the config.
-   *
-   * @param array $params
-   * @return array
-   */
-  public function configErrors($params = array()) {
-    if ($params['operation'] == 'backup') {
-//      return [
-//        new ValidationError('filename', 'This filename sucks')
-//      ];
-    }
   }
 
   /**

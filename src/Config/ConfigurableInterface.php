@@ -56,5 +56,12 @@ interface ConfigurableInterface {
    */
   public function configSchema($params = array());
 
+  /**
+   * Get any validation errors in the config.
+   *
+   * @param array $params
+   * @return array
+   */
+  public function configErrors($params = array());
 
 }
