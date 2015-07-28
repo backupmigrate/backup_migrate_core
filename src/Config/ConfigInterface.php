@@ -53,13 +53,4 @@ interface ConfigInterface
    */
   public function fromArray($values);
 
-  /**
-   * Set the defaults for this configuration object.
-   * This is like fromArray but it does not overwrite existing values.
-   *
-   * @param ConfigInterface $values
-   * @return void
-   */
-  public function setDefaults(ConfigInterface $values);
-
 }

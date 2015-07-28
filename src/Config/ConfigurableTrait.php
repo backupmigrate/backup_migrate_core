@@ -44,7 +44,12 @@ trait ConfigurableTrait {
     $this->config = $config;
 
     // Add the default values to the config object so they can be relied on to be always present.
-    $this->config()->setDefaults($this->configDefaults());
+    $defaults = $this->configDefaults();
+    foreach ($defaults->toArray() as $key => $value) {
+      if (!$this->config->keyIsSet($key)) {
+        $this->config->set($key, $value);
+      }
+    }
   }
 
   /**

@@ -86,18 +86,5 @@ class Config implements ConfigInterface {
     $this->config = $values;
   }
 
-  /**
-   * Set the defaults for this configuration object.
-   * This is like fromArray but it does not overwrite existing values.
-   *
-   * @param \BackupMigrate\Core\Config\ConfigInterface $defaults
-   */
-  public function setDefaults(ConfigInterface $defaults) {
-    foreach ($defaults->toArray() as $key => $value) {
-      if (!$this->keyIsSet($key)) {
-        $this->set($key, $value);
-      }
-    }
-  }
 
 }
