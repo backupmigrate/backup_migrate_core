@@ -352,15 +352,15 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    * @return array
    */
   protected function _availableCompressionAlgorithms() {
-    $compression_options = array("none" => t("No Compression"));
+    $compression_options = array("none" => ("No Compression"));
     if (function_exists("gzencode")) {
-      $compression_options['gzip'] = t("GZip");
+      $compression_options['gzip'] = ("GZip");
     }
     if (function_exists("bzcompress")) {
-      $compression_options['bzip'] = t("BZip");
+      $compression_options['bzip'] = ("BZip");
     }
     if (class_exists('ZipArchive')) {
-      $compression_options['zip'] = t("Zip", array(), array('context' => 'compression format'));
+      $compression_options['zip'] = ("Zip");
     }
     return $compression_options;
   }
