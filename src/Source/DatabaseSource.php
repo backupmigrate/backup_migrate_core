@@ -30,32 +30,54 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
     // @TODO: make this the id of the source.
     $group = 'db';
 
+    // Backup settings.
     if ($params['operation'] == 'backup') {
       $table_select = [
         'group' => $group,
-        'type' => 'select',
+        'type' => 'enum',
         'multiple' => true,
         'options' => $this->getTableNames(),
         'actions' => ['backup']
       ];
       $schema['fields']['exclude_tables'] = $table_select + [
-          'title' => 'Exclude these tables altogether',
+          'title' => (('Exclude these tables entirely')),
+        ];
+
+      $schema['fields']['nodata_tables'] = $table_select + [
+          'title' => (('Exclude data from these tables')),
         ];
     }
+
+    // Init settings.
     else if ($params['operation'] == 'initialize') {
+      $schema['fields']['host'] = [
+        'type' => 'text',
+        'title' => 'Hostname'
+      ];
       $schema['fields']['database'] = [
         'type' => 'text',
         'title' => 'Database'
       ];
+      $schema['fields']['username'] = [
+        'type' => 'text',
+        'title' => 'Username',
+      ];
+      $schema['fields']['password'] = [
+        'type' => 'password',
+        'title' => 'Password'
+      ];
+      $schema['fields']['port'] = [
+        'type' => 'number',
+        'min' => 1,
+        'max' => 65535,
+        'title' => 'Port',
+      ];
     }
-//    $schema['fields']['nodata_tables'] = $table_select + [
-//      'title' => 'Exclude data from these tables',
-//    ];
-//
-//    // Uneditable
-//    $schema['fields']['generator'] = [
-//      'default' => 'Backup and Migrate Core',
-//    ];
+
+    $schema['groups'][$group] = array(
+      // @TODO: Make this the title of the source.
+      'title' => 'Database Settings',
+    );
 
     return $schema;
   }
