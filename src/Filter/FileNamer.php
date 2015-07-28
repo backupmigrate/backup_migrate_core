@@ -29,6 +29,7 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
     $schema = array();
 
     // Backup configuration
+
     if ($params['operation'] == 'backup') {
       $schema['groups']['file'] = [
         'title' => 'Backup File',
@@ -44,13 +45,11 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         // for timestamp and extension.
         'max_length' => 200,
         'required' => TRUE,
-        'description' => (''),
       ];
       $schema['fields']['timestamp'] = [
         'group' => 'file',
         'type' => 'boolean',
         'title' => 'Append a timestamp',
-        'actions' => ['backup']
       ];
       $schema['fields']['timestamp_format'] = [
         'group' => 'file',
@@ -58,10 +57,9 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'title' => 'Timestamp Format',
         'max_length' => 32,
         'dependencies' => ['timestamp' => TRUE],
-        'actions' => ['backup']
+        'description' => (('Use <a href="http://php.net/date">PHP Date formatting</a>.')),
       ];
     }
-
     return $schema;
   }
 
