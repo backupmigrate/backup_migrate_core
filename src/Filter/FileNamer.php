@@ -9,6 +9,7 @@ namespace BackupMigrate\Core\Filter;
 
 
 use BackupMigrate\Core\Config\Config;
+use BackupMigrate\Core\Config\ValidationError;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
@@ -22,20 +23,19 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
   use FileProcessorTrait;
 
   /**
-   * Get a definition for user-configurable settings.
-   *
-   * @return array
+   * {@inheritdoc}
    */
   public function configSchema($params = array()) {
     $schema = array();
 
+    // Backup configuration
     if ($params['operation'] == 'backup') {
       $schema['groups']['file'] = [
         'title' => 'Backup File',
       ];
       $schema['fields']['filename'] = [
         'group' => 'file',
-        'type' => 'textfield',
+        'type' => 'text',
         'title' => 'File Name',
         'actions' => ['backup']
       ];
@@ -47,7 +47,7 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
       ];
       $schema['fields']['timestamp_format'] = [
         'group' => 'file',
-        'type' => 'textfield',
+        'type' => 'text',
         'title' => 'Timestamp Format',
         'dependencies' => ['timestamp' => TRUE],
         'actions' => ['backup']
@@ -62,12 +62,27 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
    *
    * @return \BackupMigrate\Core\Config\Config
    */
-  public function confDefaults() {
+  public function configDefaults() {
     return new Config([
       'filename' => 'backup',
       'timestamp' => TRUE,
       'timestamp_format' => 'Y-m-d\TH-i-s',
     ]);
+  }
+
+
+  /**
+   * Get any validation errors in the config.
+   *
+   * @param array $params
+   * @return array
+   */
+  public function configErrors($params = array()) {
+    if ($params['operation'] == 'backup') {
+//      return [
+//        new ValidationError('filename', 'This filename sucks')
+//      ];
+    }
   }
 
   /**
