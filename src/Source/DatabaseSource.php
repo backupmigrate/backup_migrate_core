@@ -25,22 +25,29 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
    *
    * @return array
    */
-  public function configSchema() {
+  public function configSchema($params = array()) {
     $schema = array();
-
     // @TODO: make this the id of the source.
     $group = 'db';
 
-    $table_select = [
-      'group' => $group,
-      'type' => 'select',
-      'multiple' => true,
-      'options' => $this->getTableNames(),
-      'actions' => ['backup']
-    ];
-    $schema['fields']['exclude_tables'] = $table_select + [
-      'title' => 'Exclude these tables altogether',
-    ];
+    if ($params['operation'] == 'backup') {
+      $table_select = [
+        'group' => $group,
+        'type' => 'select',
+        'multiple' => true,
+        'options' => $this->getTableNames(),
+        'actions' => ['backup']
+      ];
+      $schema['fields']['exclude_tables'] = $table_select + [
+          'title' => 'Exclude these tables altogether',
+        ];
+    }
+    else if ($params['operation'] == 'initialize') {
+      $schema['fields']['database'] = [
+        'type' => 'text',
+        'title' => 'Database'
+      ];
+    }
 //    $schema['fields']['nodata_tables'] = $table_select + [
 //      'title' => 'Exclude data from these tables',
 //    ];
@@ -58,7 +65,7 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
    *
    * @return \BackupMigrate\Core\Config\Config
    */
-  public function confDefaults() {
+  public function configDefaults() {
     return new Config([
       'generator' => 'Backup and Migrate Core',
     ]);
