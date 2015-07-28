@@ -101,10 +101,10 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
     $out = array();
     $weights = array();
 
-    foreach ($this->getAll() as $plugin) {
+    foreach ($this->getAll() as $key => $plugin) {
       if ($plugin->supportsOp($op)) {
-        $out[] = $plugin;
-        $weights[] = $plugin->opWeight($op);
+        $out[$key] = $plugin;
+        $weights[$key] = $plugin->opWeight($op);
       }
     }
     array_multisort($weights, $out);
@@ -142,6 +142,21 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
 
     return $operand;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function map($op, $params = array()) {
+    $out = array();
+
+    // Run each of the installed plugins which implements the given operation.
+    foreach ($this->getAllByOp($op) as $key => $plugin) {
+      $out[$key] = $plugin->{$op}($params);
+    }
+
+    return $out;
+  }
+
 
   /**
    * Prepare the plugin for use. This is called when a plugin is added to the

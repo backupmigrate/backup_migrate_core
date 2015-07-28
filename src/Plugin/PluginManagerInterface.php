@@ -92,4 +92,23 @@ interface PluginManagerInterface
    */
   public function call($op, $operand = NULL, $params = array());
 
+  /**
+   * Call all plugins which support the given operation. Return the results in
+   * an array keyed by the plugin id.
+   *
+   * Params is an array of extra params which may be used. Plugins should expect
+   * these to be passed as a keyed array.
+   *
+   * @param string $op
+   *    The name of the operation to be called.
+   * @param mixed $operand
+   *    If there in an object being operated on (eg. a backup file) it will be
+   *    passed to each plugin in succession. If not then this will be NULL.
+   * @param array $params
+   *    Optional operation parameters as a key/value array
+   * @return array
+   */
+  public function map($op, $params = array());
+
+
 }

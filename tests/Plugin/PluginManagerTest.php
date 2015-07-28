@@ -99,12 +99,12 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
     $this->plugins->add($plugin, 'test');
 
     $op1 = $this->plugins->getAllByOp('op1');
-    $this->assertEquals([$plugin2, $plugin], $op1);
+    $this->assertEquals([$plugin2, $plugin], array_values($op1));
 
     $op2 = $this->plugins->getAllByOp('op2');
-    $this->assertEquals([$plugin, $plugin2], $op2);
+    $this->assertEquals([$plugin, $plugin2], array_values($op2));
 
     $op3 = $this->plugins->getAllByOp('op3');
-    $this->assertEquals([$plugin2], $op3);
+    $this->assertEquals([$plugin2], array_values($op3));
   }
 }
