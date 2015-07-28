@@ -39,6 +39,8 @@ class Config implements ConfigInterface {
    * Get a setting value
    *
    * @param string $key The key for the setting.
+   * @param mixed $default
+   *  The default to return if the value does not exist.
    * @return mixed The value of the setting.
    */
   public function get($key, $default = NULL) {
@@ -82,6 +84,20 @@ class Config implements ConfigInterface {
    */
   public function fromArray($values) {
     $this->config = $values;
+  }
+
+  /**
+   * Set the defaults for this configuration object.
+   * This is like fromArray but it does not overwrite existing values.
+   *
+   * @param \BackupMigrate\Core\Config\ConfigInterface $defaults
+   */
+  public function setDefaults(ConfigInterface $defaults) {
+    foreach ($defaults->toArray() as $key => $value) {
+      if (!$this->keyIsSet($key)) {
+        $this->set($key, $value);
+      }
+    }
   }
 
 }

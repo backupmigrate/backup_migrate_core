@@ -26,31 +26,33 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
    *
    * @return array
    */
-  public function configSchema() {
+  public function configSchema($params = array()) {
     $schema = array();
 
-    $schema['groups']['file'] = [
-      'title' => 'Backup File',
-    ];
-    $schema['fields']['filename'] = [
-      'group' => 'file',
-      'type' => 'textfield',
-      'title' => 'File Name',
-      'actions' => ['backup']
-    ];
-    $schema['fields']['timestamp'] = [
-      'group' => 'file',
-      'type' => 'checkbox',
-      'title' => 'Append a timestamp',
-      'actions' => ['backup']
-    ];
-    $schema['fields']['timestamp_format'] = [
-      'group' => 'file',
-      'type' => 'textfield',
-      'title' => 'Timestamp Format',
-      'dependencies' => ['timestamp' => TRUE],
-      'actions' => ['backup']
-    ];
+    if ($params['operation'] == 'backup') {
+      $schema['groups']['file'] = [
+        'title' => 'Backup File',
+      ];
+      $schema['fields']['filename'] = [
+        'group' => 'file',
+        'type' => 'textfield',
+        'title' => 'File Name',
+        'actions' => ['backup']
+      ];
+      $schema['fields']['timestamp'] = [
+        'group' => 'file',
+        'type' => 'checkbox',
+        'title' => 'Append a timestamp',
+        'actions' => ['backup']
+      ];
+      $schema['fields']['timestamp_format'] = [
+        'group' => 'file',
+        'type' => 'textfield',
+        'title' => 'Timestamp Format',
+        'dependencies' => ['timestamp' => TRUE],
+        'actions' => ['backup']
+      ];
+    }
 
     return $schema;
   }

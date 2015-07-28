@@ -39,16 +39,11 @@ trait ConfigurableTrait {
    * @param ConfigInterface $config A configuration object containing only configuration for all plugins
    */
   public function setConfig(ConfigInterface $config) {
+    // Set the configuration object to the one passed in.
     $this->config = $config;
-  }
 
-  /**
-   * Set the configuration for all plugins.
-   *
-   * @param ConfigInterface $config A configuration object containing only configuration for all plugins
-   */
-  public function setDefaults(ConfigInterface $defaults) {
-    $this->defaults = $defaults;
+    // Add the default values to the config object so they can be relied on to be always present.
+    $this->config()->setDefaults($this->configDefaults());
   }
 
   /**
@@ -60,33 +55,29 @@ trait ConfigurableTrait {
   }
 
   /**
-   * Get the configuration object for this item.
-   * @return \BackupMigrate\Core\Config\ConfigInterface
-   */
-  public function defaults() {
-    if (!$this->defaults) {
-      $this->setDefaults($this->confDefaults());
-    }
-    return $this->defaults;
-  }
-
-  /**
    * Get the default values for the plugin.
    *
    * @return \BackupMigrate\Core\Config\Config
    */
-  public function confDefaults() {
+  public function configDefaults() {
     return new Config();
   }
 
   /**
    * Get a default (blank) schema.
    *
+   * @param array $params
+   *  The parameters including:
+   *    - operation - The operation being performed, will be one of:
+   *      - 'backup': Configuration needed during a backup operation
+   *      - 'restore': Configuration needed during a restore
+   *      - 'initialize': Core configuration always needed by this item
    * @return array
    */
-  public function configSchema() {
-    return [];
+  public function configSchema($params = array()) {
+    return array();
   }
+
 
   /**
    * Get a specific value from the configuration.
@@ -95,12 +86,7 @@ trait ConfigurableTrait {
    * @return mixed The configuration value.
    */
   public function confGet($key) {
-    if ($this->config()->keyIsSet($key)) {
-      return $this->config()->get($key);
-    }
-    else {
-      return $this->defaults()->get($key);
-    }
+    return $this->config()->get($key);
   }
 
 }

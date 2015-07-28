@@ -88,17 +88,19 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    *
    * @return array
    */
-  public function configSchema() {
+  public function configSchema($params = array()) {
     $form = array();
 
-    $compression_options = $this->_availableCompressionAlgorithms();
-    $form['fields']['compression'] = [
-      'group' => 'file',
-      'type' => count($compression_options) > 1 ? "select" : 'value',
-      'title' => 'Compression',
-      'options' => $compression_options,
-      'actions' => ['backup']
-    ];
+    if ($params['operation'] == 'backup') {
+      $compression_options = $this->_availableCompressionAlgorithms();
+      $form['fields']['compression'] = [
+        'group' => 'file',
+        'type' => count($compression_options) > 1 ? "select" : 'value',
+        'title' => 'Compression',
+        'options' => $compression_options,
+        'actions' => ['backup']
+      ];
+    }
 
     return $form;
   }

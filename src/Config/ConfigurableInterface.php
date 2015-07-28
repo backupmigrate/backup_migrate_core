@@ -3,6 +3,7 @@
  * @file
  */
 namespace BackupMigrate\Core\Config;
+use BackupMigrate\Core\Config\ConfigInterface;
 
 
 /**
@@ -21,7 +22,7 @@ interface ConfigurableInterface {
 
   /**
    * Get the configuration object for this item.
-   * @return \BackupMigrate\Core\Config\ConfigInterface
+   * @return ConfigInterface
    */
   public function config();
 
@@ -39,14 +40,20 @@ interface ConfigurableInterface {
    * @return mixed
    * @internal param $key
    */
-  public function confDefaults();
+  public function configDefaults();
 
   /**
-   * Get a configuration schema for this configurable. This will help set
-   * default values for config and assist consuming parties with generating
-   * a UI for configuration
+   * Get a default (blank) schema.
    *
+   * @param array $params
+   *  The parameters including:
+   *    - operation - The operation being performed, will be one of:
+   *      - 'backup': Configuration needed during a backup operation
+   *      - 'restore': Configuration needed during a restore
+   *      - 'initialize': Core configuration always needed by this item
    * @return array
    */
-  public function configSchema();
+  public function configSchema($params = array());
+
+
 }
