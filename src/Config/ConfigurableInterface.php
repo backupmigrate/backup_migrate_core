@@ -2,7 +2,9 @@
 /**
  * @file
  */
+
 namespace BackupMigrate\Core\Config;
+
 use BackupMigrate\Core\Config\ConfigInterface;
 
 
