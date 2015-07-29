@@ -31,8 +31,6 @@ trait ConfigurableTrait {
   protected $init;
 
 
-  protected $defaults;
-
   /**
    * @param ConfigInterface|array $init
    *  The initial values for the configurable item
