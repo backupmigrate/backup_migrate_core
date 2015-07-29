@@ -59,6 +59,10 @@ trait ConfigurableTrait {
     $this->config = $config;
 
     // Add the init/default values to the config object so they will always exist.
+    // @TODO: Make this cascade happen when the config key is requested.
+    // That will allow read-only or runtime generation config object to be passed
+    // This would work by creating a CascadeConfig object which takes an array
+    // of ConfigInterface objects and queries each in order to find the given key.
     $defaults = $this->configDefaults();
     $init = $this->init;
     foreach ([$init, $defaults] as $config_object) {
