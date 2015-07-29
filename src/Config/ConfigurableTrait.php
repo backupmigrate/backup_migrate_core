@@ -14,9 +14,22 @@ namespace BackupMigrate\Core\Config;
  */
 trait ConfigurableTrait {
   /**
+   * The object's configuration object.
+   *
    * @var \BackupMigrate\Core\Config\ConfigInterface
    */
   protected $config;
+
+  /**
+   * The initial configuration. These configuration options can be overriden by
+   * the config options but will not be overwritten. If the object is
+   * re-configured after construction any missing configuration options will
+   * revert to these values.
+   *
+   * @var \BackupMigrate\Core\Config\ConfigInterface
+   */
+  protected $init;
+
 
   protected $defaults;
 
@@ -28,9 +41,11 @@ trait ConfigurableTrait {
     if (is_array($init)) {
       $init = new Config($init);
     }
-    if ($init instanceof ConfigInterface) {
-      $this->setConfig($init);
-    }
+    $this->init = $init;
+
+    // Set the config to a blank object to populate all values with the initial
+    // and default values
+    $this->setConfig(new Config());
   }
 
   /**
@@ -43,11 +58,14 @@ trait ConfigurableTrait {
     // Set the configuration object to the one passed in.
     $this->config = $config;
 
-    // Add the default values to the config object so they can be relied on to be always present.
+    // Add the init/default values to the config object so they will always exist.
     $defaults = $this->configDefaults();
-    foreach ($defaults->toArray() as $key => $value) {
-      if (!$this->config->keyIsSet($key)) {
-        $this->config->set($key, $value);
+    $init = $this->init;
+    foreach ([$init, $defaults] as $config_object) {
+      foreach ($config_object->toArray() as $key => $value) {
+        if (!$this->config->keyIsSet($key)) {
+          $this->config->set($key, $value);
+        }
       }
     }
   }

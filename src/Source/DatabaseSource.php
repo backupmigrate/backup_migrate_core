@@ -23,6 +23,7 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
   /**
    * Get a definition for user-configurable settings.
    *
+   * @param array $params
    * @return array
    */
   public function configSchema($params = array()) {
