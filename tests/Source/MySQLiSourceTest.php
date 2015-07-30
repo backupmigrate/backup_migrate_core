@@ -87,7 +87,7 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
       [
         'host' => $GLOBALS['DB_HOST'],
         'database' => $GLOBALS['DB_DBNAME'],
-        'user' => $GLOBALS['DB_USER'],
+        'username' => $GLOBALS['DB_USER'],
         'password' => $GLOBALS['DB_PASSWD'],
         'port' => $GLOBALS['DB_PORT'],
       ]
