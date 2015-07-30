@@ -219,12 +219,8 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
       // Configure the plugin with the appropriate subset of the configuration.
       $config = $this->confGet($id);
 
-      // Don't override plugin config if there is nothing set.
-      // This is because sources and destinations may be configured before they
-      // are passed in to the manager. This maybe something to normalize.
-      if ($config !== NULL) {
-        $plugin->setConfig(new Config($config));
-      }
+      // Set the config for the plugin
+      $plugin->setConfig(new Config($config));
 
       // Get the configuration back from the plugin to populate defaults within the manager.
       $this->config()->set($id, $plugin->config());
