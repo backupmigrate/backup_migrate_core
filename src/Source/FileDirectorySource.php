@@ -9,6 +9,7 @@ namespace BackupMigrate\Core\Source;
 
 
 use Archive_Tar;
+use BackupMigrate\Core\Environment\ArchiveWriterInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Exception\IgnorableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
@@ -26,6 +27,12 @@ class FileDirectorySource extends PluginBase
   use FileProcessorTrait;
 
   /**
+   * @var \BackupMigrate\Core\Environment\ArchiveWriterInterface
+   */
+  private $archive_writer;
+
+
+  /**
    * {@inheritdoc}
    */
   public function supportedOps() {
@@ -40,11 +47,18 @@ class FileDirectorySource extends PluginBase
    */
   public function exportToFile() {
     if ($directory = $this->confGet('directory')) {
-      $file = $this->getTempFileManager()->create('tar');
+      if (!$writer = $this->getArchiveWriter()) {
+        throw new BackupMigrateException('A file directory source requires an archive writer object.');
+      }
+      $ext = $writer->getFileExt();
+      $file = $this->getTempFileManager()->create($ext);
 
       if ($files = $this->getFilesToBackup($directory)) {
-        $tar = new Archive_Tar($file->realpath());
-        $tar->addModify($files, '', $directory);
+        $writer->setOutput($file);
+        foreach ($files as $file) {
+          $writer->addFile($file, $directory);
+        }
+        $writer->closeArchive();
         return $file;
       }
       throw new BackupMigrateException('The directory %dir does not not have any files to be backed up.',
@@ -156,5 +170,20 @@ class FileDirectorySource extends PluginBase
     }
 
     return array($out, $errors);
+  }
+
+
+  /**
+   * @param \BackupMigrate\Core\Environment\ArchiveWriterInterface $writer
+   */
+  public function setArchiveWriter(ArchiveWriterInterface $writer) {
+    $this->archive_writer  = $writer;
+  }
+
+  /**
+   * @return ArchiveWriterInterface
+   */
+  public function getArchiveWriter() {
+    return $this->archive_writer;
   }
 }
