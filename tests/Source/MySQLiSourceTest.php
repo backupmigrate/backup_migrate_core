@@ -44,16 +44,24 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
 
     $dsn = "mysql:dbname=$GLOBALS[DB_DBNAME];host=$GLOBALS[DB_HOST];port=$GLOBALS[DB_PORT]";
 
-    if ($this->conn === NULL) {
-      if (self::$pdo == NULL) {
-        self::$pdo = new PDO(
-          $dsn,
-          $GLOBALS['DB_USER'],
-          $GLOBALS['DB_PASSWD']
-        );
+    try {
+      if ($this->conn === NULL) {
+        if (self::$pdo == NULL) {
+          self::$pdo = new PDO(
+            $dsn,
+            $GLOBALS['DB_USER'],
+            $GLOBALS['DB_PASSWD']
+          );
+        }
+        $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DB_DBNAME']);
       }
-      $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DB_DBNAME']);
     }
+    catch (Exception $e) {
+      $this->markTestSkipped(
+        'Could not connect to the testing MySQL database.'
+      );
+    }
+
     return $this->conn;
   }
 
