@@ -41,7 +41,7 @@ class PearTarArchiveReaderTest extends \PHPUnit_Framework_TestCase {
 
     // TODO: Fix all this temp file messiness. Make it less dependent on the OS.
     $input_file = tempnam('/tmp', 'bamtest');
-    exec('tar --create --file=' .  $file_name . ' --files-from=/dev/null');
+    exec('tar --create --file=' .  $input_file . ' --files-from=/dev/null');
     foreach ($this->file_list as $name => $body) {
       file_put_contents('/tmp/'.$name, $body);
       exec("tar -C /tmp/ --append --file=$input_file $name");
