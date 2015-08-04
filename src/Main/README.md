@@ -44,15 +44,15 @@ to configure the plugin and to specify which source and destination are used dur
 	$plugins = new PluginManager($services);
 
     // Add a source:
-    $plugins->add(new MySQLiSource(), 'db1');
+    $plugins->add('db1', new MySQLiSource());
     
     // Add some destinations
-    $plugins->add(new BrowserDownloadDestination(), 'download');
-    $plugins->add(new DirectoryDestination(), 'mydirectory');
+    $plugins->add('download', new BrowserDownloadDestination());
+    $plugins->add('mydirectory', new DirectoryDestination());
     
     // Add some filters
-    $plugins->add(new CompressionFilter(), 'compress');
-    $plugins->add(new FileNamer(), 'namer');
+    $plugins->add('compress', new CompressionFilter());
+    $plugins->add('namer', new FileNamer());
     
     $bam = new BackupMigrate($plugins);
 

@@ -17,12 +17,12 @@ interface PluginManagerInterface
   /**
    * Add an item to the manager
    *
+   * @param $id
    * @param \BackupMigrate\Core\Plugin\PluginInterface|object $item
    *    The source to add.
-   * @param $id
    * @return
    */
-  public function add(PluginInterface $item, $id);
+  public function add($id, PluginInterface $item);
 
   /**
    * Get the item with the given id.

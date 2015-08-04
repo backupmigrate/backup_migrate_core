@@ -30,6 +30,6 @@ This plugin will have a logger injected if one is available:
 	
 	$plugins = new PluginManager($services);
 	// The manager will inject the logger automatically.
-	$plugins->add(new MyPlugin(), 'myplugin');
+	$plugins->add('myplugin', new MyPlugin());
 	
 	

@@ -33,13 +33,13 @@ The built in `\BackupMigrate\Core\Config\Config` is a simple implementation of t
 	
 	// Add the database source. This will read the configuration with the same key ('database1')
 	plugins->add(
-		new \BackupMigrate\Core\Source\MySQLiSource(),
-		'database1'
+		'database1',
+		new \BackupMigrate\Core\Source\MySQLiSource()
 	);
 	// Add the compression plugin.
 	plugins->add(
-		new \BackupMigrate\Core\Filter\CompressionFilter(),
-		'compressor'
+	    'compressor',
+		new \BackupMigrate\Core\Filter\CompressionFilter()
 	);
 	// Add more filters and a destination.
 	...
@@ -54,19 +54,19 @@ The built in `\BackupMigrate\Core\Config\Config` is a simple implementation of t
 
 A plugin may have two types of configuration: initial configuration, added when the plugin is created, and run-time configuration, added later by the plugin manager. Initial configuration can be overriden by run-time configuration but it cannot be overwritten by run-time config. That means that you can reconfigure plugins after the plugin manager has been created but the initial configuration will not be permanently overwriten. 
 
-An example that illustrates the difference is a database source plugin. The database connection information should not change per operation and should be concidered initial configuration. The list of tables to exclude during a backup, or whether the tables should be locked during a restore may change from run to run and should be run-time configuration.
+An example that illustrates the difference is a database source plugin. The database connection information should not change per operation and should be considered initial configuration. The list of tables to exclude during a backup, or whether the tables should be locked during a restore may change from run to run and should be run-time configuration.
 
 To specify initial configuration pass it to the plugin's constructor:
 
 	// The db credentials are passed in to the constructor and are permanent.
 	$plugins->add(
+		'main_database',
 		new MySQLiSource(new Config([
 			'database' => '...',
 			'username' => '...',
 			...
-		]),
-		'main_database'
-		);
+		])
+	);
 	
 	// Setting this configuration will not overwrite the db credentials.
 	$plugins->setConfig(new Config([

@@ -36,7 +36,7 @@ The plugin manager is a registry that stores each of the installed plugins and c
 
 The consuming application accesses the plugin manager only to add plugins. It may do so by adding the plugins before passing the plugin manager to the `BackupMigrate` object or by callign `plugins()` on the BackupMigrate object:
 
-	$backup_migrate->plugins()->add(new MyPlugin(), 'demoplugin');
+	$backup_migrate->plugins()->add('demoplugin', new MyPlugin());
 	
 To configure this plugin the consuming application would have a section called 'demoplugin' in the plugin manager configuration object:
 
@@ -99,7 +99,7 @@ Any service provided by the service locator will be injected into a plugin when 
 	$plugins = new PluginManager($services);
 	
 	// If this plugin has a `setLogger` the logger will be injected.
-	$plugins->add(new TestPlugin(), 'test');
+	$plugins->add('test', new TestPlugin());
 
 See: [Services](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Service)
 	

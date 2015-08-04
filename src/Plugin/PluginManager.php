@@ -72,7 +72,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   /**
    * {@inheritdoc}
    */
-  public function add(PluginInterface $item, $id) {
+  public function add($id, PluginInterface $item) {
     $this->_preparePlugin($item, $id);
     $this->items[$id] = $item;
   }

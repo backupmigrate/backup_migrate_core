@@ -40,8 +40,8 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
     $plugin2 = $this->getMockBuilder('\BackupMigrate\Core\Plugin\PluginBase')
       ->getMock();
 
-    $this->plugins->add($plugin, 'test');
-    $this->plugins->add($plugin2, 'test2');
+    $this->plugins->add('test', $plugin);
+    $this->plugins->add('test2', $plugin2);
 
     $this->assertEquals($plugin, $this->plugins->get('test'));
     $this->assertEquals($plugin2, $this->plugins->get('test2'));
@@ -70,8 +70,8 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
       $this->equalTo(new Config(['foo' => 'baz', 'hello' => 'world']))
     );
 
-    $this->plugins->add($plugin, 'test');
-    $this->plugins->add($plugin2, 'test2');
+    $this->plugins->add('test', $plugin);
+    $this->plugins->add('test2', $plugin2);
   }
 
   /**
@@ -111,8 +111,8 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
         $this->equalTo(new Config(['foo' => 'baz2', 'hello' => 'planet!', 'abc' => 123]))
       );
 
-    $this->plugins->add($plugin, 'test');
-    $this->plugins->add($plugin2, 'test2');
+    $this->plugins->add('test', $plugin);
+    $this->plugins->add('test2', $plugin2);
 
     $this->plugins->setConfig(
       new Config([
@@ -144,8 +144,8 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
       ['op1' => ['weight' => -100], 'op2' => ['weight' => 100], 'op3' => []]
     );
 
-    $this->plugins->add($plugin2, 'test2');
-    $this->plugins->add($plugin, 'test');
+    $this->plugins->add('test2', $plugin2);
+    $this->plugins->add('test', $plugin);
 
     $op1 = $this->plugins->getAllByOp('op1');
     $this->assertEquals([$plugin2, $plugin], array_values($op1));

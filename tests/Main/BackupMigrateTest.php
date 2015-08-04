@@ -6,8 +6,10 @@
 namespace BackupMigrate\Core\Tests\Main;
 
 use BackupMigrate\Core\Config\Config;
+use BackupMigrate\Core\Main\BackupMigrateInterface;
 use BackupMigrate\Core\Plugin\PluginManager;
 use BackupMigrate\Core\Main\BackupMigrate;
+use BackupMigrate\Core\Plugin\PluginManagerInterface;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 use \BackupMigrate\Core\File\ReadableStreamBackupFile;
 
@@ -20,10 +22,13 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
   use TempFileConsumerTestTrait;
 
   /**
-   * @var PluginManager
+   * @var PluginManagerInterface
    */
   protected $plugins;
 
+  /**
+   * @var BackupMigrate
+   */
   protected $bam;
 
   public function setUp() {
@@ -49,8 +54,8 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     $plugin2 = $this->getMockBuilder('\BackupMigrate\Core\Plugin\PluginBase')
       ->getMock();
 
-    $this->bam->plugins()->add($plugin, 'test');
-    $this->bam->plugins()->add($plugin2, 'test2');
+    $this->bam->plugins()->add('test', $plugin);
+    $this->bam->plugins()->add('test2', $plugin2);
 
     $this->assertEquals($plugin, $this->bam->plugins()->get('test'));
     $this->assertEquals($plugin2, $this->bam->plugins()->get('test2'));
@@ -97,10 +102,10 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add($source, 'source');
-    $this->bam->plugins()->add($destination, 'destination');
-    $this->bam->plugins()->add($destination2, 'destination2');
-    $this->bam->plugins()->add($plugin, 'test');
+    $this->bam->plugins()->add('source', $source);
+    $this->bam->plugins()->add('destination', $destination);
+    $this->bam->plugins()->add('destination2', $destination2);
+    $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->backup('source', 'destination');
 
@@ -144,10 +149,10 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add($source, 'source');
-    $this->bam->plugins()->add($destination, 'destination');
-    $this->bam->plugins()->add($destination2, 'destination2');
-    $this->bam->plugins()->add($plugin, 'test');
+    $this->bam->plugins()->add('source', $source);
+    $this->bam->plugins()->add('destination', $destination);
+    $this->bam->plugins()->add('destination2', $destination2);
+    $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->backup('source', array('destination', 'destination2'));
 
@@ -186,9 +191,9 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add($source, 'source');
-    $this->bam->plugins()->add($destination, 'destination');
-    $this->bam->plugins()->add($plugin, 'test');
+    $this->bam->plugins()->add('source', $source);
+    $this->bam->plugins()->add('destination', $destination);
+    $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->restore('source', 'destination', 'file.txt');
   }
