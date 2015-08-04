@@ -4,7 +4,7 @@
  */
 
 namespace BackupMigrate\Core\Tests\Environment;
-use BackupMigrate\Core\Service\PearTarArchiveWriter;
+use BackupMigrate\Core\Service\PearTarArchiver;
 use BackupMigrate\Core\File\BackupFile;
 use BackupMigrate\Core\File\WritableStreamBackupFile;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
@@ -18,7 +18,7 @@ class PearTarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
   use TempFileConsumerTestTrait;
 
   /**
-   * @var PearTarArchiveWriter
+   * @var PearTarArchiver
    */
   protected $archiver;
 
@@ -38,7 +38,7 @@ class PearTarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
       'files' => $this->file_list
     ]);
 
-    $this->archiver = new PearTarArchiveWriter();
+    $this->archiver = new PearTarArchiver();
   }
 
   /**
@@ -56,7 +56,7 @@ class PearTarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
   public function testArchiveFiles() {
     $output_file = tempnam('/tmp', 'test');
     $file = new WritableStreamBackupFile($output_file);
-    $this->archiver->setOutput($file);
+    $this->archiver->setArchive($file);
 
     $file_names = array_keys($this->file_list);
 

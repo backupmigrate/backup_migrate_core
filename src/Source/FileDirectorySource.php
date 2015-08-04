@@ -10,7 +10,7 @@ namespace BackupMigrate\Core\Source;
 
 use Archive_Tar;
 use BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Service\ArchiveWriterInterface;
+use BackupMigrate\Core\Service\ArchiverInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Exception\IgnorableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
@@ -28,9 +28,9 @@ class FileDirectorySource extends PluginBase
   use FileProcessorTrait;
 
   /**
-   * @var \BackupMigrate\Core\Service\ArchiveWriterInterface
+   * @var \BackupMigrate\Core\Service\ArchiverInterface
    */
-  private $archive_writer;
+  private $archiver;
 
 
   /**
@@ -49,16 +49,18 @@ class FileDirectorySource extends PluginBase
   public function exportToFile() {
     if ($directory = $this->confGet('directory')) {
       // Make sure the directory ends in exactly 1 slash:
-      $directory = rtrim($directory, '/') . '/';
+      if (substr($directory, -1) !== '/') {
+        $directory = $directory . '/';
+      }
 
-      if (!$writer = $this->getArchiveWriter()) {
+      if (!$writer = $this->getArchiver()) {
         throw new BackupMigrateException('A file directory source requires an archive writer object.');
       }
       $ext = $writer->getFileExt();
       $file = $this->getTempFileManager()->create($ext);
 
       if ($files = $this->getFilesToBackup($directory)) {
-        $writer->setOutput($file);
+        $writer->setArchive($file);
         foreach ($files as $path) {
           $writer->addFile($path, $directory);
         }
@@ -75,7 +77,35 @@ class FileDirectorySource extends PluginBase
    * {@inheritdoc}
    */
   public function importFromFile(BackupFileReadableInterface $file) {
-    // @TODO: Implement this.
+    if ($directory = $this->confGet('directory')) {
+      // Make sure the directory ends in exactly 1 slash:
+      if (substr($directory, -1) !== '/') {
+        $directory = $directory . '/';
+      }
+
+      if (!file_exists($directory)) {
+        throw new BackupMigrateException('The directory %dir does not exist to restore to.',
+          array('%dir' => $directory));
+      }
+      if (!is_writable($directory)) {
+        throw new BackupMigrateException('The directory %dir cannot be written to because of the operating system file permissions.',
+          array('%dir' => $directory));
+      }
+
+      if (!$archiver= $this->getArchiver()) {
+        throw new BackupMigrateException('A file directory source requires an archive writer object.');
+      }
+      // Check that the file endings match.
+      if ($archiver->getFileExt() !== $file->getExtLast()) {
+        throw new BackupMigrateException('This source expects a .%ext file.', array('%ext' => $archiver->getFileExt()));
+      }
+
+      $archiver->setArchive($file);
+      $archiver->extractTo($directory);
+
+      return TRUE;
+    }
+    return FALSE;
   }
 
   /**
@@ -150,7 +180,7 @@ class FileDirectorySource extends PluginBase
           if (!in_array($real, $exclude)) {
             if (is_dir($real)) {
               list($sub_files, $sub_errors) =
-                  $this->_getFilesFromDirectory($real, $exclude);
+                  $this->_getFilesFromDirectory($real . '/', $exclude);
 
               // If the directory is empty, add an empty directory.
               if (count($sub_files) == 0) {
@@ -178,17 +208,17 @@ class FileDirectorySource extends PluginBase
 
 
   /**
-   * @param \BackupMigrate\Core\Service\ArchiveWriterInterface $writer
+   * @param \BackupMigrate\Core\Service\ArchiverInterface $writer
    */
-  public function setArchiveWriter(ArchiveWriterInterface $writer) {
-    $this->archive_writer  = $writer;
+  public function setArchiver(ArchiverInterface $writer) {
+    $this->archiver  = $writer;
   }
 
   /**
-   * @return ArchiveWriterInterface
+   * @return ArchiverInterface
    */
-  public function getArchiveWriter() {
-    return $this->archive_writer;
+  public function getArchiver() {
+    return $this->archiver;
   }
 
   /**

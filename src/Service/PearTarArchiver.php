@@ -1,27 +1,27 @@
 <?php
 /**
  * @file
- * Contains BackupMigrate\Core\Environment\PearTarArchiveBase
+ * Contains BackupMigrate\Core\Environment\PearTarArchiveWriter
  */
 
 
 namespace BackupMigrate\Core\Service;
 
-
-use Archive_Tar;
 use BackupMigrate\Core\Exception\BackupMigrateException;
+use BackupMigrate\Core\File\BackupFileReadableInterface;
+use Archive_Tar;
 
 /**
- * Class PearTarArchiveBase
+ * Class PearTarArchiveWriter
  * @package BackupMigrate\Core\Environment
  */
-trait PearTarArchiveTrait {
+class PearTarArchiver implements ArchiverInterface {
 
   /**
    * @var Archive_Tar;
    */
   protected $archive_tar;
-  
+
   /**
    * Get the file extension for this archiver. For a tarball writer this would
    * be 'tar'. For a Zip file writer this would be 'zip'.
@@ -45,16 +45,17 @@ trait PearTarArchiveTrait {
   }
 
   /**
-   * @param mixed $archive_file
+   * @param \BackupMigrate\Core\File\BackupFileReadableInterface $out
    * @throws \BackupMigrate\Core\Exception\BackupMigrateException
    */
-  protected function setArchiveFile($archive_file) {
+  public function setArchive(BackupFileReadableInterface $archive_file) {
     if (!class_exists('Archive_Tar')) {
       throw new BackupMigrateException('Archiving file directories requires the PEAR Archive_Tar class.');
     }
 
     $this->archive_tar = new Archive_Tar($archive_file->realpath());
   }
+
 
   /**
    * This will be called when all files have been added. It gives the implementation
@@ -67,4 +68,31 @@ trait PearTarArchiveTrait {
     unset($this->archive_tar);
   }
 
+
+  /**
+   * @param string $real_path
+   *  The real path to the file. Can be a stream URI.
+   * @param string $base_dir
+   *  The base directory of the path to be removed when the file is added.
+   * @throws \BackupMigrate\Core\Exception\BackupMigrateException
+   */
+  public function addFile($real_path, $base_dir = '') {
+    $tar = $this->getArchiveTar();
+
+    // Add the file to the tarball.
+    $tar->addModify(array($real_path), '', $base_dir);
+  }
+
+  /**
+   * Extract all files to the given directory.
+   *
+   * @param string $directory
+   *  The directory to extract the files to.
+   * @return null
+   * @throws \BackupMigrate\Core\Exception\BackupMigrateException
+   */
+  public function extractTo($directory) {
+    $tar = $this->getArchiveTar();
+    $tar->extract($directory);
+  }
 }

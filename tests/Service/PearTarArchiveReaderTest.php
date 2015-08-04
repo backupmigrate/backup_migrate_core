@@ -5,6 +5,7 @@
 
 namespace BackupMigrate\Core\Tests\Service;
 use BackupMigrate\Core\File\ReadableStreamBackupFile;
+use BackupMigrate\Core\Service\PearTarArchiver;
 use BackupMigrate\Core\Service\PearTarArchiveReader;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 
@@ -17,7 +18,7 @@ class PearTarArchiveReaderTest extends \PHPUnit_Framework_TestCase {
   use TempFileConsumerTestTrait;
 
   /**
-   * @var PearTarArchiveReader
+   * @var PearTarArchiver
    */
   protected $archiver;
 
@@ -49,7 +50,7 @@ class PearTarArchiveReaderTest extends \PHPUnit_Framework_TestCase {
     $this->input_file = $input_file;
 
 
-    $this->archiver = new PearTarArchiveReader();
+    $this->archiver = new PearTarArchiver();
 
     $this->_setUpFiles([
       'out' => [],
@@ -65,11 +66,11 @@ class PearTarArchiveReaderTest extends \PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @covers ::setInput
+   * @covers ::setArchive
    * @covers ::extractTo
    */
   public function testReadArchive() {
-    $this->archiver->setInput(new ReadableStreamBackupFile($this->input_file));
+    $this->archiver->setArchive(new ReadableStreamBackupFile($this->input_file));
 
     $this->archiver->extractTo('vfs://root/out/');
 

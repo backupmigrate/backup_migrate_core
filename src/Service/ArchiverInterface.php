@@ -13,7 +13,7 @@ use BackupMigrate\Core\File\BackupFileReadableInterface;
  *
  * @package BackupMigrate\Core\Environment
  */
-interface ArchiveWriterInterface {
+interface ArchiverInterface {
 
   /**
    * Get the file extension for this archiver. For a tarball writer this would
@@ -26,7 +26,15 @@ interface ArchiveWriterInterface {
   /**
    * @param \BackupMigrate\Core\File\BackupFileReadableInterface $out
    */
-  public function setOutput(BackupFileReadableInterface $out);
+  public function setArchive(BackupFileReadableInterface $out);
+
+  /**
+   * Extract all files to the given directory.
+   *
+   * @param $directory
+   * @return mixed
+   */
+  public function extractTo($directory);
 
   /**
    * @param string $real_path
