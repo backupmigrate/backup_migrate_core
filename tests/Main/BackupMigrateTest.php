@@ -3,10 +3,11 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Tests\Service;
+namespace BackupMigrate\Core\Tests\Main;
+
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginManager;
-use BackupMigrate\Core\Service\BackupMigrate;
+use BackupMigrate\Core\Main\BackupMigrate;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
 use \BackupMigrate\Core\File\ReadableStreamBackupFile;
 
@@ -26,7 +27,6 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
   protected $bam;
 
   public function setUp() {
-    $env = new \BackupMigrate\Core\Environment\EnvironmentBase();
     $conf = new Config(
       [
         'test' => ['foo' => 'bar',],
@@ -35,7 +35,8 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     );
     $this->_setUpFiles(['file.txt' => 'Hello, World!']);
 
-    $this->bam = new BackupMigrate($env, $conf);
+    $this->bam = new BackupMigrate();
+    $this->bam->setConfig($conf);
   }
 
   /**

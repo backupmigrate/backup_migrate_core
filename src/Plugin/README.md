@@ -2,7 +2,7 @@
 
 **Plugins** do the actual work in Backup and Migrate. **The Plugin Manager** manages the configuration of all installed plugins as well as the calling of plugins during an operation.
 
-## Plugins
+## Plugins ##
 
 Plugins may be one of the following type:
 
@@ -12,41 +12,42 @@ Plugins may be one of the following type:
 
 While these three types of plugin are conceptually separate they are technically identical.
 
-##### Sources
+##### Sources #####
 Each backup and restore operation works on a single source. For simplicity more than one source may be added to the BackupMigrate object. The source to be backed up is identified by id when `backup()` or `restore()` is called.
 
 See: [Sources](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Source)
 
-##### Destinations
+##### Destinations #####
 Destinations are the places where the backup files are sent (during `backup()`) or from which they are loaded (uring `restore()`). Restore operations loads a file from a single destination. Backup operations save the backup file to 1 or more specified destinations.
 
 See: [Destinations](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Destination)
 
-##### Filters
+##### Filters #####
 Filters can alter backup files before `restore()` or after `backup()`. Unlike sources and destinations there can be many filters run per operation. During an operation all installed filters will run unless they are configured not to (e.g: if compression type is set to 'none' for a compression filter).
 
 See: [Filters](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Filter)
 
-## The Plugin Manager
+## The Plugin Manager ##
 
 The plugin manager is a registry that stores each of the installed plugins and configures the plugin as needed. Plugins are added to the manager with an id which is used for 2 things:
 
 * Specifying the configuration of the plugin
 * Specifying the source and destination for a backup or restore
 
-The consuming application accesses the plugin manager only to add plugins. It does so by calling `plugins()` on the BackupMigrate object:
+The consuming application accesses the plugin manager only to add plugins. It may do so by adding the plugins before passing the plugin manager to the `BackupMigrate` object or by callign `plugins()` on the BackupMigrate object:
 
 	$backup_migrate->plugins()->add(new MyPlugin(), 'demoplugin');
 	
-To configure this plugin the consuming application would have a section called 'demoplugin' in the Backup and Migrate configuration object:
+To configure this plugin the consuming application would have a section called 'demoplugin' in the plugin manager configuration object:
 
 	$conf = new Config(array(
 		'demoplugin' => array('foo => 'bar')
 	);
 	
-	$backup_migrate = new BackupMigrate(NULL, $conf);
+	$plugins = new PluginManager(NULL, $conf);
+	$backup_migrate = new BackupMigrate($plugins);
 	
-### Calling Plugins
+### Calling Plugins ###
 Internally the plugin manager is used to run all plugins for a given operation. This is done using the `call()` method:
 
 	$file = $this->plugins()->call('afterBackup', $file);
@@ -87,22 +88,23 @@ By default plugins are not given access to the plugin manager. However, if a plu
 		}
 	}
 
-### Accessing The Environment ###
-If a plugin requires the use of a cache, logger, state or mailer it may implement the `\BackupMigrate\Core\Environment\EnvironmentCallerInterface` to have the environment object injected by the plugin manager. There is also a `\BackupMigrate\Core\Environment\EnvironmentCallerTrait` to help implement the interface. Once this is done plugins will have access to the environment by calling the `env()` method:
+### Accessing Services ###
+If a plugin requires the use of a cache, logger, state storage, mailer or any other backing service it must have the service injected into it by the plugin manger. To make a service avaible to the plugin manager it may be added to an object which implenents `ServiceLocatorInterface`. That service locater may be passed to the plugin manager though the constructor or it can be passed in later using `setServiceLocator()`.
 
-	class MyOtherPlugin implements EnvironmentCallerInterface {
-		use EnvironmentCallerTrait;
+Any service provided by the service locator will be injected into a plugin when it is added to the plugin manager if the name of the service matches a setter present in the plugin. For example: if a plugin has a method called `setLogger` and the service locator has a service called 'Logger' then the logger service will be injected via the `setLogger` method:
 
-		function someOperation() {
-			$this->env()->logger()->error('Something bad!');
-			$this->env()->cache()->get('mycache');
-			$this->env()->state()->set('mykey', 'myval');
-			$this->env()->mailer()->send($to, $subject, $body);
-		}
-	}
+	$services = new ServiceLocator();
+	$services->add('Logger', new FileLogger('/path/to/log.txt'));
+	
+	$plugins = new PluginManager($services);
+	
+	// If this plugin has a `setLogger` the logger will be injected.
+	$plugins->add(new TestPlugin(), 'test');
+
+See: [Services](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Service)
 	
 ### Creating New Temporary Files ###
-If a plugin needs to create a new temporary file (for example to decompress a backup file). It may request that the TempFileManager be injected by implementing `\BackupMigrate\Core\Plugin FileProcessorInterface` and using the `\BackupMigrate\Core\Plugin FileProcessorTrait`. This will allow the following:
+If a plugin needs to create a new temporary file (for example to decompress a backup file). It may request that the TempFileManager be injected by implementing `\BackupMigrate\Core\Plugin\FileProcessorInterface` and using the `\BackupMigrate\Core\Plugin\FileProcessorTrait`. This will allow the following:
 
 	class MyFilePlugin implements FileProcessorInterface {
 		use FileProcessorTrait;
@@ -115,6 +117,7 @@ If a plugin needs to create a new temporary file (for example to decompress a ba
 			// during plugin chaining.
 			return $file_out;
 		}
+	}
 		
 
 See: [Backup Files](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/File)

@@ -5,11 +5,12 @@
  * Contains \BackupMigrate\Core\Services\BackupMigrate.
  */
 
-namespace BackupMigrate\Core\Service;
+namespace BackupMigrate\Core\Main;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
-use BackupMigrate\Core\Environment\EnvironmentInterface;
+use \BackupMigrate\Core\Service\EnvironmentInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
+use BackupMigrate\Core\Main\BackupMigrateInterface;
 use \BackupMigrate\Core\Plugin\PluginCallerInterface;
 use \BackupMigrate\Core\Plugin\PluginCallerTrait;
 use \BackupMigrate\Core\Plugin\PluginManager;
@@ -18,16 +19,15 @@ use \BackupMigrate\Core\Plugin\PluginManager;
  * The core Backup and Migrate service.
  *
  * Usage:
- *   // (Optional) Instantiate an application container
- *   // to provide access to the file system etc.
- *   $env = new EnvironmentBase();
- *   // (Optional) Pass in the configuration
  *   $config = new ConfigBase(...);
- *   $bam = new BackupMigrate($env, $config);
- *   $bam->plugins()->add(new MySQLSource(...), 'db');
- *   $bam->plugins()->add(new MySQLSource(...), 'another');
- *   $bam->plugins()->add(new DirectoryDestination(...), 'manual');
- *   $bam->plugins()->add(new CompressionPlugin(), 'encryption');
+ *   $plugins = new PluginManager($config);
+ *
+ *   $plugins->add(new MySQLSource(...), 'db');
+ *   $plugins->add(new MySQLSource(...), 'another');
+ *   $plugins->add(new DirectoryDestination(...), 'manual');
+ *   $plugins->add(new CompressionPlugin(), 'encryption');
+ *
+ *   $bam = new BackupMigrate($plugins);
  *   $bam->backup($from, to);
  */
 class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
@@ -36,9 +36,14 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
 
   /**
    * {@inheritdoc}
+   * @param \BackupMigrate\Core\Config\ConfigInterface $config
+   * @param \BackupMigrate\Core\Service\ServiceLocatorInterface $services
    */
-  function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL) {
-    $this->setPluginManager(new PluginManager($env, $config));
+  function __construct(PluginManager $plugins = NULL) {
+    if ($plugins == NULL) {
+      $plugins = new PluginManager();
+    }
+    $this->setPluginManager($plugins);
   }
 
 

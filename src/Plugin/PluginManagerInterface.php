@@ -55,23 +55,6 @@ interface PluginManagerInterface
   public function getAllByOp($op);
 
   /**
-   * Get the environment (essentially a dependency injection container for
-   * interfacing with the consuming application)
-   *
-   * @return \BackupMigrate\Core\Environment\EnvironmentInterface
-   */
-  public function env();
-
-  /**
-   * Get the list of supported file types, optionally for the specified op.
-   *
-   * @param string|null $op
-   *    The operation for which the file types are supported.
-   * @return array
-   */
-  public function supportedFileTypes($op = NULL);
-
-  /**
    * Call all plugins which support the given operation.
    *
    * If an operand is used it is passed to each operator and should be returned

@@ -3,7 +3,7 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Environment;
+namespace BackupMigrate\Core\Service;
 
 
 use BackupMigrate\Core\File\BackupFileReadableInterface;

@@ -5,13 +5,11 @@
  */
 
 
-namespace BackupMigrate\Core\Environment;
+namespace BackupMigrate\Core\Service;
 
-
-use BackupMigrate\Core\Environment\MailerInterface;
 
 /**
- * Class MailSender
+ * Class Mailer
  *
  * A very basic mailer that uses the php mail function. In most systems this
  * will be replaced by a wrapper around whatever mail library is used in that

@@ -5,7 +5,7 @@
 
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginManager;
-use BackupMigrate\Core\Environment\EnvironmentBase;
+use BackupMigrate\Core\Service\EnvironmentBase;
 
 /**
  * Class PluginManagerTest
@@ -18,14 +18,14 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase {
   protected $plugins;
 
   public function setUp() {
-    $env = new \BackupMigrate\Core\Environment\EnvironmentBase();
     $conf = new Config(
       [
         'test' => ['foo' => 'bar',],
         'test2' => ['foo' => 'baz', 'hello' => 'world']
       ]
     );
-    $this->plugins = new PluginManager($env, $conf);
+    $this->plugins = new PluginManager();
+    $this->plugins->setConfig($conf);
   }
 
   /**

@@ -1,135 +1,35 @@
-# The Backup and Migrate Service
+# Services #
 
-The `\BackupMigrate\Core\Services\BackupMigrate` service is the object that exposes the operation of Backup and Migrate
-to the consuming application. By itself it does nothing, it relies on the consuming application to inject all of the 
-necessary plugins, configuration and environment services to perform it's work.
+If a plugin needs to access the greater environment to write logs, store data, etc. it should rely on service objects which may be injected into the plugin at run time.
 
-## Instantiating the Service
+## Service Locator ##
 
-Before it can be called, the Backup and Migrate service must be instantiated, configured and all necessary plugins must
-be added by the consuming application. This puts the burden of configuring and discovering plugins on the consuming 
-application but keeps the library simple, allows greater flexibility and preserves the goal of dependency inversion.
+The `ServiceLocatorInterface` defines a very simple service container which stores a keyed list of services available to plugins which need them. The built in `ServiceLocator` class implements this interface in the most basic way possible. An consuming application may choose to implement a locator using a more sophisticated dependency management and configuration solution such as [Pimple](http://pimple.sensiolabs.org/), [PHP-DI](http://php-di.org/) or [Symfony's DependencyInjection Component](http://symfony.com/doc/current/components/dependency_injection/introduction.html). The built in locator simply takes a list of already configured services and returns them when requested.
 
-The service is instantiated with by creating a new `BackupMigrate` object:
+## Service Injection ##
 
-    use BackupMigrate\Core\Services\BackupMigrate;
-    
-    $bam = new BackupMigrate();
+It is not necessary to use automatic service injection. A consuming application can simply instantiate plugins and pass the necessary services directly to them. However, a simple service injection mechanism is provided by the plugin manager which can make dynamically creating plugins much simpler. To use automatic service injection, a service locator containing all of the necessary services must be created and passed to the plugin manager.
 
-### Providing the Environment
+Plugins can request that a service be injected by defining a setter with called `setServiceName` where 'ServiceName' is replaced with the name of the given service. Here is an pseudo-code example:
 
-If the consuming application needs to use any plugins that must talk to the greater environment (saving state, emailing 
-users, creating temporary files) it must provide services to Backup and Migrate that allow it to do so. These services
-are contained in an object called the environment. A new environment object should be created and passed to the service
-constructor. If you do not pass an environment then a basic one will be created which should work in the simplest 
-environments.
+	class MyPlugin implements PluginInterface {
+		
+		// Logger service setter
+		public function setLogger(LoggerInterface $logger) {
+			$this->logger = $logger;
+		}
+		
+		// ...
+	}
+	
+This plugin will have a logger injected if one is available:
 
-Providing an environment.
-
-    use BackupMigrate\Core\Services\BackupMigrate; 
-    use MyAPP\Environment\MyEnvironment;
-    
-    // Create a custom environment with whatever services or configuration are needed for the application
-    $env = new MyEnvironment(...);
-
-    // Pass the environment to the service
-    $bam = new BackupMigrate($env);
-
-See: [Environment](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Environment)
-
-### Configuring the Object
-
-A new `BackupMigrate` service object can be configured when it is instantiated. This is done by passing a 
-`ConfigInterface` object containing the necessary configuration for each plugin that will be needed:
-
-    use BackupMigrate\Core\Services\BackupMigrate; 
-    use BackupMigrate\Core\Config\Config;
-    use MyAPP\Environment\MyEnvironment;
-    
-    // Create a custom environment with whatever services or configuration are needed for the application.
-    $env = new MyEnvironment(...);
-
-    // Create a configuration object, pass in an array of configuration.
-    $conf = new Config(array(...));
-
-    // Pass the environment to the service
-    $bam = new BackupMigrate($env, $conf);
-
-
-See: [Configuration](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Config)
-
-### Adding Plugins
-
-Destinations, Sources and Filter plugins are all added the same way, after the service has been instantiated. Each plugin
-that is needed must be added to the plugin manager which is available by calling the `plugins()` method. The `add()`
-method can then be used to add the plugin. Each added plugin must be given a unique ID when added. This ID will be used
-to configure the plugin and to specify which source and destination are used during the operation.
-
-    
-    // ...
-
-    // Create a Backup and Migrate Service object
-    $bam = new BackupMigrate($env, $conf);
-
-    // Add a source:
-    $bam->plugins()->add(new MySQLiSource(), 'db1');
-    
-    // Add some destinations
-    $bam->plugins()->add(new BrowserDownloadDestination(), 'download');
-    $bam->plugins()->add(new DirectoryDestination(), 'mydirectory');
-    
-    // Add some filters
-    $bam->plugins()->add(new CompressionFilter(), 'compress');
-    $bam->plugins()->add(new FileNamer(), 'namer');
-
-
-See: [Plugins](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Plugin)
-
-## Operations
-The Backup and Migrate service provides two main operations:
-
-* `backup($source_id, $destination_id)`
-* `restore($source_id, $destination_id, $file_id)`
-
-### The Backup Operation
-
-The `backup()` operation creates a backup file from the specified source, post-processes the file with all installed 
-filters and saves the file to the specified destination. The parameters for this operation are:
-
-* **$source_id** ***(string)*** - The id of the source as specified when it is added to the plugin manager.
-* **$destination_id** ***(string|array)*** - The id of the destination as specified when it is added to the plugin manager. 
-This can also be an array of destination ids to send the backup to multiple destinations.
-
-There is no return value but it may throw an exception if there is an error.
-
-    // ...
-
-    // Create a Backup and Migrate Service object
-    $bam = new BackupMigrate($env, $conf);
-
-    // Add plugins ...
-    
-    // Run the backup.
-    $bam->backup('db1', 'mydirectory');
-
-
-### The Restore Operation
-
-The `restore()` operation loads the specified file from the specified destination, pre-processes the file with all 
-installed filters and restores the data to the specified source. The parameters are:
-
-* **$source_id** ***(string)*** - The id of the source as specified when it is added to the plugin manager.
-* **$destination_id** ***(string)*** - The id of the destination as specified when it is added to the plugin manager.
-* **$file_id** ***(string)*** - The id of the file within the destination. This is usually the file name but can be any 
-unique string specified by the destination.
-
-
-    // ...
-    
-    // Create a Backup and Migrate Service object
-    $bam = new BackupMigrate($env, $conf);
-    
-    // Add plugins ...
-    
-    // Run the restore.
-    $bam->restore('db1', 'mydirectory', 'backup.mysql.gz');
+	$services = new ServiceLocator();
+	// The key 'Logger' must match 'setLogger'
+	$services->add('Logger', new MyLogger());
+	
+	$plugins = new PluginManager($services);
+	// The manager will inject the logger automatically.
+	$plugins->add(new MyPlugin(), 'myplugin');
+	
+	

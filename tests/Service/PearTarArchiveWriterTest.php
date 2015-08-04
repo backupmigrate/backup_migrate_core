@@ -4,7 +4,7 @@
  */
 
 namespace BackupMigrate\Core\Tests\Environment;
-use BackupMigrate\Core\Environment\PearTarArchiveWriter;
+use BackupMigrate\Core\Service\PearTarArchiveWriter;
 use BackupMigrate\Core\File\BackupFile;
 use BackupMigrate\Core\File\WritableStreamBackupFile;
 use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;

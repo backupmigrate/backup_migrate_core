@@ -11,18 +11,16 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
-use BackupMigrate\Core\Environment\EnvironmentCallerInterface;
-use BackupMigrate\Core\Environment\EnvironmentCallerTrait;
-use BackupMigrate\Core\Environment\EnvironmentInterface;
 use BackupMigrate\Core\File\TempFileManager;
+use BackupMigrate\Core\Service\ServiceLocator;
+use BackupMigrate\Core\Service\ServiceLocatorInterface;
 
 /**
  * Class PluginManager
  * @package BackupMigrate\Core\Plugin
  */
-class PluginManager implements PluginManagerInterface, ConfigurableInterface, EnvironmentCallerInterface {
+class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   use ConfigurableTrait;
-  use EnvironmentCallerTrait;
 
   /**
    * @var \BackupMigrate\Core\Plugin\PluginInterface[]
@@ -30,17 +28,22 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
   protected $items;
 
   /**
+   * @var \BackupMigrate\Core\Service\ServiceLocatorInterface
+   */
+  protected $services;
+
+  /**
    * @var \BackupMigrate\Core\File\TempFileManagerInterface
    */
   protected $tempFileManager;
 
   /**
-   * @param \BackupMigrate\Core\Environment\EnvironmentInterface $env
+   * @param \BackupMigrate\Core\Service\ServiceLocatorInterface $services
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
    */
-  public function __construct(EnvironmentInterface $env = NULL, ConfigInterface $config = NULL) {
-    // Add the injected environment or a placeholder version.
-    $this->setEnvironment($env);
+  public function __construct(ServiceLocatorInterface $services = NULL, ConfigInterface $config = NULL) {
+    // Add the injected service locator for dependency injection into plugins.
+    $this->setServiceLocator($services ? $services : new ServiceLocator());
 
     // Set the configuration or a null object if no config was specified.
     $this->setConfig($config ? $config : new Config());
@@ -64,24 +67,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
     foreach ($this->getAll() as $key => $plugin) {
       $this->_configurePlugin($plugin, $key);
     }
-  }
-
-  /**
-   * Get the temporary file manager controlled by this plugin manager to be
-   * passed as a dependency to plugins. Lazily creates the manager so that
-   * a 'blank' plugin manager doesn't take much to initiate.
-   *
-   * @return \BackupMigrate\Core\File\TempFileManagerInterface
-   */
-  public function getTempFileManager() {
-    // Create a tempFileManager from the environment's temp file adapter.
-    if (!$this->tempFileManager) {
-      $this->tempFileManager = new TempFileManager(
-        $this->env()->getTempFileAdapter()
-      );
-    }
-
-    return $this->tempFileManager;
   }
 
   /**
@@ -129,25 +114,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
   /**
    * {@inheritdoc}
    */
-  public function supportedFileTypes($op = NULL) {
-    $out = array();
-
-    foreach ($this->getAllByOp('getFileTypes') as $plugin) {
-      $types = $plugin->getFileTypes();
-      foreach ($types as $name => $type) {
-        if ($op == NULL || (is_array($type['ops']) && in_array($op, $type['ops']))) {
-          $out[$name] = $type;
-        }
-      }
-    }
-
-    return $out;
-  }
-
-
-  /**
-   * {@inheritdoc}
-   */
   public function call($op, $operand = NULL, $params = array()) {
 
     // Run each of the installed plugins which implements the given operation.
@@ -187,9 +153,11 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
     // If this plugin can be configured, then pass in the configuration.
     $this->_configurePlugin($plugin, $id);
 
-    // Inject the file processor
-    if ($plugin instanceof FileProcessorInterface) {
-      $plugin->setTempFileManager($this->getTempFileManager());
+    // Inject available services.
+    foreach ($this->services->keys() as $key) {
+      if (method_exists($plugin, 'set' . $key) && $service = $this->services->get($key)) {
+        $plugin->{'set' . $key}($service);
+      }
     }
 
     // Inject the plugin manager.
@@ -197,14 +165,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
       $plugin->setPluginManager($this);
     }
 
-    // Inject the environment dependency container.
-    if ($plugin instanceof EnvironmentCallerInterface) {
-      $plugin->setEnvironment($this->env());
-    }
-
-    // @TODO Inject cache/state/logger/mailer dependencies
-    // OR: simply inject the entire environment and let the plugin use what it
-    // wants.
   }
 
   /**
@@ -225,5 +185,19 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface, En
       // Get the configuration back from the plugin to populate defaults within the manager.
       $this->config()->set($id, $plugin->config());
     }
+  }
+
+  /**
+   * @return ServiceLocatorInterface
+   */
+  public function services() {
+    return $this->services;
+  }
+
+  /**
+   * @param ServiceLocatorInterface $services
+   */
+  public function setServiceLocator($services) {
+    $this->services = $services;
   }
 }

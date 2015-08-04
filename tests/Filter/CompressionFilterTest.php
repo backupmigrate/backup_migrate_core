@@ -4,7 +4,7 @@
  */
 
 use BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Environment\EnvironmentBase;
+use BackupMigrate\Core\Service\EnvironmentBase;
 use \BackupMigrate\Core\Filter\CompressionFilter;
 use BackupMigrate\Core\File\TempFileAdapter;
 use BackupMigrate\Core\File\TempFileManager;

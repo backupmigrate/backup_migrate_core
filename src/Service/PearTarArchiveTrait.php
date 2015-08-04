@@ -5,7 +5,7 @@
  */
 
 
-namespace BackupMigrate\Core\Environment;
+namespace BackupMigrate\Core\Service;
 
 
 use Archive_Tar;

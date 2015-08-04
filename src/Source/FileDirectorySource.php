@@ -9,7 +9,7 @@ namespace BackupMigrate\Core\Source;
 
 
 use Archive_Tar;
-use BackupMigrate\Core\Environment\ArchiveWriterInterface;
+use BackupMigrate\Core\Service\ArchiveWriterInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Exception\IgnorableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
@@ -27,7 +27,7 @@ class FileDirectorySource extends PluginBase
   use FileProcessorTrait;
 
   /**
-   * @var \BackupMigrate\Core\Environment\ArchiveWriterInterface
+   * @var \BackupMigrate\Core\Service\ArchiveWriterInterface
    */
   private $archive_writer;
 
@@ -174,7 +174,7 @@ class FileDirectorySource extends PluginBase
 
 
   /**
-   * @param \BackupMigrate\Core\Environment\ArchiveWriterInterface $writer
+   * @param \BackupMigrate\Core\Service\ArchiveWriterInterface $writer
    */
   public function setArchiveWriter(ArchiveWriterInterface $writer) {
     $this->archive_writer  = $writer;
