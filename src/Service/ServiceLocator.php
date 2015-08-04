@@ -18,7 +18,7 @@ namespace BackupMigrate\Core\Service;
 class ServiceLocator implements ServiceLocatorInterface {
 
   /**
-   * @var ServiceInterface[]
+   * @var array
    */
   protected $services;
 
@@ -47,7 +47,7 @@ class ServiceLocator implements ServiceLocatorInterface {
    *
    * @param string $type
    *  The service type identifier
-   * @return ServiceInterface
+   * @return mixed
    */
   public function get($type) {
     return $this->services[$type];

@@ -13,8 +13,8 @@ use Exception;
  * @package BackupMigrate\Core\Exception
  */
 class BackupMigrateException extends Exception {
-  protected $message = 'Unknown exception';
   protected $replacement = array();
+  protected $message_raw = 'Unknown exception';
 
   /**
    * Construct the exception. Note: The message is NOT binary safe.
@@ -27,17 +27,19 @@ class BackupMigrateException extends Exception {
   public function __construct($message = null, $replacement = array(), $code = 0)
   {
     $this->replacement = $replacement;
-    parent::__construct($message, $code);
+    $this->message_raw = $message;
+
+    // Send the replaced message to the parent constructor to act as normal in most cases.
+    parent::__construct(strtr($message, $replacement), $code);
   }
 
   /**
-   * String representation of the exception
+   * Get the unmodified message with replacement tokens.
    *
-   * @link http://php.net/manual/en/exception.tostring.php
-   * @return string the string representation of the exception.
+   * @return null|string
    */
-  public function __toString()
-  {
-    return strtr($this->message, $this->replacement);
+  public function getMessageRaw() {
+    return $this->message_raw;
   }
+
 }

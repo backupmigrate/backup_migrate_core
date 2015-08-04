@@ -9,6 +9,7 @@ namespace BackupMigrate\Core\Source;
 
 
 use Archive_Tar;
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Service\ArchiveWriterInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Exception\IgnorableException;
@@ -47,6 +48,9 @@ class FileDirectorySource extends PluginBase
    */
   public function exportToFile() {
     if ($directory = $this->confGet('directory')) {
+      // Make sure the directory ends in exactly 1 slash:
+      $directory = rtrim($directory, '/') . '/';
+
       if (!$writer = $this->getArchiveWriter()) {
         throw new BackupMigrateException('A file directory source requires an archive writer object.');
       }
@@ -55,8 +59,8 @@ class FileDirectorySource extends PluginBase
 
       if ($files = $this->getFilesToBackup($directory)) {
         $writer->setOutput($file);
-        foreach ($files as $file) {
-          $writer->addFile($file, $directory);
+        foreach ($files as $path) {
+          $writer->addFile($path, $directory);
         }
         $writer->closeArchive();
         return $file;
@@ -140,7 +144,7 @@ class FileDirectorySource extends PluginBase
       while (($file = readdir($handle)) !== FALSE) {
         // If not a dot file and the file name isn't excluded.
         if ($file != '.' && $file != '..' && !in_array($file, $exclude)) {
-          $real = realpath($dir . '/' . $file);
+          $real = ($dir . $file);
 
           // If the full path is not excluded.
           if (!in_array($real, $exclude)) {
@@ -160,7 +164,7 @@ class FileDirectorySource extends PluginBase
                 $out[] = $real;
               }
               else {
-                $errors[] = $dir . '/' . $file;
+                $errors[] = $dir . $file;
               }
             }
           }
@@ -185,5 +189,17 @@ class FileDirectorySource extends PluginBase
    */
   public function getArchiveWriter() {
     return $this->archive_writer;
+  }
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Config\Config
+   */
+  public function configDefaults() {
+    return new Config([
+      'exclude_filepaths' => [],
+      'directory' => '',
+    ]);
   }
 }
