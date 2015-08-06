@@ -14,6 +14,7 @@ use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class FileNamer
@@ -21,6 +22,7 @@ use BackupMigrate\Core\File\BackupFileReadableInterface;
  */
 class FileNamer extends PluginBase implements FileProcessorInterface {
   use FileProcessorTrait;
+  use TranslatableTrait;
 
   /**
    * {@inheritdoc}
@@ -39,7 +41,7 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'type' => 'text',
         'title' => 'File Name',
         'must_match' => '/^[\w\-_]+$/',
-        'must_match_error' => (('%title must contain only letters, numbers, dashes (-) and underscores (_).')),
+        'must_match_error' => $this->t('%title must contain only letters, numbers, dashes (-) and underscores (_).'),
         'min_length' => 1,
         // Allow a 200 character backup name leaving a generous 55 characters
         // for timestamp and extension.
@@ -57,7 +59,7 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'title' => 'Timestamp Format',
         'max_length' => 32,
         'dependencies' => ['timestamp' => TRUE],
-        'description' => (('Use <a href="http://php.net/date">PHP Date formatting</a>.')),
+        'description' => $this->t('Use <a href="http://php.net/date">PHP Date formatting</a>.'),
       ];
     }
     return $schema;

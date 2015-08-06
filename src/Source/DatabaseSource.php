@@ -11,6 +11,7 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
+use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class DatabaseSource
@@ -19,6 +20,7 @@ use BackupMigrate\Core\Plugin\PluginBase;
 abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
+  use TranslatableTrait;
 
   /**
    * Get a definition for user-configurable settings.
@@ -41,11 +43,11 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
         'actions' => ['backup']
       ];
       $schema['fields']['exclude_tables'] = $table_select + [
-          'title' => (('Exclude these tables entirely')),
+          'title' => $this->t('Exclude these tables entirely'),
         ];
 
       $schema['fields']['nodata_tables'] = $table_select + [
-          'title' => (('Exclude data from these tables')),
+          'title' => $this->t('Exclude data from these tables'),
         ];
     }
 

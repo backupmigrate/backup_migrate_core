@@ -153,20 +153,28 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     // If this plugin can be configured, then pass in the configuration.
     $this->_configurePlugin($plugin, $id);
 
+    // Inject the available services
+    $this->injectServices($plugin);
+
+    // Inject the plugin manager.
+    if ($plugin instanceof PluginCallerInterface) {
+      $plugin->setPluginManager($this);
+    }
+  }
+
+  /**
+   * Inject all available services into the give plugin.
+   *
+   * @param \BackupMigrate\Core\Plugin\PluginInterface $plugin
+   */
+  protected function injectServices(PluginInterface $plugin) {
     // Inject available services.
     foreach ($this->services->keys() as $key) {
       if (method_exists($plugin, 'set' . $key) && $service = $this->services->get($key)) {
         $plugin->{'set' . $key}($service);
       }
     }
-
-    // Inject the plugin manager.
-    if ($plugin instanceof PluginCallerInterface) {
-      $plugin->setPluginManager($this);
-    }
-
   }
-
   /**
    * Set the configuration for the given plugin.
    *
@@ -199,5 +207,10 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
    */
   public function setServiceLocator($services) {
     $this->services = $services;
+
+    // Inject or re-inject the services.
+    foreach ($this->getAll() as $key => $plugin) {
+      $this->injectServices($plugin);
+    }
   }
 }

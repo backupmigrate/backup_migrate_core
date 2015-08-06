@@ -4,6 +4,7 @@
  */
 
 namespace BackupMigrate\Core\Config;
+use BackupMigrate\Core\Translation\TranslatableTrait;
 
 
 /**
@@ -13,6 +14,8 @@ namespace BackupMigrate\Core\Config;
  * A configurable object. Manages injection and access to a config object.
  */
 trait ConfigurableTrait {
+  use TranslatableTrait;
+
   /**
    * The object's configuration object.
    *
@@ -122,15 +125,15 @@ trait ConfigurableTrait {
 
       // Check if it's required.
       if (!empty($field['required']) && empty($value)) {
-        $out[] = new ValidationError($key, (('%title is required.')), ['%title' => $field['title']]);
+        $out[] = new ValidationError($key, $this->t('%title is required.'), ['%title' => $field['title']]);
       }
 
       // Check it for length.
       if (!empty($field['min_length']) && strlen($value) < $field['min_length']) {
-        $out[] = new ValidationError($key, (('%title must be at least %count characters.')), ['%title' => $field['title'], '%count' => $field['min_length']]);
+        $out[] = new ValidationError($key, $this->t('%title must be at least %count characters.'), ['%title' => $field['title'], '%count' => $field['min_length']]);
       }
       if (!empty($field['max_length']) && strlen($value) > $field['max_length']) {
-        $out[] = new ValidationError($key, (('%title must be at no more than %count characters.')), ['%title' => $field['title'], '%count' => $field['max_length']]);
+        $out[] = new ValidationError($key, $this->t('%title must be at no more than %count characters.'), ['%title' => $field['title'], '%count' => $field['max_length']]);
       }
 
       // Check for the regular expression match.
@@ -139,7 +142,7 @@ trait ConfigurableTrait {
           $out[] = new ValidationError($key, $field['must_match_error'], ['%title' => $field['title']]);
         }
         else {
-          $out[] = new ValidationError($key, (('%title contains invalid characters.')), ['%title' => $field['title']]);
+          $out[] = new ValidationError($key, $this->t('%title contains invalid characters.'), ['%title' => $field['title']]);
         }
       }
     }
