@@ -72,7 +72,7 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
       }
 
       // Run each of the installed plugins which implements the 'beforeBackup' operation.
-      // $this->plugins()->call('beforeBackup');
+      $this->plugins()->call('beforeBackup');
 
       // Do the actual backup.
       $file = $source->exportToFile();
@@ -127,11 +127,11 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
       $source->importFromFile($file);
 
       // Let plugins react to a successful operation.
-      $this->plugins()->call('backupSucceed', $file);
+      $this->plugins()->call('restoreSucceed', $file);
     }
     catch (\Exception $e) {
       // Let plugins react to a failed operation.
-      $this->plugins()->call('backupFail', $e);
+      $this->plugins()->call('restoreFail', $e);
 
       // The consuming software needs to deal with this.
       throw $e;
