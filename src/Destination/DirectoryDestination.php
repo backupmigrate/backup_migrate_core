@@ -9,9 +9,8 @@ namespace BackupMigrate\Core\Destination;
 
 
 use BackupMigrate\Core\Config\ConfigurableInterface;
-use BackupMigrate\Core\Config\ConfigurableTrait;
+use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
-use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\File\BackupFile;
 use BackupMigrate\Core\File\BackupFileInterface;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
@@ -33,13 +32,49 @@ class DirectoryDestination extends DestinationBase implements DestinationInterfa
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function checkWritable() {
+    $this->checkDirectory();
+  }
+
+  /**
    * Do the actual file save. This function is called to save the data file AND
    * the metadata sidecar file.
    * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
+   * @throws \BackupMigrate\Core\Exception\BackupMigrateException
    */
   function _saveFile(BackupFileReadableInterface $file) {
+    // Check if the directory exists.
+    $this->checkDirectory();
+
     rename($file->realpath(), $this->confGet('directory') . $file->getFullName());
     // @TODO: use copy/unlink if the temp file and the destination do not share a stream wrapper.
+  }
+
+  /**
+   * Check that the directory can be used for backup.
+   *
+   * @throws \BackupMigrate\Core\Exception\BackupMigrateException
+   */
+  protected function checkDirectory() {
+    $dir = $this->confGet('directory');
+
+    // Check if the directory exists.
+    if (!file_exists($dir)) {
+      throw new DestinationNotWritableException(
+        "The backup file could not be saved to '%dir' because it does not exist.",
+        ['%dir' => $dir]
+      );
+    }
+
+    // Check if the directory is writable
+    if (!is_writable($this->confGet('directory'))) {
+      throw new DestinationNotWritableException(
+        "The backup file could not be saved to '%dir' because Backup and Migrate does not have write access to that directory.",
+        ['%dir' => $dir]
+      );
+    }
   }
 
   /**

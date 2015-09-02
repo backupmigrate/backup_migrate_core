@@ -52,6 +52,10 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    */
   public function backup($source_id, $destination_id) {
     try {
+
+      // Allow the plugins to set up.
+      $this->plugins()->call('setUp', 'backup', $source_id, $destination_id);
+
       // Get the source and the destination to use.
       $source = $this->plugins()->get($source_id);
       $destinations = array();
@@ -64,6 +68,10 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
         if (!$destinations[$id]) {
           throw new BackupMigrateException('The destination !id does not exist.', array('!id' => $destination_id));
         }
+
+        // Check that the destination can be written to.
+        // @TODO: Catch exceptions and continue if at least one destination is valid.
+        $destinations[$id]->checkWritable();
       }
 
       // Check that the source is valid.
@@ -95,6 +103,10 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
       // The consuming software needs to deal with this.
       throw $e;
     }
+
+    // Allow the plugins to tear down.
+    $this->plugins()->call('tearDown', 'backup', $source_id, $destination_id);
+
   }
 
   /**
@@ -125,6 +137,9 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
 
       // Do the actual source restore.
       $source->importFromFile($file);
+
+      // Run each of the installed plugins which implements the 'beforeBackup' operation.
+      $this->plugins()->call('afterRestore');
 
       // Let plugins react to a successful operation.
       $this->plugins()->call('restoreSucceed', $file);

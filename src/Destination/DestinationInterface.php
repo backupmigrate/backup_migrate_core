@@ -7,6 +7,7 @@
 
 namespace BackupMigrate\Core\Destination;
 
+use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\File\BackupFileInterface;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginInterface;
@@ -91,4 +92,13 @@ interface DestinationInterface extends PluginInterface
    * @param string $id The id of the file to delete.
    */
   public function deleteFile($id);
+
+  /**
+   * Check if a destination is writable. This may be used prior to a backup to
+   * ensure that the destination is available before attempting the backup.
+   *
+   * @throws DestinationNotWritableException
+   */
+  public function checkWritable();
+
 }
