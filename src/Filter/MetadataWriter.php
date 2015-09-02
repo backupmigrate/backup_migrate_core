@@ -13,6 +13,8 @@ use BackupMigrate\Core\File\BackupFileWritableInterface;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
 use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
@@ -21,9 +23,10 @@ use BackupMigrate\Core\Translation\TranslatableTrait;
  *
  * Add metadata such as a description to the backup file.
  */
-class MetadataWriter extends PluginBase implements FileProcessorInterface {
+class MetadataWriter extends PluginBase implements FileProcessorInterface, PluginCallerInterface {
   use FileProcessorTrait;
   use TranslatableTrait;
+  use PluginCallerTrait;
 
   /**
    * {@inheritdoc}
@@ -55,8 +58,10 @@ class MetadataWriter extends PluginBase implements FileProcessorInterface {
   public function configDefaults() {
     return new Config([
       'description' => '',
-      'generator' => 'Backup and Migrate (https://github.com/backupmigrate)',
+      'generator' => 'Backup and Migrate',
       'generatorversion' => defined('BACKUP_MIGRATE_CORE_VERSION') ? constant('BACKUP_MIGRATE_CORE_VERSION') : 'unknown',
+      'generatorurl' => 'https://github.com/backupmigrate',
+      'bam_sourceid' => '',
     ]);
   }
 
@@ -69,8 +74,23 @@ class MetadataWriter extends PluginBase implements FileProcessorInterface {
     return [
       'description',
       'generator',
-      'generatorversion'
+      'generatorversion',
+      'generatorurl',
+      'bam_sourceid'
     ];
+  }
+
+
+  /**
+   * Run before the backup/restore begins.
+   */
+  public function setUp($op, $source_id) {
+    if ($op == 'backup' && $source_id) {
+      $this->confSet('bam_sourceid', $source_id);
+      if ($source = $this->plugins()->get($source_id)) {
+        // @TODO Query the source for it's type and name.
+      }
+    }
   }
 
   /**
