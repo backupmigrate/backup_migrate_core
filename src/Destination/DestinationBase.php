@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\Config\ConfigurableTrait;
+use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileInterface;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
@@ -58,12 +59,17 @@ abstract class DestinationBase extends PluginBase implements DestinationInterfac
   }
 
   /**
-   * Is this a remote destination.
-   *
-   * @return bool True if remote, false if local.
+   * {@inheritdoc}
    */
   public function isRemote() {
     return false;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkWritable() {
+    throw new DestinationNotWritableException('The specified destination cannot be written to.');
   }
 
   /**
