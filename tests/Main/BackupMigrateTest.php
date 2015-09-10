@@ -84,9 +84,12 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     $plugin->method('afterBackup')->willReturn($file);
 
     $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\DirectoryDestination')
-      ->setMethods(['saveFile'])
+      ->setMethods(['saveFile', 'checkWritable'])
       ->getMock();
+    $destination->method('checkWritable')->willReturn(true);
 
+
+    $destination->expects($this->once())->method('checkWritable');
     $destination->expects($this->once())->method('saveFile')->with(
       $this->equalTo($file)
     );
@@ -131,16 +134,20 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
     $plugin->method('afterBackup')->willReturn($file);
 
     $destination = $this->getMockBuilder('\BackupMigrate\Core\Destination\DirectoryDestination')
-      ->setMethods(['saveFile'])
+      ->setMethods(['saveFile', 'checkWritable'])
       ->getMock();
+    $destination->method('checkWritable')->willReturn(true);
 
+    $destination->expects($this->once())->method('checkWritable');
     $destination->expects($this->once())->method('saveFile')->with(
       $this->equalTo($file)
     );
     $destination2 = $this->getMockBuilder('\BackupMigrate\Core\Destination\DirectoryDestination')
-      ->setMethods(['saveFile'])
+      ->setMethods(['saveFile', 'checkWritable'])
       ->getMock();
+    $destination2->method('checkWritable')->willReturn(true);
 
+    $destination2->expects($this->once())->method('checkWritable');
     $destination2->expects($this->once())->method('saveFile')->with(
       $this->equalTo($file)
     );
