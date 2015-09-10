@@ -270,7 +270,7 @@ FOOTER;
       if ($create) {
         // Lowercase the keys for consistency
         $create = array_change_key_case($create);
-        $out .= "DROP VIEW IF EXISTS `". $view['name'] ."`;\n";
+        $out .= "DROP VIEW IF EXISTS `". $table['name'] ."`;\n";
         $out .= "SET sql_mode = 'ANSI';\n";
         $out .= strtr($create['create view'], "\n", " ") . ";\n";
         $out .= "SET sql_mode = '$sql_mode';\n";
