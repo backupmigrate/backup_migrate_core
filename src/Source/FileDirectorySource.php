@@ -120,6 +120,10 @@ class FileDirectorySource extends PluginBase
    */
   protected function getFilesToBackup($dir) {
     $exclude = $this->confGet('exclude_filepaths');
+    $exclude = $this->compileExcludePatterns($exclude);
+
+    // Remove any trailing slashes.
+    $dir = rtrim($dir, '/');
 
     if (!file_exists($dir)) {
       throw new BackupMigrateException('Directory %dir does not exist.',
@@ -135,7 +139,7 @@ class FileDirectorySource extends PluginBase
     }
 
     // Get a filtered list if files from the directory.
-    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude);
+    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude, $dir . '/');
 
     // Alert the user to any errors there might have been.
     if ($errors) {
@@ -163,7 +167,7 @@ class FileDirectorySource extends PluginBase
    * @param array $exclude An array of exclude rules.
    * @return array
    */
-  protected function _getFilesFromDirectory($dir, $exclude = array()) {
+  protected function _getFilesFromDirectory($dir, $exclude = array(), $base_path = '') {
     $out = $errors = array();
 
     // Open the directory.
@@ -173,28 +177,32 @@ class FileDirectorySource extends PluginBase
     else {
       while (($file = readdir($handle)) !== FALSE) {
         // If not a dot file and the file name isn't excluded.
-        if ($file != '.' && $file != '..' && !in_array($file, $exclude)) {
-          $real = ($dir . $file);
+        if ($file != '.' && $file != '..') {
 
-          // If the full path is not excluded.
-          if (!in_array($real, $exclude)) {
-            if (is_dir($real)) {
+          // Get the full path of the file.
+          $path = $dir . '/' . $file;
+
+          // Make sure this path is not excluded.
+          if (!$this->matchPath($path, $exclude, $base_path)) {
+            if (is_dir($path)) {
               list($sub_files, $sub_errors) =
-                  $this->_getFilesFromDirectory($real . '/', $exclude);
+                $this->_getFilesFromDirectory($path, $exclude, $base_path);
 
-              // If the directory is empty, add an empty directory.
-              if (count($sub_files) == 0) {
-                $out[] = $real;
+              // Add the directory if it is empty.
+              if (empty($sub_files)) {
+                $out[] = $path;
               }
+
+              // Add the sub-files to the output
               $out = array_merge($out, $sub_files);
               $errors = array_merge($errors, $sub_errors);
             }
             else {
-              if (is_readable($real)) {
-                $out[] = $real;
+              if (is_readable($path)) {
+                $out[] = $path;
               }
               else {
-                $errors[] = $dir . $file;
+                $errors[] = $path;
               }
             }
           }
@@ -232,4 +240,45 @@ class FileDirectorySource extends PluginBase
       'directory' => '',
     ]);
   }
+
+
+  /**
+   * Convert an array of glob patterns to an array of regex patterns for file name exclusion.
+   *
+   * @param array $exclude
+   *    A list of patterns with glob wildcards
+   * @return array
+   *    A list of patterns as regular expressions
+   *
+   */
+  private function compileExcludePatterns($exclude) {
+    $out = array();
+    foreach ($exclude as $pattern) {
+      // Convert Glob wildcards to a regex per http://php.net/manual/en/function.fnmatch.php#71725
+      $out[] = "#^". strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.', '\[' => '[', '\]' => ']'))."$#i";
+    }
+    return $out;
+  }
+
+  /**
+   * Match a path to the list of exclude patterns.
+   *
+   * @param string $path
+   *    The path to match.
+   * @param array $exclude
+   *    An array of regular expressions to match against.
+   * @param string $base_path
+   * @return bool
+   */
+  private function matchPath($path, $exclude, $base_path = '') {
+    $path = substr($path, strlen($base_path));
+
+    foreach ($exclude as $pattern) {
+      if (preg_match($pattern, $path)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }

@@ -37,12 +37,12 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
       'restore' => [],
       'files' => [
         'item1.txt' => 'Hello, World 1!',
-        'item2.txt' => 'Hello, World 2!',
-        'item3.txt' => 'Hello, World 3!',
+        'item2.dat' => 'Hello, World 2!',
+        'abc.txt'   => 'Hello, World 3!',
         // TODO: Test subdirectories
         'subdir' => [
           'item4.txt' => 'Hello, World 4!',
-          'item5.txt' => 'Hello, World 5!'
+          'item5.dat' => 'Hello, World 5!'
         ]
       ]
     ];
@@ -51,9 +51,18 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
 
     $this->URI = 'vfs://root/files/';
 
-    $this->source = new FileDirectorySource(new Config(['directory' => $this->URI]));
-    $this->source->setArchiver(new \BackupMigrate\Core\Service\PearTarArchiver());
-    $this->source->setTempFileManager($this->manager);
+    $this->source = $this->newSource(['directory' => $this->URI]);
+  }
+
+  /**
+   * @param array $config
+   * @return \BackupMigrate\Core\Source\FileDirectorySource
+   */
+  private function newSource($config = array()) {
+    $source = new FileDirectorySource(new Config($config));
+    $source->setArchiver(new \BackupMigrate\Core\Service\PearTarArchiver());
+    $source->setTempFileManager($this->manager);
+    return $source;
   }
 
   /**
@@ -85,6 +94,72 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
+   * @covers exportToFile
+   * @covers importFromFile
+   */
+  public function testExclude() {
+    $source = $this->newSource(
+      [
+        'directory' => $this->URI,
+        'exclude_filepaths' => ['subdir']
+      ]);
+    $files = $this->file_list['files'];
+    unset($files['subdir']);
+    $this->_exportAndTest($source, $files);
+
+    $source = $this->newSource(
+      [
+        'directory' => $this->URI,
+        'exclude_filepaths' => ['*.dat']
+      ]);
+    $files = $this->file_list['files'];
+    unset($files['item2.dat']);
+    unset($files['subdir']['item5.dat']);
+    $this->_exportAndTest($source, $files);
+
+    $source = $this->newSource(
+      [
+        'directory' => $this->URI,
+        'exclude_filepaths' => ['*item[12345].txt']
+      ]);
+    $files = $this->file_list['files'];
+
+    unset($files['item1.txt']);
+    unset($files['subdir']['item4.txt']);
+    $this->_exportAndTest($source, $files);
+
+    $source = $this->newSource(
+      [
+        'directory' => $this->URI,
+        'exclude_filepaths' => ['*item[12345].txt', 'subdir']
+      ]);
+    $files = $this->file_list['files'];
+
+    unset($files['item1.txt']);
+    unset($files['subdir']);
+    $this->_exportAndTest($source, $files);
+
+  }
+
+  /**
+   * Export a tarball from a source and match it's contents to the expected file list.
+   * @param $source
+   * @param $files
+   * @throws \BackupMigrate\Core\Exception\BackupMigrateException
+   */
+  private function _exportAndTest($source, $files) {
+    $file = $source->exportToFile();
+
+    // Move the file to the tmp directory so we can use command line untar.
+    $tarball = tempnam('/tmp', 'bamtest');
+    copy($file->realpath(), $tarball);
+
+    // Untar the file and see if all of the files are there.
+    $this->_compareTarballToFilelist($files, $tarball);
+  }
+
+
+  /**
    * Recursively check an entire directory against a tarball.
    *
    * @param $files
@@ -92,14 +167,59 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
    * @param string $base_dir
    */
   private function _compareTarballToFilelist($files, $tarball, $base_dir = '') {
+    $actual = array();
+    exec('tar tf ' . $tarball, $actual);
+
+    $expected = $this->_flattenFileList($files);
+
+    // Sort and dedupe lists
+    $actual = array_unique($actual);
+    sort($actual);
+
+    $expected = array_unique($expected);
+    sort($expected);
+
+    $this->assertEquals($expected, $actual);
+
+
+    // Make sure the file contents all match.
+    $this->_compareTarballFileContents($files, $tarball);
+  }
+
+  /**
+   * Recursively check an entire directory against a tarball.
+   *
+   * @param $files
+   * @param $tarball
+   * @param string $base_dir
+   */
+  private function _compareTarballFileContents($files, $tarball, $base_dir = '') {
     foreach ($files as $file_name => $contents) {
       if (is_array($contents)) {
-        $this->_compareTarballToFilelist($contents, $tarball, $file_name . '/');
+        $this->_compareTarballFileContents($contents, $tarball, $file_name . '/');
       }
       else {
         $output = exec('tar xfO ' . $tarball . ' ' . $base_dir . $file_name);
         $this->assertEquals($contents, $output);
       }
     }
+  }
+
+  /**
+   * @param $files
+   * @param string $base_dir
+   * @return array
+   */
+  private function _flattenFileList($files, $base_dir = '') {
+    $out = array();
+    foreach ($files as $file_name => $contents) {
+      if (is_array($contents)) {
+        $out = array_merge($out, $this->_flattenFileList($contents, $file_name . '/'));
+      }
+      else {
+        $out[] = $base_dir . $file_name;
+      }
+    }
+    return $out;
   }
 }
