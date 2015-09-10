@@ -17,6 +17,7 @@ use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class FileDirectorySource
@@ -26,6 +27,7 @@ class FileDirectorySource extends PluginBase
   implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
+  use TranslatableTrait;
 
   /**
    * @var \BackupMigrate\Core\Service\ArchiverInterface
@@ -122,8 +124,10 @@ class FileDirectorySource extends PluginBase
     $exclude = $this->confGet('exclude_filepaths');
     $exclude = $this->compileExcludePatterns($exclude);
 
-    // Remove any trailing slashes.
-    $dir = rtrim($dir, '/');
+    // Add a trailing slash if there is none.
+    if (substr($dir, -1) !== '/') {
+      $dir .= '/';
+    }
 
     if (!file_exists($dir)) {
       throw new BackupMigrateException('Directory %dir does not exist.',
@@ -139,7 +143,7 @@ class FileDirectorySource extends PluginBase
     }
 
     // Get a filtered list if files from the directory.
-    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude, $dir . '/');
+    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude, $dir);
 
     // Alert the user to any errors there might have been.
     if ($errors) {
@@ -163,7 +167,8 @@ class FileDirectorySource extends PluginBase
   }
 
   /**
-   * @param string $dir The name of the directory to list.
+   * @param string $dir
+   *  The name of the directory to list. This must always end in '/'.
    * @param array $exclude An array of exclude rules.
    * @return array
    */
@@ -180,13 +185,13 @@ class FileDirectorySource extends PluginBase
         if ($file != '.' && $file != '..') {
 
           // Get the full path of the file.
-          $path = $dir . '/' . $file;
+          $path = $dir . $file;
 
           // Make sure this path is not excluded.
           if (!$this->matchPath($path, $exclude, $base_path)) {
             if (is_dir($path)) {
               list($sub_files, $sub_errors) =
-                $this->_getFilesFromDirectory($path, $exclude, $base_path);
+                $this->_getFilesFromDirectory($path  . '/', $exclude, $base_path);
 
               // Add the directory if it is empty.
               if (empty($sub_files)) {
@@ -229,6 +234,43 @@ class FileDirectorySource extends PluginBase
     return $this->archiver;
   }
 
+
+  /**
+   * Get a definition for user-configurable settings.
+   *
+   * @param array $params
+   * @return array
+   */
+  public function configSchema($params = array()) {
+    $schema = array();
+    // @TODO: make this the id of the source.
+    $group = 'files';
+
+    // Backup settings.
+    if ($params['operation'] == 'backup') {
+      $schema['fields']['exclude_filepaths'] = [
+        'type' => 'text',
+        'title' => $this->t('Exclude these files'),
+        'multiple' => true,
+        'group' => 'files'
+      ];
+  }
+
+    // Init settings.
+    else if ($params['operation'] == 'initialize') {
+      $schema['fields']['directory'] = [
+        'type' => 'text',
+        'title' => $this->t('Directory Path'),
+      ];
+    }
+
+    $schema['groups'][$group] = array(
+      // @TODO: Make this the title of the source.
+      'title' => 'File Settings',
+    );
+
+    return $schema;
+  }
   /**
    * Get the default values for the plugin.
    *
