@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Destination;
 
 
+use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
@@ -73,5 +74,19 @@ class BrowserDownloadDestination extends StreamDestination implements Destinatio
     }
     // @TODO Throw exception.
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkWritable() {
+    // Check that we're running as a web process via a browser.
+    // @TODO: we could check if the 'HTTP_ACCEPT' header contains the right mime but that is probably overkill.
+    if (!isset($_SERVER['SERVER_ADDR'])) {
+      throw new DestinationNotWritableException(
+        "The download destination only works when accessed through a http client."
+      );
+    }
+  }
+
 
 }
