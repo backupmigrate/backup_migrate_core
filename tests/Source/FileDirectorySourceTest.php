@@ -54,6 +54,10 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
     $this->source = $this->newSource(['directory' => $this->URI]);
   }
 
+  public function tearDown() {
+    $this->_tearDownFiles();
+  }
+
   /**
    * @param array $config
    * @return \BackupMigrate\Core\Source\FileDirectorySource
@@ -93,6 +97,9 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
       $this->file_list['files'],
       $result['root']['restore']
     );
+
+    // Clean up
+    unlink($tarball);
   }
 
   /**
@@ -158,6 +165,9 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
 
     // Untar the file and see if all of the files are there.
     $this->_compareTarballToFilelist($files, $tarball);
+
+    // Clean up
+    unlink($tarball);
   }
 
 

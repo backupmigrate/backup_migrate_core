@@ -33,8 +33,8 @@ trait TempFileConsumerTestTrait {
   protected $root;
 
   /**
-   * {@inheritdoc}
-   */
+ * {@inheritdoc}
+ */
   public function _setUpFiles($structure = NULL)
   {
     $structure = $structure ? : ['tmp' => []];
@@ -43,5 +43,15 @@ trait TempFileConsumerTestTrait {
     $this->adapter = new TempFileAdapter($this->root->url() . '/tmp/', 'bmtest_');
     $this->manager = new TempFileManager($this->adapter);
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function _tearDownFiles()
+  {
+    unset($this->adapter);
+    unset($this->manager);
+    unset($this->root);
   }
 }
