@@ -64,17 +64,15 @@ class TarArchiveWriter implements ArchiveWriterInterface {
    */
   protected function writeHeader($real_path, $new_path) {
     if (strlen($new_path) > 99) {
-      if (!$this->writeLongHeader($new_path)) {
-        return false;
-      }
+      $this->writeLongHeader($new_path);
     }
 
     $v_info = lstat($real_path);
+
     $v_uid = sprintf("%6s ", DecOct($v_info[4]));
     $v_gid = sprintf("%6s ", DecOct($v_info[5]));
     $v_perms = sprintf("%6s ", DecOct($v_info['mode']));
-
-    $v_mtime = sprintf("%11s", DecOct($v_info['mode']));
+    $v_mtime = sprintf("%11s", DecOct($v_info['mtime']));
 
     $v_linkname = '';
 
@@ -129,8 +127,6 @@ class TarArchiveWriter implements ArchiveWriterInterface {
 
       // ----- Write the last 356 bytes of the header in the archive
     $this->archive->write($v_binary_data_last, 356);
-
-    return true;
   }
 
   /**
@@ -186,8 +182,6 @@ class TarArchiveWriter implements ArchiveWriterInterface {
       $v_binary_data = pack("a512", "$v_buffer");
       $this->archive->write($v_binary_data);
     }
-
-    return true;
   }
 
   /**
