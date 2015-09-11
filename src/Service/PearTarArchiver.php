@@ -72,15 +72,23 @@ class PearTarArchiver implements ArchiverInterface {
   /**
    * @param string $real_path
    *  The real path to the file. Can be a stream URI.
-   * @param string $base_dir
-   *  The base directory of the path to be removed when the file is added.
+   * @param string $new_path
+   *  The new path this file should have in the archive.
+   *  NB: Only the path part is used, the filename cannot be changed.
+   *    eg: /tmp/somefile.txt -> some/tar/dir/somefile.txt
    * @throws \BackupMigrate\Core\Exception\BackupMigrateException
    */
-  public function addFile($real_path, $base_dir = '') {
+  public function addFile($real_path, $new_path = '') {
     $tar = $this->getArchiveTar();
 
+    $add = $remove = '';
+    if ($new_path && $new_path !== $real_path) {
+      $remove = dirname($real_path);
+      $add = dirname($new_path);
+    }
+
     // Add the file to the tarball.
-    $tar->addModify(array($real_path), '', $base_dir);
+    $tar->addModify(array($real_path), $add, $remove);
   }
 
   /**

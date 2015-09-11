@@ -61,7 +61,7 @@ class PearTarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
     $file_names = array_keys($this->file_list);
 
     foreach ($file_names as $filename) {
-      $this->archiver->addFile('vfs://root/files/' . $filename, 'vfs://root/files/');
+      $this->archiver->addFile('vfs://root/files/' . $filename, $filename);
     }
     $this->archiver->closeArchive();
 
