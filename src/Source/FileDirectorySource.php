@@ -17,6 +17,7 @@ use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
+use BackupMigrate\Core\Service\ArchiveWriterInterface;
 use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
@@ -34,6 +35,10 @@ class FileDirectorySource extends PluginBase
    */
   private $archiver;
 
+  /**
+   * @var \BackupMigrate\Core\Service\ArchiveWriterInterface
+   */
+  private $archive_writer;
 
   /**
    * {@inheritdoc}
@@ -55,7 +60,7 @@ class FileDirectorySource extends PluginBase
         $directory = $directory . '/';
       }
 
-      if (!$writer = $this->getArchiver()) {
+      if (!$writer = $this->getArchiveWriter()) {
         throw new BackupMigrateException('A file directory source requires an archive writer object.');
       }
       $ext = $writer->getFileExt();
@@ -95,7 +100,7 @@ class FileDirectorySource extends PluginBase
       }
 
       if (!$archiver= $this->getArchiver()) {
-        throw new BackupMigrateException('A file directory source requires an archive writer object.');
+        throw new BackupMigrateException('A file directory source requires an archive reader object.');
       }
       // Check that the file endings match.
       if ($archiver->getFileExt() !== $file->getExtLast()) {
@@ -235,6 +240,19 @@ class FileDirectorySource extends PluginBase
     return $this->archiver;
   }
 
+  /**
+   * @param \BackupMigrate\Core\Service\ArchiveWriterInterface $writer
+   */
+  public function setArchiveWriter(ArchiveWriterInterface $writer) {
+    $this->archive_writer = $writer;
+  }
+
+  /**
+   * @return ArchiverInterface
+   */
+  public function getArchiveWriter() {
+    return $this->archive_writer;
+  }
 
   /**
    * Get a definition for user-configurable settings.
