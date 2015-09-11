@@ -28,7 +28,6 @@ class FileDirectorySource extends PluginBase
   implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
-  use TranslatableTrait;
 
   /**
    * @var \BackupMigrate\Core\Service\ArchiverInterface

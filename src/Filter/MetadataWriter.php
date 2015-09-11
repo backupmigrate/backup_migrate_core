@@ -25,7 +25,6 @@ use BackupMigrate\Core\Translation\TranslatableTrait;
  */
 class MetadataWriter extends PluginBase implements FileProcessorInterface, PluginCallerInterface {
   use FileProcessorTrait;
-  use TranslatableTrait;
   use PluginCallerTrait;
 
   /**

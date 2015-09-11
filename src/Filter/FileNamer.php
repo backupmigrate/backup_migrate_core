@@ -22,7 +22,6 @@ use BackupMigrate\Core\Translation\TranslatableTrait;
  */
 class FileNamer extends PluginBase implements FileProcessorInterface {
   use FileProcessorTrait;
-  use TranslatableTrait;
 
   /**
    * {@inheritdoc}
