@@ -10,6 +10,7 @@
 
 namespace BackupMigrate\Core\File;
 
+use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\File\BackupFile;
 use BackupMigrate\Core\File\TempFileAdapterInterface;
 
@@ -44,16 +45,16 @@ class WritableStreamBackupFile extends ReadableStreamBackupFile implements Backu
       $path = $this->realpath();
 
       // Check if the file can be read/written.
-      if ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path))) {
+      if ((file_exists($path) && !is_writable($path)) || (!file_exists($path) && !is_writable(dirname($path)))) {
         // @TODO: Throw better exception
-        throw new \Exception('Cannot write to file.');
+        throw new BackupMigrateException('Cannot write to file: %path', ['%path' => $path]);
       }
 
       // Open the file.
       $mode = "w" . ($binary ? "b" : "");
       $this->handle = fopen($path, $mode);
       if (!$this->handle) {
-        throw new \Exception('Cannot open file.');
+        throw new BackupMigrateException('Cannot open file: %path', ['%path' => $path]);
       }
     }
   }
