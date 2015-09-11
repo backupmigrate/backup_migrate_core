@@ -63,8 +63,8 @@ class FileDirectorySource extends PluginBase
 
       if ($files = $this->getFilesToBackup($directory)) {
         $writer->setArchive($file);
-        foreach ($files as $path) {
-          $writer->addFile($path, $directory);
+        foreach ($files as $new => $real) {
+          $writer->addFile($real, $new);
         }
         $writer->closeArchive();
         return $file;
@@ -143,7 +143,7 @@ class FileDirectorySource extends PluginBase
     }
 
     // Get a filtered list if files from the directory.
-    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude, $dir);
+    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude);
 
     // Alert the user to any errors there might have been.
     if ($errors) {
@@ -172,11 +172,12 @@ class FileDirectorySource extends PluginBase
    * @param array $exclude An array of exclude rules.
    * @return array
    */
-  protected function _getFilesFromDirectory($dir, $exclude = array(), $base_path = '') {
+  protected function _getFilesFromDirectory($base_path, $exclude = array(), $subdir = '') {
     $out = $errors = array();
 
+
     // Open the directory.
-    if (!$handle = opendir($dir)) {
+    if (!$handle = opendir($base_path . $subdir)) {
       $errors[] = $dir;
     }
     else {
@@ -185,17 +186,17 @@ class FileDirectorySource extends PluginBase
         if ($file != '.' && $file != '..') {
 
           // Get the full path of the file.
-          $path = $dir . $file;
+          $path = $base_path . $subdir . $file;
 
           // Make sure this path is not excluded.
           if (!$this->matchPath($path, $exclude, $base_path)) {
             if (is_dir($path)) {
               list($sub_files, $sub_errors) =
-                $this->_getFilesFromDirectory($path  . '/', $exclude, $base_path);
+                $this->_getFilesFromDirectory($base_path, $exclude, $subdir . $file  . '/');
 
               // Add the directory if it is empty.
               if (empty($sub_files)) {
-                $out[] = $path;
+                $out[$subdir . $file] = $path;
               }
 
               // Add the sub-files to the output
@@ -204,7 +205,7 @@ class FileDirectorySource extends PluginBase
             }
             else {
               if (is_readable($path)) {
-                $out[] = $path;
+                $out[$subdir . $file] = $path;
               }
               else {
                 $errors[] = $path;
