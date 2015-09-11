@@ -61,6 +61,7 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
   private function newSource($config = array()) {
     $source = new FileDirectorySource(new Config($config));
     $source->setArchiver(new \BackupMigrate\Core\Service\PearTarArchiver());
+    $source->setArchiveWriter(new \BackupMigrate\Core\Service\TarArchiveWriter());
     $source->setTempFileManager($this->manager);
     return $source;
   }
@@ -82,6 +83,7 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
     // Restore to another directory.
     $source = new FileDirectorySource(new Config(['directory' => 'vfs://root/restore/']));
     $source->setArchiver(new \BackupMigrate\Core\Service\PearTarArchiver());
+    $source->setArchiveWriter(new \BackupMigrate\Core\Service\TarArchiveWriter());
     $source->setTempFileManager($this->manager);
     $source->importFromFile($file);
 
