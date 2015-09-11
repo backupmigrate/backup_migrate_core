@@ -6,6 +6,7 @@
  */
 
 namespace BackupMigrate\Core\File;
+use BackupMigrate\Core\Exception\BackupMigrateException;
 
 /**
  * Provides a very basic temp file manager which assumes read/write access to a
@@ -41,7 +42,11 @@ class TempFileAdapter implements TempFileAdapterInterface
    * @param string $prefix A string prefix to add to each created file.
    */
   public function __construct($dir, $prefix = 'bam') {
-    $this->dir = rtrim($dir, '/');
+    // Add a trailing slash if needed.
+    if (substr($dir, -1) !== '/') {
+      $dir .= '/';
+    }
+    $this->dir = $dir;
     $this->prefix = $prefix;
     $this->tempfiles = array();
     // @TODO: check that temp direcory is writeable or throw an exception.
@@ -65,7 +70,7 @@ class TempFileAdapter implements TempFileAdapterInterface
     $try = 5;
     do
     {
-      $out = $this->dir . '/' . $this->prefix . mt_rand() . $ext;
+      $out = $this->dir . $this->prefix . mt_rand() . $ext;
       $fp = @fopen($out, 'x');
     }
     while(!$fp && $try-- > 0);
@@ -91,11 +96,14 @@ class TempFileAdapter implements TempFileAdapterInterface
           unlink($filename);
         }
         else {
-          // @TODO: Throw exception. Cannot delete temp file.
-          throw new \Exception('Could not delete the temp file because it is not writable');
+          throw new BackupMigrateException('Could not delete the temp file: %file because it is not writable', ['%file' => $filename]);
         }
       }
+      // Remove the item from the list.
+      $this->tempfiles = array_diff($this->tempfiles, [$filename]);
+      return;
     }
+    throw new BackupMigrateException('Attempting to delete a temp file not managed by this codebase: %file', ['%file' => $filename]);
   }
 
   /**
