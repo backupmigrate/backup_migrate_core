@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Destination;
 
 
+use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
@@ -88,5 +89,14 @@ class BrowserDownloadDestination extends StreamDestination implements Destinatio
     }
   }
 
+
+  /**
+   * Get the default values for the plugin.
+   *
+   * @return \BackupMigrate\Core\Config\Config
+   */
+  public function configDefaults() {
+    return new Config(['name' => $this->t('Download')]);
+  }
 
 }

@@ -28,7 +28,7 @@ interface PluginManagerInterface
    * Get the item with the given id.
    *
    * @param $id
-   * @return \BackupMigrate\Core\Base\PluginInterface The item specified by the id or NULL if it doesn't exist.
+   * @return \BackupMigrate\Core\Plugin\PluginInterface The item specified by the id or NULL if it doesn't exist.
    **/
   public function get($id);
 

@@ -75,6 +75,7 @@ class DebugDestination extends StreamDestination implements DestinationInterface
       'showbody' => true,
       'maxbody' => 1024 * 16,
       'format' => 'text',
+      'streamuri' => 'php://stdout'
     ]);
   }
 }

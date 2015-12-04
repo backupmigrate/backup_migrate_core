@@ -30,12 +30,14 @@ interface ConfigurableInterface {
   public function config();
 
   /**
-   * Get a specific value from the configuration.
+   * Get a setting from the configuration for this object
    *
-   * @param string $key The configuration object key to retrieve.
-   * @return mixed The configuration value.
+   * @param string $key The key for the setting.
+   * @param mixed $default
+   *  The default to return if the value does not exist.
+   * @return mixed The value of the setting.
    */
-  public function confGet($key);
+  public function confGet($key, $default = NULL);
 
   /**
    * Get the configuration defaults for this item.

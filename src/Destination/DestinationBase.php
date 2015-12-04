@@ -73,6 +73,26 @@ abstract class DestinationBase extends PluginBase implements DestinationInterfac
   }
 
   /**
+   * Get a definition for user-configurable settings.
+   *
+   * @param array $params
+   * @return array
+   */
+  public function configSchema($params = array()) {
+    $schema = array();
+
+    // Init settings for al destinations
+    if ($params['operation'] == 'initialize') {
+      $schema['fields']['name'] = [
+        'type' => 'text',
+        'title' => 'Name'
+      ];
+    }
+
+    return $schema;
+  }
+
+  /**
    * Do the actual delete for a file.
    *
    * @param string $id The id of the file to delete.

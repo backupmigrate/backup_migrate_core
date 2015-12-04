@@ -17,7 +17,7 @@ use BackupMigrate\Core\Translation\TranslatableTrait;
  * Class DatabaseSource
  * @package BackupMigrate\Core\Source
  */
-abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
+abstract class DatabaseSource extends PluginBase implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
   use TranslatableTrait;

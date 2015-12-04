@@ -150,13 +150,15 @@ trait ConfigurableTrait {
   }
 
   /**
-   * Get a specific value from the configuration.
+   * Get a setting from the configuration for this object
    *
-   * @param string $key The configuration object key to retrieve.
-   * @return mixed The configuration value.
+   * @param string $key The key for the setting.
+   * @param mixed $default
+   *  The default to return if the value does not exist.
+   * @return mixed The value of the setting.
    */
-  public function confGet($key) {
-    return $this->config()->get($key);
+  public function confGet($key, $default = NULL) {
+    return $this->config()->get($key, $default);
   }
 
 }
