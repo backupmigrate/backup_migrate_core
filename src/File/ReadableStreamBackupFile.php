@@ -142,7 +142,7 @@ class ReadableStreamBackupFile extends BackupFile implements BackupFileReadableI
     if (!$this->isOpen()) {
       $this->openForRead();
     }
-    return rtrim(fgets($this->handle), "\n\r");
+    return fgets($this->handle);
   }
 
   /**
