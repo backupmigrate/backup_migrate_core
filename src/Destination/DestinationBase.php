@@ -17,7 +17,8 @@ use BackupMigrate\Core\File\BackupFileReadableInterface;
  * Class DestinationBase
  * @package BackupMigrate\Core\Destination
  */
-abstract class DestinationBase extends PluginBase implements DestinationInterface
+
+abstract class DestinationBase extends PluginBase implements ReadableDestinationInterface, WritableDestinationInterface
 {
 
   /**
@@ -70,26 +71,6 @@ abstract class DestinationBase extends PluginBase implements DestinationInterfac
    */
   public function checkWritable() {
     throw new DestinationNotWritableException('The specified destination cannot be written to.');
-  }
-
-  /**
-   * Get a definition for user-configurable settings.
-   *
-   * @param array $params
-   * @return array
-   */
-  public function configSchema($params = array()) {
-    $schema = array();
-
-    // Init settings for al destinations
-    if ($params['operation'] == 'initialize') {
-      $schema['fields']['name'] = [
-        'type' => 'text',
-        'title' => 'Name'
-      ];
-    }
-
-    return $schema;
   }
 
   /**

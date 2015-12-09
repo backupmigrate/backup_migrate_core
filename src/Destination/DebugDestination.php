@@ -16,7 +16,7 @@ use BackupMigrate\Core\Plugin\PluginCallerInterface;
  * Class DebugDestination
  * @package BackupMigrate\Core\Destination
  */
-class DebugDestination extends StreamDestination implements DestinationInterface {
+class DebugDestination extends StreamDestination implements WritableDestinationInterface {
 
   /**
    * {@inheritdoc}
@@ -75,7 +75,6 @@ class DebugDestination extends StreamDestination implements DestinationInterface
       'showbody' => true,
       'maxbody' => 1024 * 16,
       'format' => 'text',
-      'streamuri' => 'php://stdout'
     ]);
   }
 }

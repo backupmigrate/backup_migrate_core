@@ -20,16 +20,7 @@ use BackupMigrate\Core\Plugin\PluginBase;
  * Class StreamDestination
  * @package BackupMigrate\Core\Destination
  */
-class StreamDestination extends PluginBase implements DestinationInterface, ConfigurableInterface {
-
-  /**
-   * Get a list of supported operations and their weight.
-   *
-   * @return array
-   */
-  public function supportedOps() {
-    return [];
-  }
+class StreamDestination extends PluginBase implements WritableDestinationInterface, ConfigurableInterface {
 
   /**
    * {@inheritdoc}

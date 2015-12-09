@@ -13,7 +13,6 @@ use BackupMigrate\Core\Plugin\PluginManager;
 use \BackupMigrate\Core\Source\SourceManagerInterface;
 use \BackupMigrate\Core\Source\SourceInterface;
 use \BackupMigrate\Core\Destination\DestinationManagerInterface;
-use \BackupMigrate\Core\Destination\DestinationInterface;
 use \BackupMigrate\Core\Plugin\PluginManagerInterface;
 use \BackupMigrate\Core\Config\ConfigInterface;
 
