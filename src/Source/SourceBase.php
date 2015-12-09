@@ -30,25 +30,4 @@ abstract class SourceBase extends PluginBase implements SourceInterface, FilePro
     ];
   }
 
-  /**
-   * Get a definition for user-configurable settings.
-   *
-   * @param array $params
-   * @return array
-   */
-  public function configSchema($params = array()) {
-    $schema = array();
-
-    // Init settings for al destinations
-    if ($params['operation'] == 'initialize') {
-      $schema['fields']['name'] = [
-        'type' => 'text',
-        'title' => 'Name'
-      ];
-    }
-
-    return $schema;
-  }
-
-
 }
