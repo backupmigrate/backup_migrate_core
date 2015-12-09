@@ -17,10 +17,9 @@ use BackupMigrate\Core\Translation\TranslatableTrait;
  * Class DatabaseSource
  * @package BackupMigrate\Core\Source
  */
-abstract class DatabaseSource extends PluginBase implements SourceInterface, FileProcessorInterface
+abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
-  use TranslatableTrait;
 
   /**
    * Get a definition for user-configurable settings.
@@ -49,6 +48,10 @@ abstract class DatabaseSource extends PluginBase implements SourceInterface, Fil
       $schema['fields']['nodata_tables'] = $table_select + [
           'title' => $this->t('Exclude data from these tables'),
         ];
+      $schema['groups'][$group] = array(
+        // @TODO: Make this the title of the source.
+        'title' => 'Database Settings',
+      );
     }
 
     // Init settings.
@@ -77,10 +80,6 @@ abstract class DatabaseSource extends PluginBase implements SourceInterface, Fil
       ];
     }
 
-    $schema['groups'][$group] = array(
-      // @TODO: Make this the title of the source.
-      'title' => 'Database Settings',
-    );
 
     return $schema;
   }

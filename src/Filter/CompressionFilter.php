@@ -95,10 +95,10 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
       $compression_options = $this->_availableCompressionAlgorithms();
       $form['fields']['compression'] = [
         'group' => 'file',
-        'type' => 'enum',
+        'type' => count($compression_options) > 1 ? "select" : 'value',
         'title' => 'Compression',
         'options' => $compression_options,
-        'actions' => ['backup'],
+        'actions' => ['backup']
       ];
     }
 
@@ -352,7 +352,7 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    * @return array
    */
   protected function _availableCompressionAlgorithms() {
-    $compression_options = array();
+    $compression_options = array("none" => ("No Compression"));
     if (function_exists("gzencode")) {
       $compression_options['gzip'] = ("GZip");
     }
