@@ -159,6 +159,20 @@ class ReadableStreamBackupFile extends BackupFile implements BackupFileReadableI
   }
 
   /**
+   * Move the file pointer forward a given number of bytes.
+   *
+   * @param int $bytes
+   * @return int
+   *  The number of bytes moved or -1 if the operation failed.
+   */
+  public function seekBytes($bytes) {
+    if ($this->isOpen()) {
+      return fseek($this->handle, $bytes);
+    }
+    return -1;
+  }
+
+  /**
    * Rewind the file handle to the start of the file.
    */
   function rewind() {

@@ -3,20 +3,26 @@
  * @file
  */
 
-namespace BackupMigrate\Core\Tests\Environment;
-use BackupMigrate\Core\Service\PearTarArchiver;
-use BackupMigrate\Core\File\BackupFile;
-use BackupMigrate\Core\File\WritableStreamBackupFile;
-use BackupMigrate\Core\Service\TarArchiveWriter;
-use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
+namespace BackupMigrate\Core\Service;
 
+
+use BackupMigrate\Core\File\WritableStreamBackupFile;
+use BackupMigrate\Core\Tests\File\TempFileConsumerTestTrait;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
- * Class PearTarArchiveWriterTest
- * @package BackupMigrate\Core\Tests\Environment
+ * Class TarArchiveReaderTest
+ * @package BackupMigrate\Core\Service
  */
-class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
+class TarArchiveReaderTest extends \PHPUnit_Framework_TestCase {
   use TempFileConsumerTestTrait;
+
+  /**
+   * @var TarArchiveReader
+   */
+  protected $reader;
 
   /**
    * @var TarArchiveWriter
@@ -30,10 +36,12 @@ class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
 
   public function setUp() {
     $this->file_list =  [
-        'item1.txt' => 'Hello, World 1!',
-        'item2.txt' => 'Hello, World 2!',
-        'item3.txt' => 'Hello, World 3!',
-      ];
+      'item1.txt' => 'Hello, World 1!',
+      'item2.txt' => 'Hello, World 2!',
+      'item3.txt' => 'Hello, World 3!',
+      'subdir/subitem1.txt' => 'Hello, World 4!',
+    ];
+
     // Add a file with a very long name
     $name = '';
     for ($i = 0; $i < 10; $i++) {
@@ -43,9 +51,12 @@ class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
 
     $this->_setUpFiles([
       'tmp' => [],
+      'output' => [],
       'files' => $this->file_list
     ]);
 
+
+    $this->reader = new TarArchiveReader();
     $this->archiver = new TarArchiveWriter();
   }
 
@@ -53,7 +64,7 @@ class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
    * @covers ::getFileExt
    */
   public function testGetFileExt() {
-    $this->assertEquals('tar', $this->archiver->getFileExt());
+//    $this->assertEquals('tar', $this->reader->getFileExt());
   }
 
   /**
@@ -61,7 +72,7 @@ class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
    * @covers ::addFile
    * @covers ::closeArchive
    */
-  public function testArchiveFiles() {
+  public function testUnArchiveFiles() {
     $output_file = tempnam('/tmp', 'test');
     $file = new WritableStreamBackupFile($output_file);
     $this->archiver->setArchive($file);
@@ -73,15 +84,29 @@ class TarArchiveWriterTest extends \PHPUnit_Framework_TestCase {
     }
     $this->archiver->closeArchive();
 
-    $tar_list = null;
-    exec('tar tf ' . $output_file, $tar_list);
+    $output_dir=tempnam(sys_get_temp_dir(),'');
+    if (file_exists($output_dir)) {
+      unlink($output_dir);
+    }
+    mkdir($output_dir);
+
+    $this->reader->setArchive($file);
+    $this->reader->extractTo($output_dir);
+
+    // Recursively read the output directory.
+    $objects = new RecursiveDirectoryIterator($output_dir, FilesystemIterator::SKIP_DOTS);
+    $file_list = [];
+    foreach (new RecursiveIteratorIterator($objects) as $filename => $cur) {
+      $file_list[] = substr($filename, strlen($output_dir) + 1);
+    }
+    sort($file_names);
+    sort($file_list);
 
     // Make sure the files all exist with the correct names.
-    $this->assertEquals($file_names, $tar_list);
+    $this->assertEquals($file_names, $file_list);
 
     foreach ($this->file_list as $file_name => $contents) {
-      $output = null;
-      $output = exec('tar xfO ' . $output_file . ' ' . $file_name);
+      $output = file_get_contents($output_dir . '/' . $file_name);
       $this->assertEquals($contents, $output);
     }
   }

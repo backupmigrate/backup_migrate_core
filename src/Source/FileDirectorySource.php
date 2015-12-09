@@ -7,8 +7,6 @@
 
 namespace BackupMigrate\Core\Source;
 
-
-use Archive_Tar;
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Service\ArchiverInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
@@ -18,7 +16,6 @@ use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Service\ArchiveWriterInterface;
-use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class FileDirectorySource
@@ -30,14 +27,14 @@ class FileDirectorySource extends PluginBase
   use FileProcessorTrait;
 
   /**
-   * @var \BackupMigrate\Core\Service\ArchiverInterface
-   */
-  private $archiver;
-
-  /**
    * @var \BackupMigrate\Core\Service\ArchiveWriterInterface
    */
   private $archive_writer;
+
+  /**
+   * @var \BackupMigrate\Core\Service\ArchiveReaderInterface
+   */
+  private $archive_reader;
 
   /**
    * {@inheritdoc}
@@ -98,16 +95,17 @@ class FileDirectorySource extends PluginBase
           array('%dir' => $directory));
       }
 
-      if (!$archiver= $this->getArchiver()) {
+      if (!$reader = $this->getArchiveReader()) {
         throw new BackupMigrateException('A file directory source requires an archive reader object.');
       }
       // Check that the file endings match.
-      if ($archiver->getFileExt() !== $file->getExtLast()) {
+      if ($reader->getFileExt() !== $file->getExtLast()) {
         throw new BackupMigrateException('This source expects a .%ext file.', array('%ext' => $archiver->getFileExt()));
       }
 
-      $archiver->setArchive($file);
-      $archiver->extractTo($directory);
+      $reader->setArchive($file);
+      $reader->extractTo($directory);
+      $reader->closeArchive();
 
       return TRUE;
     }
@@ -224,21 +222,6 @@ class FileDirectorySource extends PluginBase
     return array($out, $errors);
   }
 
-
-  /**
-   * @param \BackupMigrate\Core\Service\ArchiverInterface $writer
-   */
-  public function setArchiver(ArchiverInterface $writer) {
-    $this->archiver  = $writer;
-  }
-
-  /**
-   * @return ArchiverInterface
-   */
-  public function getArchiver() {
-    return $this->archiver;
-  }
-
   /**
    * @param \BackupMigrate\Core\Service\ArchiveWriterInterface $writer
    */
@@ -247,10 +230,24 @@ class FileDirectorySource extends PluginBase
   }
 
   /**
-   * @return ArchiverInterface
+   * @return \BackupMigrate\Core\Service\ArchiveWriterInterface
    */
   public function getArchiveWriter() {
     return $this->archive_writer;
+  }
+
+  /**
+   * @return \BackupMigrate\Core\Service\ArchiveReaderInterface
+   */
+  public function getArchiveReader() {
+    return $this->archive_reader;
+  }
+
+  /**
+   * @param \BackupMigrate\Core\Service\ArchiveReaderInterface $archive_reader
+   */
+  public function setArchiveReader($archive_reader) {
+    $this->archive_reader = $archive_reader;
   }
 
   /**
@@ -272,6 +269,10 @@ class FileDirectorySource extends PluginBase
         'multiple' => true,
         'group' => 'files'
       ];
+      $schema['groups'][$group] = array(
+        // @TODO: Make this the title of the source.
+        'title' => 'File Settings',
+      );
   }
 
     // Init settings.
@@ -282,10 +283,6 @@ class FileDirectorySource extends PluginBase
       ];
     }
 
-    $schema['groups'][$group] = array(
-      // @TODO: Make this the title of the source.
-      'title' => 'File Settings',
-    );
 
     return $schema;
   }
@@ -340,5 +337,6 @@ class FileDirectorySource extends PluginBase
     }
     return false;
   }
+
 
 }

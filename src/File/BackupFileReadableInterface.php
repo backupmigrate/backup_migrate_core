@@ -53,6 +53,15 @@ interface BackupFileReadableInterface extends BackupFileInterface {
   public function close();
 
   /**
+   * Move the file pointer forward a given number of bytes.
+   *
+   * @param int $bytes
+   * @return int
+   *  The number of bytes moved or -1 if the operation failed.
+   */
+  public function seekBytes($bytes);
+
+  /**
    * Rewind the file handle to the start of the file.
    */
   public function rewind();
