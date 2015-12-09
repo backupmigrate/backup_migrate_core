@@ -84,7 +84,7 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
 
       // Test implicit file open and close.
       $new_file = new ReadableStreamBackupFile($this->fileURI);
-      $this->assertEquals($new_file->readAll(), 'Hello, World!');
+      $this->assertEquals('Hello, World!', $new_file->readAll());
       unset($new_file);
       // Not sure how to test that the handle has been closed since we don't get direct access to it.
 
@@ -96,7 +96,7 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
       $this->assertEquals($message, $file->readAll());
 
       $file->rewind();
-      $this->assertEquals('First Line', $file->readLine());
+      $this->assertEquals('First Line', trim($file->readLine()));
       $this->assertEquals('Second Line', $file->readLine());
 
 

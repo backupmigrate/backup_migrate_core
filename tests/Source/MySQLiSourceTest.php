@@ -212,6 +212,8 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
     // Test multiple statements
     $file = $this->manager->create('mysql');
     $file->write("INSERT INTO `table1` VALUES ('3','I am a record!',null);\n");
+    // Make sure that blank lines are ignored correctly.
+    $file->write("\n");
     $file->write("INSERT INTO `table1` VALUES ('4','I am a fifth record!',null);");
     $file->close();
     $this->source->importFromFile($file);
