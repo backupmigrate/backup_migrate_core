@@ -18,6 +18,12 @@ use BackupMigrate\Core\Plugin\PluginBase;
 class FileExcludeFilter extends PluginBase {
 
   /**
+   * @var array
+   *   A cache of compiled patterns.
+   */
+  var $patterns;
+
+  /**
    * The 'beforeDBTableBackup' plugin op.
    *
    * @param array $table
@@ -61,17 +67,14 @@ class FileExcludeFilter extends PluginBase {
    *
    */
   private function compileExcludePatterns($exclude) {
-    static $patterns = null;
-
-    if ($patterns!== null) {
-      return $patterns;
+    if ($this->patterns !== null) {
+      return $this->patterns;
     }
-    $patterns = [];
     foreach ($exclude as $pattern) {
       // Convert Glob wildcards to a regex per http://php.net/manual/en/function.fnmatch.php#71725
-      $patterns[] = "#^". strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.', '\[' => '[', '\]' => ']'))."$#i";
+      $this->patterns[] = "#^". strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.', '\[' => '[', '\]' => ']'))."$#i";
     }
-    return $patterns;
+    return $this->patterns;
   }
 
   /**
@@ -87,9 +90,11 @@ class FileExcludeFilter extends PluginBase {
   private function matchPath($path, $exclude, $base_path = '') {
     $path = substr($path, strlen($base_path));
 
-    foreach ($exclude as $pattern) {
-      if (preg_match($pattern, $path)) {
-        return true;
+    if ($exclude) {
+      foreach ($exclude as $pattern) {
+        if (preg_match($pattern, $path)) {
+          return true;
+        }
       }
     }
     return false;
