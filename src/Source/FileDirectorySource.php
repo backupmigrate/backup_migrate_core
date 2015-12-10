@@ -8,7 +8,8 @@
 namespace BackupMigrate\Core\Source;
 
 use BackupMigrate\Core\Config\Config;
-use BackupMigrate\Core\Service\ArchiverInterface;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Exception\IgnorableException;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
@@ -22,9 +23,11 @@ use BackupMigrate\Core\Service\ArchiveWriterInterface;
  * @package BackupMigrate\Core\Source
  */
 class FileDirectorySource extends PluginBase
-  implements SourceInterface, FileProcessorInterface
+  implements SourceInterface, FileProcessorInterface, PluginCallerInterface
 {
   use FileProcessorTrait;
+  use PluginCallerTrait;
+
 
   /**
    * @var \BackupMigrate\Core\Service\ArchiveWriterInterface
@@ -113,8 +116,7 @@ class FileDirectorySource extends PluginBase
   }
 
   /**
-   * Get a list if files to be backed up from the given directory. Do not
-   * include files that match the 'exclude_filepaths' setting.
+   * Get a list if files to be backed up from the given directory.
    *
    * @param string $dir The name of the directory to list.
    * @return array
@@ -123,9 +125,6 @@ class FileDirectorySource extends PluginBase
    * @internal param $directory
    */
   protected function getFilesToBackup($dir) {
-    $exclude = $this->confGet('exclude_filepaths');
-    $exclude = $this->compileExcludePatterns($exclude);
-
     // Add a trailing slash if there is none.
     if (substr($dir, -1) !== '/') {
       $dir .= '/';
@@ -145,7 +144,7 @@ class FileDirectorySource extends PluginBase
     }
 
     // Get a filtered list if files from the directory.
-    list($out, $errors) = $this->_getFilesFromDirectory($dir, $exclude);
+    list($out, $errors) = $this->_getFilesFromDirectory($dir);
 
     // Alert the user to any errors there might have been.
     if ($errors) {
@@ -169,18 +168,18 @@ class FileDirectorySource extends PluginBase
   }
 
   /**
-   * @param string $dir
+   * @param $base_path
    *  The name of the directory to list. This must always end in '/'.
-   * @param array $exclude An array of exclude rules.
+   * @param string $subdir
    * @return array
+   * @internal param string $dir
    */
-  protected function _getFilesFromDirectory($base_path, $exclude = array(), $subdir = '') {
+  protected function _getFilesFromDirectory($base_path, $subdir = '') {
     $out = $errors = array();
-
 
     // Open the directory.
     if (!$handle = opendir($base_path . $subdir)) {
-      $errors[] = $dir;
+      $errors[] = $base_path . $subdir;
     }
     else {
       while (($file = readdir($handle)) !== FALSE) {
@@ -190,11 +189,12 @@ class FileDirectorySource extends PluginBase
           // Get the full path of the file.
           $path = $base_path . $subdir . $file;
 
-          // Make sure this path is not excluded.
-          if (!$this->matchPath($path, $exclude, $base_path)) {
+          // Allow filters to modify or exclude this path.
+          $path = $this->plugins()->call('beforeFileBackup', $path, ['source' => $this, 'base_path' => $base_path]);
+          if ($path) {
             if (is_dir($path)) {
               list($sub_files, $sub_errors) =
-                $this->_getFilesFromDirectory($base_path, $exclude, $subdir . $file  . '/');
+                $this->_getFilesFromDirectory($base_path, $subdir . $file  . '/');
 
               // Add the directory if it is empty.
               if (empty($sub_files)) {
@@ -258,25 +258,9 @@ class FileDirectorySource extends PluginBase
    */
   public function configSchema($params = array()) {
     $schema = array();
-    // @TODO: make this the id of the source.
-    $group = 'files';
-
-    // Backup settings.
-    if ($params['operation'] == 'backup') {
-      $schema['fields']['exclude_filepaths'] = [
-        'type' => 'text',
-        'title' => $this->t('Exclude these files'),
-        'multiple' => true,
-        'group' => 'files'
-      ];
-      $schema['groups'][$group] = array(
-        // @TODO: Make this the title of the source.
-        'title' => 'File Settings',
-      );
-  }
 
     // Init settings.
-    else if ($params['operation'] == 'initialize') {
+    if ($params['operation'] == 'initialize') {
       $schema['fields']['directory'] = [
         'type' => 'text',
         'title' => $this->t('Directory Path'),
@@ -286,6 +270,7 @@ class FileDirectorySource extends PluginBase
 
     return $schema;
   }
+
   /**
    * Get the default values for the plugin.
    *
@@ -293,49 +278,8 @@ class FileDirectorySource extends PluginBase
    */
   public function configDefaults() {
     return new Config([
-      'exclude_filepaths' => [],
       'directory' => '',
     ]);
-  }
-
-
-  /**
-   * Convert an array of glob patterns to an array of regex patterns for file name exclusion.
-   *
-   * @param array $exclude
-   *    A list of patterns with glob wildcards
-   * @return array
-   *    A list of patterns as regular expressions
-   *
-   */
-  private function compileExcludePatterns($exclude) {
-    $out = array();
-    foreach ($exclude as $pattern) {
-      // Convert Glob wildcards to a regex per http://php.net/manual/en/function.fnmatch.php#71725
-      $out[] = "#^". strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.', '\[' => '[', '\]' => ']'))."$#i";
-    }
-    return $out;
-  }
-
-  /**
-   * Match a path to the list of exclude patterns.
-   *
-   * @param string $path
-   *    The path to match.
-   * @param array $exclude
-   *    An array of regular expressions to match against.
-   * @param string $base_path
-   * @return bool
-   */
-  private function matchPath($path, $exclude, $base_path = '') {
-    $path = substr($path, strlen($base_path));
-
-    foreach ($exclude as $pattern) {
-      if (preg_match($pattern, $path)) {
-        return true;
-      }
-    }
-    return false;
   }
 
 
