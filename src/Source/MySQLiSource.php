@@ -59,10 +59,12 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
 //        if (_backup_migrate_check_timeout()) {
 //          return FALSE;
 //        }
-        if ($table['name'] && !isset($exclude[$table['name']])) {
+
+        $table = $this->plugins()->call('beforeDBTableBackup', $table, ['source' => $this]);
+        if ($table['name'] && !isset($exclude[$table['name']]) && empty($table['exclude'])) {
           $file->write($this->_getTableCreateSQL($table));
           $lines++;
-          if (!in_array($table['name'], $nodata)) {
+          if (empty($table['nodata']) && !in_array($table['name'], $nodata)) {
             $lines += $this->_dumpTableSQLToFile($file, $table);
           }
         }

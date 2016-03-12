@@ -102,53 +102,6 @@ class FileDirectorySourceTest extends PHPUnit_Framework_TestCase {
     unlink($tarball);
   }
 
-  /**
-   * @covers exportToFile
-   * @covers importFromFile
-   */
-  public function testExclude() {
-    $source = $this->newSource(
-      [
-        'directory' => $this->URI,
-        'exclude_filepaths' => ['subdir']
-      ]);
-    $files = $this->file_list['files'];
-    unset($files['subdir']);
-    $this->_exportAndTest($source, $files);
-
-    $source = $this->newSource(
-      [
-        'directory' => $this->URI,
-        'exclude_filepaths' => ['*.dat']
-      ]);
-    $files = $this->file_list['files'];
-    unset($files['item2.dat']);
-    unset($files['subdir']['item5.dat']);
-    $this->_exportAndTest($source, $files);
-
-    $source = $this->newSource(
-      [
-        'directory' => $this->URI,
-        'exclude_filepaths' => ['*item[12345].txt']
-      ]);
-    $files = $this->file_list['files'];
-
-    unset($files['item1.txt']);
-    unset($files['subdir']['item4.txt']);
-    $this->_exportAndTest($source, $files);
-
-    $source = $this->newSource(
-      [
-        'directory' => $this->URI,
-        'exclude_filepaths' => ['*item[12345].txt', 'subdir']
-      ]);
-    $files = $this->file_list['files'];
-
-    unset($files['item1.txt']);
-    unset($files['subdir']);
-    $this->_exportAndTest($source, $files);
-
-  }
 
   /**
    * Export a tarball from a source and match it's contents to the expected file list.
