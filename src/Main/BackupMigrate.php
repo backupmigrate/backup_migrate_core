@@ -18,18 +18,6 @@ use \BackupMigrate\Core\Plugin\PluginManager;
 
 /**
  * The core Backup and Migrate service.
- *
- * Usage:
- *   $config = new ConfigBase(...);
- *   $plugins = new PluginManager($config);
- *
- *   $plugins->add(new MySQLSource(...), 'db');
- *   $plugins->add(new MySQLSource(...), 'another');
- *   $plugins->add(new DirectoryDestination(...), 'manual');
- *   $plugins->add(new CompressionPlugin(), 'encryption');
- *
- *   $bam = new BackupMigrate($plugins);
- *   $bam->backup($from, to);
  */
 class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
 {
