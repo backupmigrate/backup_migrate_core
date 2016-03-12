@@ -29,33 +29,9 @@ abstract class DatabaseSource  extends PluginBase implements SourceInterface, Fi
    */
   public function configSchema($params = array()) {
     $schema = array();
-    // @TODO: make this the id of the source.
-    $group = 'db';
-
-    // Backup settings.
-    if ($params['operation'] == 'backup') {
-      $table_select = [
-        'group' => $group,
-        'type' => 'enum',
-        'multiple' => true,
-        'options' => $this->getTableNames(),
-        'actions' => ['backup']
-      ];
-      $schema['fields']['exclude_tables'] = $table_select + [
-          'title' => $this->t('Exclude these tables entirely'),
-        ];
-
-      $schema['fields']['nodata_tables'] = $table_select + [
-          'title' => $this->t('Exclude data from these tables'),
-        ];
-      $schema['groups'][$group] = array(
-        // @TODO: Make this the title of the source.
-        'title' => 'Database Settings',
-      );
-    }
 
     // Init settings.
-    else if ($params['operation'] == 'initialize') {
+    if ($params['operation'] == 'initialize') {
       $schema['fields']['host'] = [
         'type' => 'text',
         'title' => 'Hostname'

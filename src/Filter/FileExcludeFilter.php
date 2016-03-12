@@ -55,8 +55,6 @@ class FileExcludeFilter extends PluginBase {
     ]);
   }
 
-
-
   /**
    * Convert an array of glob patterns to an array of regex patterns for file name exclusion.
    *
@@ -100,7 +98,6 @@ class FileExcludeFilter extends PluginBase {
     return false;
   }
 
-
   /**
    * Get a definition for user-configurable settings.
    *
@@ -125,7 +122,8 @@ class FileExcludeFilter extends PluginBase {
           'multiple' => true,
           'group' => 'default'
         ];
-      }    }
+      }
+    }
     return $schema;
   }
 

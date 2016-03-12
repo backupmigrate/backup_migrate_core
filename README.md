@@ -39,12 +39,12 @@ The following is a simplified version of how to call the library to perform a ba
 	);
 	
 	// Create a new Backup and Migrate object with this configuration.
-	$bam = new BackupMigrate(NULL, $config);
+	$bam = new BackupMigrate(null, null, null, $config);
 	
 	// Add the database source. This will read the configuration with the same key 	
-	$bam->plugins()->add(new MySQLiSource(), 'database1');
+	$bam->sources()->add(new MySQLiSource(), 'database1');
 	// Add the destination.
-	$bam->plugins()->add(new DirectoryDestination(), 'mybackups');
+	$bam->destinations()->add(new DirectoryDestination(), 'mybackups');
 
 	// Add the filters.
 	$bam->plugins()->add(new CompressionFilter(), 'compression');
@@ -94,21 +94,25 @@ See: [Destinations](https://github.com/backupmigrate/backup_migrate_core/tree/ma
 ##### Filters
 Filters can alter backup files before `restore()` or after `backup()`. Unlike sources and destinations there can be many filters run per operation.
 
-#### Plugin Manager
-The plugin manager maintains a list if injected plugins and configures them as needed. Consuming software interacts with the plugin manager by calling `plugins()` on the BackupMigrate object. This is the method used to inject plugins into the controller:
+#### Plugin Managers
+A plugin manager maintains a list of injected plugins and configures them and injects services as needed. Consuming software interacts with the plugin manager by calling `plugins()` on the BackupMigrate object. This is the method used to inject plugins into the controller:
 
 	// Create a new BackupMigrate controller.
 	$backup_migrate = new BackupMigrate();
 	
 	// Add a new custom plugin with the id 'mycustomplugin'
-	$backup_migrate->plugins()->add(new CustomPlugin(), 'mycustomplugin');
+	$backup_migrate->plugins()->add('mycustomplugin', new CustomPlugin());
+	
+The controller also has a PluginManager for sources and one for destinations.
+
+	// Add a source
+	$backup_migrate->sources()->add('source_id', new CustomSource());
+
+	// Add a destination
+	$backup_migrate->destinations()->add('destination_id', new CustomDestination());
 
 ### Configuration
 Backup and Migrate Core has very little configuration management built in. It is the responsibility to inject the necessary configuration into the library as a `ConfigInterface` object. If no configuration object is provided then each plugin will use it's configuration defaults.
 
 See: [Configuration](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Config)
 
-### Environment
-The environment is an object (a simple dependency injection container) which contains services that allows Backup and Migrate plugins to access the broader environment. Access to caching, state, logging, email sending and temporary file creation is provided by the consuming application using the environment object. Creating and injecting this object is optional. If the consuming application does not provide an environment object then a default environment will be created with non-functioning versions of the optional services.
-
-See: [Environment](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Environment) 

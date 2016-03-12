@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Main;
 
 use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Plugin\PluginManagerInterface;
 use \BackupMigrate\Core\Service\EnvironmentInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Main\BackupMigrateInterface;
@@ -35,15 +36,29 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   use PluginCallerTrait;
 
   /**
+   * @var \BackupMigrate\Core\Plugin\PluginManagerInterface;
+   */
+  protected $sources;
+
+  /**
+   * @var \BackupMigrate\Core\Plugin\PluginManagerInterface;
+   */
+  protected $destinations;
+
+
+  /**
    * {@inheritdoc}
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
    * @param \BackupMigrate\Core\Service\ServiceLocatorInterface $services
    */
-  function __construct(PluginManager $plugins = NULL) {
-    if ($plugins == NULL) {
+  function __construct(PluginManager $plugins = null, PluginManagerInterface $sources = null, PluginManagerInterface $destinations = null) {
+    if ($plugins == null) {
       $plugins = new PluginManager();
     }
     $this->setPluginManager($plugins);
+
+    $this->sources = $sources ? $sources : new PluginManager();
+    $this->destinations = $destinations ? $destinations : new PluginManager();
   }
 
 
@@ -57,12 +72,12 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
       $this->plugins()->call('setUp', 'backup', $source_id, $destination_id);
 
       // Get the source and the destination to use.
-      $source = $this->plugins()->get($source_id);
+      $source = $this->sources()->get($source_id);
       $destinations = array();
 
       // Allow a single destination or multiple destinations.
       foreach ((array)$destination_id as $id) {
-        $destinations[$id] = $this->plugins()->get($id);
+        $destinations[$id] = $this->destinations()->get($id);
 
         // Check that the destination is valid.
         if (!$destinations[$id]) {
@@ -115,8 +130,8 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   public function restore($source_id, $destination_id, $file_id = NULL) {
     try {
       // Get the source and the destination to use.
-      $source = $this->plugins()->get($source_id);
-      $destination = $this->plugins()->get($destination_id);
+      $source = $this->sources()->get($source_id);
+      $destination = $this->destinations()->get($destination_id);
 
       if (!$source) {
         throw new BackupMigrateException('The source !id does not exist.', array('!id' => $source_id));
@@ -165,5 +180,33 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   public function setConfig(ConfigInterface $config) {
     $this->plugins()->setConfig($config);
   }
+
+  /**
+   * Get the list of available sources.
+   *
+   * @return mixed
+   */
+  public function sources() {
+    return $this->sources;
+  }
+
+  /**
+   * Get the list of available sources.
+   *
+   * @return mixed
+   */
+  public function destinations() {
+    return $this->destinations;
+  }
+
+  /**
+   * Get the list of available sources.
+   *
+   * @return mixed
+   */
+  public function filters() {
+    return $this->plugins;
+  }
+
 
 }

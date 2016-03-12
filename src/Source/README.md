@@ -6,6 +6,6 @@ Sources in Backup and Migrate are implemented as plugins and will have dependenc
 
 A single Backup and Migrate instance can have more than one source of a given type. Each source will have a unique key that will be used to pass the configuration to the source object and to specify the source when running a `backup()` or `restore()` operation.
 
-Like other plugins, sources are passed to the Backup and Migrate object by the consuming application by calling the `add()` method on the plugin manager.
+Like other plugins, sources are passed to the Backup and Migrate object by the consuming application by calling the `add()` method on the sources plugin manager.
 
-	$backup_migrate->plugins()->add('source1', new MySourcePlugin());
+	$backup_migrate->sources()->add('source1', new MySourcePlugin());

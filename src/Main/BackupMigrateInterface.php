@@ -50,5 +50,26 @@ interface BackupMigrateInterface
    */
   public function restore($source_id, $destination_id, $file = NULL);
 
+  /**
+   * Get the list of available filters.
+   *
+   * @return PluginManagerInterface
+   */
+  public function filters();
+
+
+  /**
+   * Get the list of available sources.
+   *
+   * @return PluginManagerInterface
+   */
+  public function sources();
+
+  /**
+   * Get the list of available sources.
+   *
+   * @return PluginManagerInterface
+   */
+  public function destinations();
 
 }

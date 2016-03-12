@@ -105,9 +105,9 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add('source', $source);
-    $this->bam->plugins()->add('destination', $destination);
-    $this->bam->plugins()->add('destination2', $destination2);
+    $this->bam->sources()->add('source', $source);
+    $this->bam->destinations()->add('destination', $destination);
+    $this->bam->destinations()->add('destination2', $destination2);
     $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->backup('source', 'destination');
@@ -156,9 +156,9 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add('source', $source);
-    $this->bam->plugins()->add('destination', $destination);
-    $this->bam->plugins()->add('destination2', $destination2);
+    $this->bam->sources()->add('source', $source);
+    $this->bam->destinations()->add('destination', $destination);
+    $this->bam->destinations()->add('destination2', $destination2);
     $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->backup('source', array('destination', 'destination2'));
@@ -198,8 +198,8 @@ class BackupMigrateTest extends \PHPUnit_Framework_TestCase {
       $this->equalTo($file)
     );
 
-    $this->bam->plugins()->add('source', $source);
-    $this->bam->plugins()->add('destination', $destination);
+    $this->bam->sources()->add('source', $source);
+    $this->bam->destinations()->add('destination', $destination);
     $this->bam->plugins()->add('test', $plugin);
 
     $this->bam->restore('source', 'destination', 'file.txt');
