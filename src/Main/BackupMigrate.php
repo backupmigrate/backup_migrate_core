@@ -7,14 +7,12 @@
 
 namespace BackupMigrate\Core\Main;
 
-use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Plugin\PluginManagerInterface;
-use \BackupMigrate\Core\Service\EnvironmentInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
-use BackupMigrate\Core\Main\BackupMigrateInterface;
-use \BackupMigrate\Core\Plugin\PluginCallerInterface;
-use \BackupMigrate\Core\Plugin\PluginCallerTrait;
-use \BackupMigrate\Core\Plugin\PluginManager;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerTrait;
+use BackupMigrate\Core\Plugin\PluginManager;
 
 /**
  * The core Backup and Migrate service.
