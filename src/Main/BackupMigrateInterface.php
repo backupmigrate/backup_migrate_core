@@ -7,14 +7,8 @@
 
 namespace BackupMigrate\Core\Main;
 
-use BackupMigrate\Core\Service\EnvironmentInterface;
-use BackupMigrate\Core\Plugin\PluginInterface;
-use BackupMigrate\Core\Plugin\PluginManager;
-use \BackupMigrate\Core\Source\SourceManagerInterface;
-use \BackupMigrate\Core\Source\SourceInterface;
-use \BackupMigrate\Core\Destination\DestinationManagerInterface;
-use \BackupMigrate\Core\Plugin\PluginManagerInterface;
-use \BackupMigrate\Core\Config\ConfigInterface;
+use BackupMigrate\Core\Service\ServiceManager;
+use BackupMigrate\Core\Plugin\PluginManagerInterface;
 
 
 /**
@@ -24,12 +18,9 @@ interface BackupMigrateInterface
 {
 
   /**
-   * Backup and Migrate constructor. Takes all of the dependencies for this service.
-   *
-   * @param \BackupMigrate\Core\Plugin\PluginManager $plugins
-   *  A plugin manager containing all of the available plugins for this service.
+   * Backup and Migrate constructor.
    */
-  public function __construct(PluginManager $plugins = NULL);
+  public function __construct();
 
   /**
    * Perform the backup from a given source and save it to the given destination.
@@ -51,25 +42,44 @@ interface BackupMigrateInterface
   public function restore($source_id, $destination_id, $file = NULL);
 
   /**
-   * Get the list of available filters.
+   * Get the list of available destinations.
    *
    * @return PluginManagerInterface
    */
-  public function filters();
-
+  public function destinations();
 
   /**
-   * Get the list of available sources.
+   * Set the destinations plugin manager.
+   *
+   * @param PluginManagerInterface $destinations
+   */
+  public function setDestinationManager(PluginManagerInterface $destinations);
+
+  /**
+   * Get the list of sources.
    *
    * @return PluginManagerInterface
    */
   public function sources();
 
   /**
-   * Get the list of available sources.
+   * Set the sources plugin manager.
    *
-   * @return PluginManagerInterface
+   * @param PluginManagerInterface $sources
    */
-  public function destinations();
+  public function setSourceManager(PluginManagerInterface $sources);
 
+  /**
+   * Get the service locator.
+   *
+   * @return ServiceManager
+   */
+  public function services();
+
+  /**
+   * Set the service locator.
+   *
+   * @param ServiceManager $services
+   */
+  public function setServiceManager($services);
 }

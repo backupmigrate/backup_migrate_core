@@ -30,7 +30,7 @@ to configure the plugin and to specify which source and destination are used dur
     $bam = new BackupMigrate($);
 
 	// Create a service locator
-	$services = new ServiceLocator();
+	$services = new ServiceManager();
 	
 	// Add necessary services
 	$services->add('TempFileManager',
@@ -81,7 +81,7 @@ See: [Environment](https://github.com/backupmigrate/backup_migrate_core/tree/mas
 
 ### Configuring the Object
 
-The `BackupMigrate` object does not have any configuration but the injected plugins and services may. Services should be configured before they are passed to the `ServiceLocator`. Plugins can be configured when they are created and passed to the plugin manager or additional configuration can be passed in by calling `setConfig` on the plugin manager. Often combination of these techniques will be used. Base configuration is passed to the plugin when it is instantiated and run-time configuration is passed in later. 
+The `BackupMigrate` object does not have any configuration but the injected plugins and services may. Services should be configured before they are passed to the `ServiceManager`. Plugins can be configured when they are created and passed to the plugin manager or additional configuration can be passed in by calling `setConfig` on the plugin manager. Often combination of these techniques will be used. Base configuration is passed to the plugin when it is instantiated and run-time configuration is passed in later. 
 
 See: [Configuration](https://github.com/backupmigrate/backup_migrate_core/tree/master/src/Config)
 

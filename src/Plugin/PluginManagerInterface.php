@@ -93,5 +93,11 @@ interface PluginManagerInterface
    */
   public function map($op, $params = array());
 
-
+  /**
+   * Set the configuration for all plugins.
+   *
+   * @param ConfigInterface $config
+   *    A configuration object containing only configuration for all plugins
+   */
+  public function setConfig(ConfigInterface $config);
 }

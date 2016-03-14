@@ -13,6 +13,7 @@ use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
 use BackupMigrate\Core\Plugin\PluginManager;
+use BackupMigrate\Core\Service\ServiceManager;
 
 /**
  * The core Backup and Migrate service.
@@ -31,22 +32,24 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
    */
   protected $destinations;
 
+  /**
+   * @var ServiceManager The service locator for this object.
+   */
+  protected $services;
 
   /**
    * {@inheritdoc}
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
-   * @param \BackupMigrate\Core\Service\ServiceLocatorInterface $services
+   * @param \BackupMigrate\Core\Service\ServiceManagerInterface $services
    */
-  function __construct(PluginManager $plugins = null, PluginManagerInterface $sources = null, PluginManagerInterface $destinations = null) {
-    if ($plugins == null) {
-      $plugins = new PluginManager();
-    }
-    $this->setPluginManager($plugins);
+  function __construct() {
+    $this->setServiceManager(new ServiceManager());
+    $services = $this->services();
 
-    $this->sources = $sources ? $sources : new PluginManager();
-    $this->destinations = $destinations ? $destinations : new PluginManager();
+    $this->setPluginManager(new PluginManager($services));
+    $this->setSourceManager(new PluginManager($services));
+    $this->setDestinationManager(new PluginManager($services));
   }
-
 
   /**
    * {@inheritdoc}
@@ -168,31 +171,56 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
   }
 
   /**
-   * Get the list of available sources.
+   * Get the list of available destinations.
    *
-   * @return mixed
-   */
-  public function sources() {
-    return $this->sources;
-  }
-
-  /**
-   * Get the list of available sources.
-   *
-   * @return mixed
+   * @return PluginManagerInterface
    */
   public function destinations() {
     return $this->destinations;
   }
 
   /**
-   * Get the list of available sources.
+   * Set the destinations plugin manager.
    *
-   * @return mixed
+   * @param PluginManagerInterface $destinations
    */
-  public function filters() {
-    return $this->plugins;
+  public function setDestinationManager(PluginManagerInterface $destinations) {
+    $this->destinations = $destinations;
   }
 
+  /**
+   * Get the list of sources.
+   *
+   * @return PluginManagerInterface
+   */
+  public function sources() {
+    return $this->sources;
+  }
 
+  /**
+   * Set the sources plugin manager.
+   *
+   * @param PluginManagerInterface $sources
+   */
+  public function setSourceManager(PluginManagerInterface $sources) {
+    $this->sources = $sources;
+  }
+
+  /**
+   * Get the service locator.
+   *
+   * @return ServiceManager
+   */
+  public function services() {
+    return $this->services;
+  }
+
+  /**
+   * Set the service locator.
+   *
+   * @param ServiceManager $services
+   */
+  public function setServiceManager($services) {
+    $this->services = $services;
+  }
 }

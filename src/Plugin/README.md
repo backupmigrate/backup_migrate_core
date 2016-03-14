@@ -89,11 +89,11 @@ By default plugins are not given access to the plugin manager. However, if a plu
 	}
 
 ### Accessing Services ###
-If a plugin requires the use of a cache, logger, state storage, mailer or any other backing service it must have the service injected into it by the plugin manger. To make a service avaible to the plugin manager it may be added to an object which implenents `ServiceLocatorInterface`. That service locater may be passed to the plugin manager though the constructor or it can be passed in later using `setServiceLocator()`.
+If a plugin requires the use of a cache, logger, state storage, mailer or any other backing service it must have the service injected into it by the plugin manger. To make a service avaible to the plugin manager it may be added to an object which implenents `ServiceManagerInterface`. That service locater may be passed to the plugin manager though the constructor or it can be passed in later using `setServiceManager()`.
 
 Any service provided by the service locator will be injected into a plugin when it is added to the plugin manager if the name of the service matches a setter present in the plugin. For example: if a plugin has a method called `setLogger` and the service locator has a service called 'Logger' then the logger service will be injected via the `setLogger` method:
 
-	$services = new ServiceLocator();
+	$services = new ServiceManager();
 	$services->add('Logger', new FileLogger('/path/to/log.txt'));
 	
 	$plugins = new PluginManager($services);

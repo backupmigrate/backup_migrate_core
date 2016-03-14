@@ -5,21 +5,21 @@
 
 namespace BackupMigrate\Core\Service;
 
-use BackupMigrate\Core\Service\ServiceInterface;
+use BackupMigrate\Core\Plugin\PluginInterface;
 
 
 /**
- * Interface ServiceLocatorInterface
+ * Interface ServiceManagerInterface
  * @package BackupMigrate\Core\Environment
  */
-interface ServiceLocatorInterface {
+interface ServiceManagerInterface {
 
   /**
    * Retrieve a service from the locator
    *
    * @param string $type
    *  The service type identifier
-   * @return ServiceInterface
+   * @return mixed
    */
   public function get($type);
 
@@ -29,4 +29,12 @@ interface ServiceLocatorInterface {
    * @return array
    */
   public function keys();
+
+  /**
+   * Inject the services in this locator into the given plugin.
+   *
+   * @param object $plugin
+   * @return mixed
+   */
+  public function addClient($plugin);
 }

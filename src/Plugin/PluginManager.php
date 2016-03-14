@@ -12,8 +12,8 @@ use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\File\TempFileManager;
-use BackupMigrate\Core\Service\ServiceLocator;
-use BackupMigrate\Core\Service\ServiceLocatorInterface;
+use BackupMigrate\Core\Service\ServiceManager;
+use BackupMigrate\Core\Service\ServiceManagerInterface;
 
 /**
  * Class PluginManager
@@ -28,7 +28,7 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   protected $items;
 
   /**
-   * @var \BackupMigrate\Core\Service\ServiceLocatorInterface
+   * @var \BackupMigrate\Core\Service\ServiceManagerInterface
    */
   protected $services;
 
@@ -38,19 +38,18 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   protected $tempFileManager;
 
   /**
-   * @param \BackupMigrate\Core\Service\ServiceLocatorInterface $services
+   * @param \BackupMigrate\Core\Service\ServiceManagerInterface $services
    * @param \BackupMigrate\Core\Config\ConfigInterface $config
    */
-  public function __construct(ServiceLocatorInterface $services = NULL, ConfigInterface $config = NULL) {
+  public function __construct(ServiceManagerInterface $services = NULL, ConfigInterface $config = NULL) {
     // Add the injected service locator for dependency injection into plugins.
-    $this->setServiceLocator($services ? $services : new ServiceLocator());
+    $this->setServiceManager($services ? $services : new ServiceManager());
 
     // Set the configuration or a null object if no config was specified.
     $this->setConfig($config ? $config : new Config());
 
     // Create an array to store the plugins themselves.
     $this->items = array();
-
   }
 
 
@@ -153,8 +152,8 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     // If this plugin can be configured, then pass in the configuration.
     $this->_configurePlugin($plugin, $id);
 
-    // Inject the available services
-    $this->injectServices($plugin);
+    // Inject the available services.
+    $this->services()->addClient($plugin);
 
     // Inject the plugin manager.
     if ($plugin instanceof PluginCallerInterface) {
@@ -162,19 +161,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
     }
   }
 
-  /**
-   * Inject all available services into the give plugin.
-   *
-   * @param \BackupMigrate\Core\Plugin\PluginInterface $plugin
-   */
-  protected function injectServices(PluginInterface $plugin) {
-    // Inject available services.
-    foreach ($this->services->keys() as $key) {
-      if (method_exists($plugin, 'set' . $key) && $service = $this->services->get($key)) {
-        $plugin->{'set' . $key}($service);
-      }
-    }
-  }
   /**
    * Set the configuration for the given plugin.
    *
@@ -196,21 +182,21 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
   }
 
   /**
-   * @return ServiceLocatorInterface
+   * @return ServiceManagerInterface
    */
   public function services() {
     return $this->services;
   }
 
   /**
-   * @param ServiceLocatorInterface $services
+   * @param ServiceManagerInterface $services
    */
-  public function setServiceLocator($services) {
+  public function setServiceManager($services) {
     $this->services = $services;
 
     // Inject or re-inject the services.
     foreach ($this->getAll() as $key => $plugin) {
-      $this->injectServices($plugin);
+      $this->services()->addClient($plugin);
     }
   }
 }
