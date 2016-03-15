@@ -10,6 +10,9 @@ namespace BackupMigrate\Core\Filter;
 
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginBase;
+use BackupMigrate\Core\Plugin\PluginManager;
+use BackupMigrate\Core\Source\DatabaseSource;
+use BackupMigrate\Core\Source\DatabaseSourceInterface;
 
 /**
  * Allows the exclusion of certain data from a database.
@@ -20,6 +23,11 @@ use BackupMigrate\Core\Plugin\PluginBase;
 class DBExcludeFilter extends PluginBase {
 
   /**
+   * @var PluginManager
+   */
+  protected $source_manager;
+
+  /**
    * The 'beforeDBTableBackup' plugin op.
    *
    * @param array $table
@@ -27,16 +35,14 @@ class DBExcludeFilter extends PluginBase {
    * @return array $table
    */
   public function beforeDBTableBackup($table, $params = []) {
-    $source = $this->confGet('source');
-    if ($source && $source == $params['source']) {
-      $exclude = $this->confGet('exclude_tables');
-      $nodata = $this->confGet('nodata_tables');
-      if (in_array($table['name'], $exclude)) {
-        $table['exclude'] = true;
-      }
-      if (in_array($table['name'], $nodata)) {
-        $table['nodata'] = true;
-      }
+    $exclude = $this->confGet('exclude_tables');
+    $nodata = $this->confGet('nodata_tables');
+    dd($exclude);
+    if (in_array($table['name'], $exclude)) {
+      $table['exclude'] = true;
+    }
+    if (in_array($table['name'], $nodata)) {
+      $table['nodata'] = true;
     }
     return $table;
   }
@@ -63,29 +69,54 @@ class DBExcludeFilter extends PluginBase {
   public function configSchema($params = array()) {
     $schema = array();
 
-    $source = $this->confGet('source');
+    if ($params['operation'] == 'backup') {
+      $tables = [];
 
-    // Backup settings.
-    if (!empty($source) && $params['operation'] == 'backup') {
-      $schema['groups']['default'] = [
-        'title' => $this->t('Exclude Data from %source', ['%source' => $source->confGet('name')]),
-      ];
-      $table_select = [
-        'type' => 'enum',
-        'multiple' => true,
-        'options' => $source->getTableNames(),
-        'actions' => ['backup'],
-        'group' => 'default'
-      ];
-      $schema['fields']['exclude_tables'] = $table_select + [
-          'title' => $this->t('Exclude these tables entirely'),
-        ];
+      foreach ($this->sources()->getAll() as $source_key => $source) {
+        if ($source instanceof DatabaseSourceInterface) {
+          $tables += $source->getTableNames();
+        }
 
-      $schema['fields']['nodata_tables'] = $table_select + [
-          'title' => $this->t('Exclude data from these tables'),
-        ];
+        if ($tables) {
+          // Backup settings.
+          $schema['groups']['default'] = [
+            'title' => $this->t('Exclude database tables'),
+          ];
+
+          $table_select = [
+            'type' => 'enum',
+            'multiple' => true,
+            'options' => $tables,
+            'actions' => ['backup'],
+            'group' => 'default'
+          ];
+          $schema['fields']['exclude_tables'] = $table_select + [
+              'title' => $this->t('Exclude these tables entirely'),
+            ];
+
+          $schema['fields']['nodata_tables'] = $table_select + [
+              'title' => $this->t('Exclude data from these tables'),
+            ];
+
+        }
+      }
     }
     return $schema;
   }
+
+  /**
+   * @return PluginManager
+   */
+  public function sources() {
+    return $this->source_manager ? $this->source_manager : new PluginManager();
+  }
+
+  /**
+   * @param PluginManager $source_manager
+   */
+  public function setSourceManager($source_manager) {
+    $this->source_manager = $source_manager;
+  }
+
 
 }

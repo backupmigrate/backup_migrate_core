@@ -11,13 +11,12 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class DatabaseSource
  * @package BackupMigrate\Core\Source
  */
-abstract class DatabaseSource  extends PluginBase implements SourceInterface, FileProcessorInterface
+abstract class DatabaseSource  extends PluginBase implements DatabaseSourceInterface, FileProcessorInterface
 {
   use FileProcessorTrait;
 
