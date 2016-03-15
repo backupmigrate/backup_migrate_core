@@ -39,6 +39,27 @@ class DirectoryDestination extends DestinationBase implements ReadableDestinatio
   }
 
   /**
+   * Get a definition for user-configurable settings.
+   *
+   * @param array $params
+   * @return array
+   */
+  public function configSchema($params = array()) {
+    $schema = array();
+
+    // Init settings.
+    if ($params['operation'] == 'initialize') {
+      $schema['fields']['directory'] = [
+        'type' => 'text',
+        'title' => $this->t('Directory Path'),
+      ];
+    }
+
+    return $schema;
+  }
+
+
+  /**
    * Do the actual file save. This function is called to save the data file AND
    * the metadata sidecar file.
    * @param \BackupMigrate\Core\File\BackupFileReadableInterface $file
