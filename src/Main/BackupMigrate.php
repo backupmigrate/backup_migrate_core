@@ -46,9 +46,12 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
     $this->setServiceManager(new ServiceManager());
     $services = $this->services();
 
-    $this->setPluginManager(new PluginManager($services));
-    $this->setSourceManager(new PluginManager($services));
-    $this->setDestinationManager(new PluginManager($services));
+    $services->add('PluginManager', new PluginManager($services));
+    $services->add('SourceManager', new PluginManager($services));
+    $services->add('DestinationManager', new PluginManager($services));
+
+    // Add these services back into this object using the service manager.
+    $services->addClient($this);
   }
 
   /**

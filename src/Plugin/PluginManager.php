@@ -154,11 +154,6 @@ class PluginManager implements PluginManagerInterface, ConfigurableInterface {
 
     // Inject the available services.
     $this->services()->addClient($plugin);
-
-    // Inject the plugin manager.
-    if ($plugin instanceof PluginCallerInterface) {
-      $plugin->setPluginManager($this);
-    }
   }
 
   /**
