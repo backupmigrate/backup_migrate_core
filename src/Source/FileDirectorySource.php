@@ -103,7 +103,7 @@ class FileDirectorySource extends PluginBase
       }
       // Check that the file endings match.
       if ($reader->getFileExt() !== $file->getExtLast()) {
-        throw new BackupMigrateException('This source expects a .%ext file.', array('%ext' => $archiver->getFileExt()));
+        throw new BackupMigrateException('This source expects a .%ext file.', array('%ext' => $reader->getFileExt()));
       }
 
       $reader->setArchive($file);
