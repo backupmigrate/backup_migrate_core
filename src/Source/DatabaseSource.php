@@ -74,7 +74,13 @@ abstract class DatabaseSource  extends PluginBase implements DatabaseSourceInter
    * Get a list of tables in this source
    */
   public function getTableNames() {
-    return $this->_getTableNames();
+    try {
+      return $this->_getTableNames();
+    }
+    catch (\Exception $e) {
+      // Todo: Log this exception
+      return [];
+    }
   }
 
   /**
@@ -84,7 +90,13 @@ abstract class DatabaseSource  extends PluginBase implements DatabaseSourceInter
    * @return array
    */
   public function getTables() {
-    return $this->_getTables();
+    try {
+      return $this->_getTables();
+    }
+    catch (\Exception $e) {
+      // Todo: Log this exception
+      return [];
+    }
   }
 
 
