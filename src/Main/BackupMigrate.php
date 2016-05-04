@@ -134,9 +134,14 @@ class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
 
       // Load the file from the destination.
       $file = $destination->getFile($file_id);
-
       if (!$file) {
         throw new BackupMigrateException('The file !id does not exist.', array('!id' => $file_id));
+      }
+
+      // Prepare the file for reading.
+      $file = $destination->loadFileForReading($file);
+      if (!$file) {
+        throw new BackupMigrateException('The file !id could not be opened for reading.', array('!id' => $file_id));
       }
 
       // Run each of the installed plugins which implements the 'backup' operation.
