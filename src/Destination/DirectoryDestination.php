@@ -69,7 +69,7 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
     // Check if the directory exists.
     $this->checkDirectory();
 
-    copy($file->realpath(), $this->confGet('directory') . '/' . $file->getFullName());
+    copy($file->realpath(), $this->_idToPath($file->getFullName()));
     // @TODO: use copy/unlink if the temp file and the destination do not share a stream wrapper.
   }
 
@@ -182,7 +182,7 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
    * @return string
    */
   protected function _idToPath($id) {
-    return $this->confGet('directory') . $id;
+    return rtrim($this->confGet('directory'), '/') . '/' . $id;
   }
 
   /**
