@@ -69,7 +69,7 @@ class DirectoryDestination extends DestinationBase implements ReadableDestinatio
     // Check if the directory exists.
     $this->checkDirectory();
 
-    rename($file->realpath(), $this->confGet('directory') . $file->getFullName());
+    copy($file->realpath(), $this->confGet('directory') . '/' . $file->getFullName());
     // @TODO: use copy/unlink if the temp file and the destination do not share a stream wrapper.
   }
 
@@ -198,9 +198,8 @@ class DirectoryDestination extends DestinationBase implements ReadableDestinatio
     if ($handle = opendir($dir)) {
       while (FALSE !== ($file = readdir($handle))) {
         $filepath = $dir . '/' . $file;
-        // Don't show hidden or unreadable files
-        // @TODO: Filter out unsupported and metadata files.
-        if (substr($file, 0, 1) !== '.' && is_readable($filepath)) {
+        // Don't show hidden, unreadable or metadata files
+        if (substr($file, 0, 1) !== '.' && is_readable($filepath) && substr($file, strlen($file) - 5) !== '.info') {
           $files[] = $file;
         }
       }
