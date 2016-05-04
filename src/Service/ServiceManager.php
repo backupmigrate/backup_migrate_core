@@ -53,8 +53,10 @@ class ServiceManager implements ServiceManagerInterface {
     $this->addClient($service);
 
     // Update any plugins that have already had this service injected
-    foreach ($this->clients[$type] as $client) {
-      $client->{'set' . $type}($service);
+    if (isset($this->clients[$type])) {
+      foreach ($this->clients[$type] as $client) {
+        $client->{'set' . $type}($service);
+      }
     }
   }
 
