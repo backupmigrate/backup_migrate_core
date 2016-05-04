@@ -35,39 +35,6 @@ class StreamDestinationTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @covers ::countFiles
-   */
-  public function testCountFiles() {
-    $files = $this->destination->countFiles();
-    $this->assertEquals(0, $files);
-  }
-
-  /**
-   * @covers ::listFiles
-   */
-  public function testListFiles() {
-    $files = $this->destination->listFiles();
-    $this->assertEmpty($files);
-  }
-
-  /**
-   * @covers ::loadFileForReading
-   */
-  public function testLoad() {
-    $file = $this->destination->getFile('item1.txt');
-    $this->assertNull($file);
-//    $file = $this->destination->loadFileForReading($file);
-//    $this->assertNull($file);
-  }
-
-  /**
-   * @covers ::deleteFile
-   */
-  public function testDelete() {
-    $this->destination->deleteFile('item1.txt');
-  }
-
-  /**
    * @covers ::saveFile
    */
   public function testSave() {

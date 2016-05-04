@@ -76,32 +76,4 @@ class StreamDestination extends PluginBase implements WritableDestinationInterfa
   public function loadFileForReading(BackupFileInterface $file) {
     return $file;
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function listFiles($count = 100, $start = 0) {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function countFiles() {
-    return 0;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function fileExists($id) {
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function deleteFile($id) {
-  }
-
 }

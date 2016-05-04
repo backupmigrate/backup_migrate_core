@@ -35,5 +35,13 @@ interface ListableDestinationInterface extends DestinationInterface {
    */
   public function countFiles();
 
+  /**
+   * @return boolean Whether the file exists in this destination
+   */
+  public function fileExists($id);
 
+  /**
+   * Delete the specified file
+   */
+  public function deleteFile($id);
 }

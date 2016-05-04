@@ -19,12 +19,4 @@ interface WritableDestinationInterface extends DestinationInterface {
    *        The file to save.
    */
   function saveFile(BackupFileReadableInterface $file);
-
-  /**
-   * Delete the file with the given id.
-   *
-   * @param string $id The id of the file to delete.
-   */
-  public function deleteFile($id);
-
 }

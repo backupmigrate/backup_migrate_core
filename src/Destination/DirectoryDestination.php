@@ -20,7 +20,7 @@ use BackupMigrate\Core\File\ReadableStreamBackupFile;
  * Class ServerDirectoryDestination
  * @package BackupMigrate\Core\Destination
  */
-class DirectoryDestination extends DestinationBase implements ReadableDestinationInterface, ConfigurableInterface, FileProcessorInterface {
+class DirectoryDestination extends DestinationBase implements ListableDestinationInterface, ReadableDestinationInterface, ConfigurableInterface, FileProcessorInterface {
   use SidecarMetadataDestinationTrait;
 
   /**
