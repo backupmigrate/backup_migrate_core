@@ -37,7 +37,6 @@ class DBExcludeFilter extends PluginBase {
   public function beforeDBTableBackup($table, $params = []) {
     $exclude = $this->confGet('exclude_tables');
     $nodata = $this->confGet('nodata_tables');
-    dd($exclude);
     if (in_array($table['name'], $exclude)) {
       $table['exclude'] = true;
     }
