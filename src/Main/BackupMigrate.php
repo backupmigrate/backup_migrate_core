@@ -18,7 +18,7 @@ use BackupMigrate\Core\Service\ServiceManager;
 /**
  * The core Backup and Migrate service.
  */
-class BackupMigrate implements BackupMigrateInterface, PluginCallerInterface
+class BackupMigrate implements BackupMigrateInterface
 {
   use PluginCallerTrait;
 

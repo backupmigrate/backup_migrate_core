@@ -9,12 +9,13 @@ namespace BackupMigrate\Core\Main;
 
 use BackupMigrate\Core\Service\ServiceManager;
 use BackupMigrate\Core\Plugin\PluginManagerInterface;
+use BackupMigrate\Core\Plugin\PluginCallerInterface;
 
 
 /**
  * The core Backup and Migrate service.
  */
-interface BackupMigrateInterface
+interface BackupMigrateInterface extends PluginCallerInterface
 {
 
   /**
