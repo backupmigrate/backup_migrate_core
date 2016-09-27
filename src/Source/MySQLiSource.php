@@ -134,6 +134,8 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
       if ($this->connection->connect_errno) {
         throw new \Exception("Failed to connect to MySQL server");
       }
+      
+      $this->connection->set_charset('utf8');
     }
     return $this->connection;
   }
