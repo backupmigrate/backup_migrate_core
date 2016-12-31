@@ -42,7 +42,7 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
       );
     }
 
-    $dsn = "mysql:dbname=$GLOBALS[DB_DBNAME];host=$GLOBALS[DB_HOST];port=$GLOBALS[DB_PORT]";
+    $dsn = "mysql:dbname=$GLOBALS[DB_DBNAME];host=$GLOBALS[DB_HOST];port=$GLOBALS[DB_PORT];charset=UTF8";
 
     try {
       if ($this->conn === NULL) {
@@ -74,7 +74,7 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
     $this->data = [
       'table1' => [
         ['id' => 1, 'field1' => 'Hello, World!', 'field2' => NULL],
-        ['id' => 2, 'field1' => 'Goodnight, Moon', 'field2' => NULL],
+        ['id' => 2, 'field1' => '晚安，月亮', 'field2' => NULL],
       ],
       'table2' => [
         ['id' => 1, 'field1' => '1980-09-11'],
@@ -170,7 +170,7 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
     $file = $this->source->exportToFile();
     $dump = $file->readAll();
 
-    $this->assertContains("INSERT INTO `table1` VALUES ('1','Hello, World!',null),('2','Goodnight, Moon',null);", $dump);
+    $this->assertContains("INSERT INTO `table1` VALUES ('1','Hello, World!',null),('2','晚安，月亮',null);", $dump);
     $this->assertContains("INSERT INTO `table2` VALUES ('1','1980-09-11');", $dump);
   }
 
