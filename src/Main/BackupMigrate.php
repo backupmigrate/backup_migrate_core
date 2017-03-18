@@ -61,7 +61,7 @@ class BackupMigrate implements BackupMigrateInterface
     try {
 
       // Allow the plugins to set up.
-      $this->plugins()->call('setUp', 'backup', $source_id, $destination_id);
+      $this->plugins()->call('setUp', null, ['operation' => 'backup', 'source_id' => $source_id, 'destination_id' => $destination_id]);
 
       // Get the source and the destination to use.
       $source = $this->sources()->get($source_id);
@@ -112,7 +112,7 @@ class BackupMigrate implements BackupMigrateInterface
     }
 
     // Allow the plugins to tear down.
-    $this->plugins()->call('tearDown', 'backup', $source_id, $destination_id);
+    $this->plugins()->call('tearDown', null, ['operation' => 'backup', 'source_id' => $source_id, 'destination_id' => $destination_id]);
 
   }
 

@@ -81,7 +81,7 @@ class BrowserDownloadDestination extends StreamDestination implements WritableDe
   public function checkWritable() {
     // Check that we're running as a web process via a browser.
     // @TODO: we could check if the 'HTTP_ACCEPT' header contains the right mime but that is probably overkill.
-    if (!isset($_SERVER['SERVER_ADDR'])) {
+    if (!isset($_SERVER['REQUEST_METHOD'])) {
       throw new DestinationNotWritableException(
         "The download destination only works when accessed through a http client."
       );

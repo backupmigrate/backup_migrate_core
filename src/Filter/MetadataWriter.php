@@ -83,13 +83,14 @@ class MetadataWriter extends PluginBase implements FileProcessorInterface, Plugi
   /**
    * Run before the backup/restore begins.
    */
-  public function setUp($op, $source_id) {
-    if ($op == 'backup' && $source_id) {
-      $this->confSet('bam_sourceid', $source_id);
-      if ($source = $this->plugins()->get($source_id)) {
+  public function setUp($operand, $options) {
+    if ($options['operation'] == 'backup' && $options['source_id']) {
+      $this->config()->set('bam_sourceid', $options['source_id']);
+      if ($source = $this->plugins()->get($options['source_id'])) {
         // @TODO Query the source for it's type and name.
       }
     }
+    return $operand;
   }
 
   /**
