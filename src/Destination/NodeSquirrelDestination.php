@@ -49,6 +49,12 @@ class NodeSquirrelDestination extends DestinationBase implements RemoteDestinati
     return $schema;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function checkWritable() {
+    return true;
+  }
 
   /**
    * Do the actual delete for a file.

@@ -152,7 +152,14 @@ class NodeSquirrelClient {
           // Post the request.
           $out = $this->getHttpClient()->post($endpoint, $post);
           // Decode the response.
-          return xmlrpc_decode($out);
+          $out = xmlrpc_decode($out);
+
+          // Check for xml errors.
+          if (isset($out['faultCode'])) {
+            throw new BackupMigrateException($out['faultString'], [], $out['faultCode']);
+          }
+
+          return $out;
         }
         catch (BackupMigrateException $e) {
           // Deal with errors.
@@ -250,7 +257,7 @@ class NodeSquirrelClient {
    * @throws \BackupMigrate\Core\Exception\BackupMigrateException
    */
   protected function getHash($time, $nonce) {
-    if ($private_key = $this->getSecretKey()) {
+    if ($private_key = $this->getPrivateKey()) {
       $message = $time . ':' . $nonce . ':' . $private_key;
       // Use HMAC-SHA1 to authenticate the call.
       $hash = base64_encode(
@@ -306,7 +313,7 @@ class NodeSquirrelClient {
    */
   public function getHttpClient() {
     if (!$this->http_client) {
-      throw new BackupMigrateException('The NodeSquirrel client requires a HTTPClient helper.');
+      $this->http_client = new PhpCurlHttpClient();
     }
     return $this->http_client;
   }
@@ -345,5 +352,15 @@ class NodeSquirrelClient {
   protected function getSiteID() {
     list($id,) = explode(':', $this->getSecretKey());
     return $id;
+  }
+
+  /**
+   * Get the site id from the secret key
+   *
+   * @return mixed
+   */
+  protected function getPrivateKey() {
+    list(,$key) = explode(':', $this->getSecretKey());
+    return $key;
   }
 }
