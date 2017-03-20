@@ -48,12 +48,12 @@ class StreamDestination extends PluginBase implements WritableDestinationInterfa
 
     // The stream must exist.
     if (!file_exists($stream_uri)) {
-      throw new DestinationNotWritableException('The file stream !uri does not exist.', ['%uri' => $stream_uri]);
+      throw new DestinationNotWritableException('The file stream %uri does not exist.', ['%uri' => $stream_uri]);
     }
 
     // The stream must be writable.
     if (!file_exists($stream_uri)) {
-      throw new DestinationNotWritableException('The file stream !uri cannot be written to.', ['%uri' => $stream_uri]);
+      throw new DestinationNotWritableException('The file stream %uri cannot be written to.', ['%uri' => $stream_uri]);
     }
   }
   /**
