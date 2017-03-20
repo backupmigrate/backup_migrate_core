@@ -65,4 +65,5 @@ interface BackupFileReadableInterface extends BackupFileInterface {
    * Rewind the file handle to the start of the file.
    */
   public function rewind();
+
 }
