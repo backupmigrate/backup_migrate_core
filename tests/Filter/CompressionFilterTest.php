@@ -122,7 +122,6 @@ class CompressionFilterTest extends PHPUnit_Framework_TestCase {
 //    $handle = zip_open($compressed->realpath());
 //    $file_handle = zip_read (zip_open($compressed->realpath()));
 //    $this->assertEquals($this->original, bzread($handle));
-
   }
 
   /**

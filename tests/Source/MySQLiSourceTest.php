@@ -156,8 +156,7 @@ class MySQLiSourceTest extends \PHPUnit_Extensions_Database_TestCase {
     $this->assertContains("CREATE TABLE `table2`", $dump);
 
     // Check that views were exported.
-//    $this->assertContains("CREATE VIEW `view1`", $dump);
-
+   //  $this->assertContains("CREATE VIEW `view1`", $dump);
   }
 
   /**

@@ -30,7 +30,6 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
     $schema = array();
 
     // Backup configuration
-
     if ($params['operation'] == 'backup') {
       $schema['groups']['file'] = [
         'title' => 'Backup File',

@@ -7,7 +7,6 @@
 
 namespace BackupMigrate\Core\Destination;
 
-use BackupMigrate\Core\Config\ConfigurableTrait;
 use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\File\BackupFileInterface;

@@ -10,7 +10,6 @@ namespace BackupMigrate\Core\Main;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Plugin\PluginManagerInterface;
 use BackupMigrate\Core\Exception\BackupMigrateException;
-use BackupMigrate\Core\Plugin\PluginCallerInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
 use BackupMigrate\Core\Plugin\PluginManager;
 use BackupMigrate\Core\Service\ServiceManager;

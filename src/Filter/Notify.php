@@ -97,8 +97,6 @@ class Notify extends PluginBase implements PluginCallerInterface {
     $this->plugins()->setServiceLocator($services);
   }
 
-
   // @TODO: Add a tee to the logger to capture all messages.
-
   // @TODO: Implement backup/restore fail/succeed ops and send a notification.
 }

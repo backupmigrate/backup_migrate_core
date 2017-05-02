@@ -11,8 +11,6 @@
 namespace BackupMigrate\Core\File;
 
 use BackupMigrate\Core\Exception\BackupMigrateException;
-use BackupMigrate\Core\File\BackupFile;
-use BackupMigrate\Core\File\TempFileAdapterInterface;
 
 /**
  * Class TempFile

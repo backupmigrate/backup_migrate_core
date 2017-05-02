@@ -6,8 +6,6 @@
 
 namespace BackupMigrate\Core\File;
 
-use BackupMigrate\Core\Plugin\PluginCallerInterface;
-use BackupMigrate\Core\Plugin\PluginCallerTrait;
 
 /**
  * Class TempFileManager

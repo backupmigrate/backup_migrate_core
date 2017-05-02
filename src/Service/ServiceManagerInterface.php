@@ -5,7 +5,6 @@
 
 namespace BackupMigrate\Core\Service;
 
-use BackupMigrate\Core\Plugin\PluginInterface;
 
 
 /**

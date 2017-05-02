@@ -30,7 +30,6 @@ class PhpCurlHttpClient implements HttpClientInterface {
    */
   public function post($url, $data) {
     $ch = $this->getCurlResource($url);
-
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
@@ -47,6 +46,7 @@ class PhpCurlHttpClient implements HttpClientInterface {
    */
   public function postFile($url, ReadableStreamBackupFile $file, $data) {
     $data['file'] = new \CURLFile($file->realpath());
+    $data['file']->setPostFilename($file->getFullName());
     return $this->post($url, $data);
   }
 

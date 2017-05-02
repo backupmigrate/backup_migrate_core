@@ -8,7 +8,6 @@
 namespace BackupMigrate\Core\Service;
 
 
-use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\File\BackupFileWritableInterface;
 
 /**

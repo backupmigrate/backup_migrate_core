@@ -12,7 +12,6 @@ use BackupMigrate\Core\Exception\DestinationNotWritableException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
-use BackupMigrate\Core\Plugin\PluginManagerInterface;
 
 /**
  * Class BrowserDownloadDestination

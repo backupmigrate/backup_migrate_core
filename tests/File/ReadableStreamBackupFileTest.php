@@ -86,8 +86,8 @@ class ReadableStreamBackupFileTest extends \PHPUnit_Framework_TestCase
       $new_file = new ReadableStreamBackupFile($this->fileURI);
       $this->assertEquals('Hello, World!', $new_file->readAll());
       unset($new_file);
-      // Not sure how to test that the handle has been closed since we don't get direct access to it.
-
+      // Not sure how to test that the handle has been
+      // closed since we don't get direct access to it.
       // Multiline file read:
       $message = "First Line\nSecond Line";
       vfsStream::create(['multiline.txt' => "First Line\nSecond Line"]);

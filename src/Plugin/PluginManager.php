@@ -11,7 +11,6 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 use BackupMigrate\Core\Config\ConfigurableTrait;
-use BackupMigrate\Core\File\TempFileManager;
 use BackupMigrate\Core\Service\ServiceManager;
 use BackupMigrate\Core\Service\ServiceManagerInterface;
 

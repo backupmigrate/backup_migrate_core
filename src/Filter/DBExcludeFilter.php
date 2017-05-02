@@ -11,7 +11,6 @@ namespace BackupMigrate\Core\Filter;
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\Plugin\PluginManager;
-use BackupMigrate\Core\Source\DatabaseSource;
 use BackupMigrate\Core\Source\DatabaseSourceInterface;
 
 /**

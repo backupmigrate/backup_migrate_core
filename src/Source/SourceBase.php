@@ -10,7 +10,6 @@ namespace BackupMigrate\Core\Source;
 use BackupMigrate\Core\Plugin\FileProcessorInterface;
 use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
-use BackupMigrate\Core\File\BackupFileReadableInterface;
 
 /**
  * Class SourceBase

@@ -38,7 +38,6 @@ interface ArchiveReaderInterface {
 
   // public function listFiles()
   // public function extractFile($from, $to);
-
   /**
    * This will be called when all files have been added. It gives the implementation
    * a chance to clean up and commit the changes if needed.

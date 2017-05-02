@@ -6,7 +6,6 @@
 namespace BackupMigrate\Core\Destination;
 
 use BackupMigrate\Core\File\BackupFileInterface;
-use BackupMigrate\Core\Plugin\PluginInterface;
 
 /**
  * Interface ReadableDestinationInterface

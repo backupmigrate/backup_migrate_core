@@ -41,7 +41,6 @@ interface BackupFileWritableInterface extends BackupFileReadableInterface {
    * @return mixed The value of the metadata for this file.
    */
   // public function getMeta($key);
-
   /**
    * Set a metadata value
    *
