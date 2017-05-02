@@ -30,6 +30,8 @@ class NodeSquirrelClientTest extends \PHPUnit_Framework_TestCase {
    * @var string
    */
   protected $site_id;
+  protected $time;
+  protected $nonce;
 
   /**
    *
@@ -42,15 +44,33 @@ class NodeSquirrelClientTest extends \PHPUnit_Framework_TestCase {
     ]);
 
 
-    $this->secret_key = "db5997406d336ef9583812c9f9370b8d:b0643b8f939cfcc390efc2fb55385b1a";
+    $private_key = 'b0643b8f939cfcc390efc2fb55385b1a';
     $this->site_id = "db5997406d336ef9583812c9f9370b8d";
+    $this->secret_key = "$this->site_id:$private_key";
     $this->http_client = $this->getMock(HttpClientInterface::class);
 
     $this->nodesquirrel_client = new NodeSquirrelClient($this->secret_key, ['api.nodesquirrel.com']);
+
+    $this->time = 1489959884;
+    $this->nonce = '5ff9e8ae24b6432bec5c3875c753414f';
     $this->nodesquirrel_client->setCryptoValues([
-      'time' => 1489959884,
-      'nonce' => '5ff9e8ae24b6432bec5c3875c753414f',
+      'time' => $this->time,
+      'nonce' => $this->nonce,
     ]);
+
+    // Recreate the hash that NS expects. There's probably a better way to test this.
+    $message = "$this->time:$this->nonce:$private_key";
+    // Use HMAC-SHA1 to authenticate the call.
+    $this->hash = base64_encode(
+      pack('H*',
+        sha1((str_pad($private_key, 64, chr(0x00)) ^ (str_repeat(chr(0x5c),
+              64))) .
+          pack('H*',
+            sha1((str_pad($private_key, 64, chr(0x00)) ^ (str_repeat(chr(0x36),
+                  64))) .
+              $message))))
+    );
+
     $this->nodesquirrel_client->setHttpClient($this->http_client);
   }
 
@@ -64,17 +84,17 @@ class NodeSquirrelClientTest extends \PHPUnit_Framework_TestCase {
 <params>
  <param>
   <value>
-   <string>ItrNr8d+KgCXU6LSq2P1ngnn8Is=</string>
+   <string>' . $this->hash . '</string>
   </value>
  </param>
  <param>
   <value>
-   <int>1489959884</int>
+   <int>' . $this->time . '</int>
   </value>
  </param>
  <param>
   <value>
-   <string>5ff9e8ae24b6432bec5c3875c753414f</string>
+   <string>' . $this->nonce . '</string>
   </value>
  </param>
  <param>
@@ -123,9 +143,9 @@ class NodeSquirrelClientTest extends \PHPUnit_Framework_TestCase {
       ->method('post')
       ->with('https://api.nodesquirrel.com',
         xmlrpc_encode_request('backups.getUploadTicket', [
-          'ItrNr8d+KgCXU6LSq2P1ngnn8Is=',
-          1489959884,
-          '5ff9e8ae24b6432bec5c3875c753414f',
+          $this->hash,
+          $this->time,
+          $this->nonce,
           $this->site_id,
           'item4.txt',
           strlen($txt),
@@ -149,9 +169,9 @@ class NodeSquirrelClientTest extends \PHPUnit_Framework_TestCase {
       ->method('post')
       ->with('https://api.nodesquirrel.com',
         xmlrpc_encode_request('backups.confirmUpload', [
-          'ItrNr8d+KgCXU6LSq2P1ngnn8Is=',
-          1489959884,
-          '5ff9e8ae24b6432bec5c3875c753414f',
+          $this->hash,
+          $this->time,
+          $this->nonce,
           $this->site_id,
           'item4.txt',
           strlen($txt),
