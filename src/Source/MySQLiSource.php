@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Source;
 
 
+use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\File\BackupFileWritableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
@@ -59,7 +60,6 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
 //        if (_backup_migrate_check_timeout()) {
 //          return FALSE;
 //        }
-
         $table = $this->plugins()->call('beforeDBTableBackup', $table, ['source' => $this]);
         if ($table['name'] && !isset($exclude[$table['name']]) && empty($table['exclude'])) {
           $file->write($this->_getTableCreateSQL($table));
@@ -122,22 +122,25 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    */
   protected function _getConnection() {
     if (!$this->connection) {
-     $this->connection = new \mysqli(
-        $this->confGet('host'),
-        $this->confGet('username'),
-        $this->confGet('password'),
-        $this->confGet('database'),
-        $this->confGet('port'),
-        $this->confGet('socket')
+      if (!function_exists('mysqli_init') && !extension_loaded('mysqli')) {
+        throw new BackupMigrateException('Cannot connect to the database becuase the MySQLi extension is missing.');
+      }
+      $this->connection = new \mysqli(
+          $this->confGet('host'),
+          $this->confGet('username'),
+          $this->confGet('password'),
+          $this->confGet('database'),
+          $this->confGet('port'),
+          $this->confGet('socket')
       );
       // Throw an error on fail
-      if ($this->connection->connect_errno) {
-        throw new \Exception("Failed to connect to MySQL server");
+      if ($this->connection->connect_errno || !$this->connection->ping()) {
+        throw new BackupMigrateException("Failed to connect to MySQL server.");
       }
       // Ensure, that the character set is UTF8.
       if (!$this->connection->set_charset('utf8mb4')) {
         if (!$this->connection->set_charset('utf8')) {
-          throw new \Exception('UTF8 is not supported by the MySQL server');
+          throw new BackupMigrateException('UTF8 is not supported by the MySQL server.');
         }
       }
     }
@@ -320,7 +323,6 @@ FOOTER;
     // Otherwise export the table data.
     $rows_per_line  = 30; //$this->confGet('rows_per_line');//variable_get('backup_migrate_data_rows_per_line', 30);
     $bytes_per_line = 2000; //$this->confGet('bytes_per_line'); variable_get('backup_migrate_data_bytes_per_line', 2000);
-
     $lines = 0;
     $result = $this->query("SELECT * FROM `". $table['name'] ."`");
     $rows = $bytes = 0;
