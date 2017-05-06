@@ -35,8 +35,8 @@ class DirectoryDestinationTest extends \PHPUnit_Framework_TestCase
       'tmp' => [],
       'files' => [
         'item1.txt' => 'Hello, World 1!',
-        'item2.txt' => 'Hello, World 2!',
-        'item3.txt' => 'Hello, World 3!',
+        'item2.txt' => 'Hello, World 22!',
+        'item3.txt' => 'Hello, World 333!',
       ]
     ]);
 
@@ -62,10 +62,31 @@ class DirectoryDestinationTest extends \PHPUnit_Framework_TestCase
     $this->assertArrayHasKey('item1.txt', $files);
     $this->assertArrayHasKey('item2.txt', $files);
     $this->assertArrayHasKey('item3.txt', $files);
-
-    // @TODO: test start and limit
-    // @TODO: Test sort order.
   }
+
+  /**
+   * @covers ::listFiles
+   */
+  public function testQuery() {
+    // Sort by filesize descending
+    $files = $this->destination->queryFiles([], 'filesize', SORT_DESC);
+    $this->assertEquals(['item3.txt', 'item2.txt', 'item1.txt'], array_keys($files));
+
+    // Filter by filesize
+    $size = strlen('Hello, World 22!');
+    $files = $this->destination->queryFiles(['filesize' => $size]);
+    foreach ($files as $file) {
+      $this->assertEquals($size, $file->getMeta('filesize'));
+    }
+
+    // Slice Files
+    $files = $this->destination->queryFiles([], null, null, 2);
+    $this->assertEquals(2, count($files));
+
+    $files = $this->destination->queryFiles([], null, null, 2, 1);
+    $this->assertEquals(['item2.txt', 'item3.txt'], array_keys($files));
+  }
+
 
   /**
    * @covers ::loadFileForReading

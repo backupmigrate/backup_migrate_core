@@ -183,6 +183,7 @@ class ReadableStreamBackupFile extends BackupFile implements BackupFileReadableI
    * Get info about the file and load them as metadata.
    */
   protected function _loadFileStats() {
+    clearstatcache();
     $this->setMeta('filesize', filesize($this->realpath()));
     $this->setMeta('datestamp', filectime($this->realpath()));
   }

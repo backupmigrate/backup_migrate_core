@@ -79,7 +79,10 @@ class TempFileTest extends \PHPUnit_Framework_TestCase
       $path = $new_file->realpath();
       $new_file->write('Hello, World!');
       $this->assertEquals(file_get_contents($new_file->realpath()), 'Hello, World!');
+      $new_file->close();
 
+      // Check the file size
+      $this->assertEquals($new_file->getMeta('filesize'), strlen('Hello, World!'));
 //      unset($new_file);
 //      // Make sure the file was deleted
 //      $this->assertFalse(file_exists($path));

@@ -130,18 +130,65 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
   /**
    * {@inheritdoc}
    */
-  public function listFiles($count = 100, $start = 0) {
+  public function listFiles() {
     $dir = $this->confGet('directory');
     $out = array();
 
     // Get the entire list of filenames
     $files = $this->_getAllFileNames();
 
-    // Limit to only the items specified.
-    for ($i = $start; $i < min($start + $count, count($files)); $i++) {
-      $file = $files[$i];
+    foreach ($files as $file) {
       $filepath = $dir . '/' . $file;
       $out[$file] = new ReadableStreamBackupFile($filepath);
+    }
+
+    return $out;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function queryFiles(
+    $filters = [],
+    $sort = 'datestamp',
+    $sort_direction = SORT_DESC,
+    $count = 100,
+    $start = 0
+  ) {
+
+    // Get the full list of files.
+    $out = $this->listFiles($count + $start);
+    foreach ($out as $key => $file) {
+      $out[$key] = $this->loadFileMetadata($file);
+    }
+
+    // Filter the output.
+    if ($filters) {
+      $out = array_filter($out, function($file) use ($filters) {
+        foreach ($filters as $key => $value) {
+          if ($file->getMeta($key) !== $value) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // Sort the files.
+    if ($sort && $sort_direction) {
+      uasort($out, function ($a, $b) use ($sort, $sort_direction) {
+        if ($sort_direction == SORT_DESC) {
+          return $b->getMeta($sort) < $b->getMeta($sort);
+        }
+        else {
+          return $b->getMeta($sort) > $b->getMeta($sort);
+        }
+      });
+    }
+
+    // Slice the return array.
+    if ($count || $start) {
+      $out = array_slice($out, $start, $count);
     }
 
     return $out;

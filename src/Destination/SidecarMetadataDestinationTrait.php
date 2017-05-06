@@ -26,7 +26,7 @@ trait SidecarMetadataDestinationTrait {
   protected function _loadFileMetadataArray(BackupFileInterface $file) {
     $info = array();
 
-    $id = $file->getMeta('id');
+    $id = $file->getFullName();
     $filename = $id . '.info';
     if ($this->fileExists($filename)) {
       $meta_file = $this->getFile($filename);

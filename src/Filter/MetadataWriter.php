@@ -73,7 +73,8 @@ class MetadataWriter extends PluginBase implements FileProcessorInterface, Plugi
       'generator',
       'generatorversion',
       'generatorurl',
-      'bam_sourceid'
+      'bam_sourceid',
+      'bam_scheduleid',
     ];
   }
 
